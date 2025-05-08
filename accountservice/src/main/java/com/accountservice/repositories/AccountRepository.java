@@ -10,6 +10,8 @@ import java.util.UUID;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, UUID> {
-    List<Account> findByAccountId(Long accountId);
-    Optional<Account> findByIdAndAccountId(UUID id, Long accountId);
+
+    List<Account> findByUserId(Long accountId);
+
+    Optional<Account> findByIdAndUserId(UUID id, Long userId);
 }

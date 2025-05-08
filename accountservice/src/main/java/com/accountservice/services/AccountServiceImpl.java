@@ -17,8 +17,9 @@ public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
 
-    public Account createBankAccount(Long accountId, AccountDTO dto) {
-        User user = userRepository.findById(accountId)
+    @Override
+    public Account createAccount(Long userId, AccountDTO dto) {
+        User user = userRepository.findById(userId)
             .orElseThrow(() -> new EntityNotFoundException());
 
        Account account = new Account();
@@ -29,17 +30,19 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.save(account);
     }
 
-    public Account updateBankAccount(UUID id, Long accountId, AccountDTO dto) {
-        Account bankAccount = accountRepository.findByIdAndAccountId(id, accountId)
+    @Override
+    public Account updateAccount(UUID id, Long userId, AccountDTO dto) {
+        Account account = accountRepository.findByIdAndUserId(id, userId)
             .orElseThrow(() -> new EntityNotFoundException());
 
-        bankAccount.setAmount(dto.amount());
-        bankAccount.setCurrency(dto.currency());
-        return accountRepository.save(bankAccount);
+        account.setAmount(dto.amount());
+        account.setCurrency(dto.currency());
+        return accountRepository.save(account);
     }
 
-    public void deleteBankAccount(UUID id, Long accountId) {
-        Account account = accountRepository.findByIdAndAccountId(id, accountId)
+    @Override
+    public void deleteAccount(UUID id, Long accountId) {
+        Account account = accountRepository.findByIdAndUserId(id, userId)
             .orElseThrow(() -> new EntityNotFoundException());
         accountRepository.delete(account);
     }
