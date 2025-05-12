@@ -41,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void deleteAccount(UUID id, Long accountId) {
+    public void deleteAccount(UUID id, Long userId) {
         Account account = accountRepository.findByIdAndUserId(id, userId)
             .orElseThrow(() -> new EntityNotFoundException());
         accountRepository.delete(account);

@@ -25,15 +25,18 @@ public class ExchangeGeneratorService {
     public void generateAndSendRates() {
 
         List<CurrencyRate> rates = List.of(
-            new CurrencyRate("USD", String.format("%.2f", 70 + 20 * RANDOM.nextDouble())),
-            new CurrencyRate("CNY", String.format("%.2f", 10 + 5 * RANDOM.nextDouble()))
+            new CurrencyRate("usd", generateRate(70, 20)),
+            new CurrencyRate("cny", generateRate(10, 5))
         );
 
-        try {
-            restTemplate.postForObject(exchangeServiceUrl, rates, Void.class);
-        } catch (Exception e) {
-            System.err.println("Error sending rates: " + e.getMessage());
-        }
+        restTemplate.postForObject(exchangeServiceUrl, rates, Void.class);
+    }
+
+    private double generateRate(double base, double spread) {
+
+        double value = base + spread * RANDOM.nextDouble();
+
+        return Math.round(value * 100.0) / 100.0;
     }
 
 }

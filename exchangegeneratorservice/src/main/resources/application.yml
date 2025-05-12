@@ -2,8 +2,8 @@ spring:
   application:
     name: exchangegeneratorservice
 
-exchangeservice:
-    url: http://exchangeservice/api/rates
-
 server:
   port: 8081
+
+exchangeservice:
+    url: http://exchangeservice/api/rates
