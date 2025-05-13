@@ -1,4 +1,4 @@
-package com.exchangegeneratorservice.services;
+package com.exchangegeneratorservice.clients;
 
 import com.exchangegeneratorservice.dto.CurrencyRate;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class ExchangeGeneratorService {
+public class ExchangeClient {
 
     private static final Random RANDOM = new Random();
 

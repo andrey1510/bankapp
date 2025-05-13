@@ -1,9 +1,12 @@
 spring:
   application:
-    name: cashservice
 
+    name: transferservice
 server:
-  port: 8086
+  port: 8084
+
+exchangeservice:
+  url: http://exchangeservice/api/rates
 
 accountservice:
   url: http://accountservice/api/accounts
