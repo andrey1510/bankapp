@@ -1,12 +1,10 @@
 package com.cashservice.services;
 
-import com.cashservice.dto.CashIncomingRequest;
-
-import java.util.UUID;
+import com.cashservice.dto.CashRequest;
 
 public interface CashService {
 
-    void processDeposit(CashIncomingRequest request);
+    void processDeposit(CashRequest request);
 
-    void processWithdraw(CashIncomingRequest request);
+    void processWithdraw(CashRequest request);
 }

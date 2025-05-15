@@ -13,3 +13,6 @@ accountservice:
 
 blockerservice:
   url: http://localhost:8087/api/fraud-check
+
+notificationservice:
+  url: http://localhost:8089/api/notifications

@@ -17,7 +17,7 @@ public class ExchangeClient {
 
     public Double getConversionRate(String fromCurrency, String toCurrency) {
 
-        if (fromCurrency.equalsIgnoreCase(toCurrency)) return 1.0;
+      //  if (fromCurrency.equalsIgnoreCase(toCurrency)) return 1.0;
 
         ExchangeRateResponse fromRate = restTemplate.getForObject(
             exchangeServiceUrl + "/" + fromCurrency,

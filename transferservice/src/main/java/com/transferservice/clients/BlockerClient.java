@@ -1,6 +1,6 @@
 package com.transferservice.clients;
 
-import com.transferservice.dto.SuspicionOperationResponse;
+import com.transferservice.dto.SuspicionOperation;
 import com.transferservice.dto.TransferRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +16,11 @@ public class BlockerClient {
     @Value("${blockerservice.url}")
     private String baseUrl;
 
-    public SuspicionOperationResponse checkTransferOperation(TransferRequest request) {
+    public SuspicionOperation checkTransferOperation(TransferRequest request) {
         return restTemplate.postForObject(
             baseUrl + "/cash",
             request,
-            SuspicionOperationResponse.class
+            SuspicionOperation.class
         );
     }
 }

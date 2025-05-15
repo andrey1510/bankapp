@@ -1,5 +1,5 @@
 package com.blockerservice.dto;
 
-public record SuspicionOperationResponse(
+public record SuspicionOperation(
     boolean isSuspicious
 ) {}

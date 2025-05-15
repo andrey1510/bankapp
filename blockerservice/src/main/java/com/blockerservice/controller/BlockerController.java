@@ -1,7 +1,7 @@
 package com.blockerservice.controller;
 
 import com.blockerservice.dto.CashRequest;
-import com.blockerservice.dto.SuspicionOperationResponse;
+import com.blockerservice.dto.SuspicionOperation;
 import com.blockerservice.dto.TransferRequest;
 import com.blockerservice.service.BlockerService;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +19,12 @@ public class BlockerController {
     private final BlockerService blockerService;
 
     @PostMapping("/transfer")
-    public SuspicionOperationResponse checkTransferOperation(@RequestBody TransferRequest request) {
+    public SuspicionOperation checkTransferOperation(@RequestBody TransferRequest request) {
         return blockerService.checkTransferOperation(request);
     }
 
     @PostMapping("/cash")
-    public SuspicionOperationResponse checkCashOperation(@RequestBody CashRequest request) {
+    public SuspicionOperation checkCashOperation(@RequestBody CashRequest request) {
         return blockerService.checkCashOperation(request);
     }
 

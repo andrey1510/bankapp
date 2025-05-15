@@ -1,5 +1,5 @@
 package com.cashservice.dto;
 
-public record SuspicionOperationResponse(
+public record SuspicionOperation(
     boolean isSuspicious
 ) {}
