@@ -31,10 +31,10 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    private String firstName;
+    private String name;
 
     @Column(nullable = false)
-    private String lastName;
+    private String surname;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -46,5 +46,11 @@ public class User {
     private LocalDate birthday;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users = new ArrayList<>();
+    private List<Account> accounts = new ArrayList<>();
+
+    @Column
+    private Boolean enabled = true;
+
+    @Column
+    private String roles = "ROLE_USER";
 }

@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/users/{userId}/accounts")
+@RequestMapping("/api/accounts")
 @RequiredArgsConstructor
 public class AccountController {
 
     private final AccountService accountService;
 
     @PostMapping
-    public ResponseEntity<Account> createBankAccount(
+    public ResponseEntity<Account> createAccount(
         @PathVariable Long userId,
         @RequestBody AccountDTO dto
     ) {
@@ -42,7 +42,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBankAccount(
+    public ResponseEntity<Void> deleteAccount(
         @PathVariable UUID id,
         @PathVariable Long userId
     ) {
