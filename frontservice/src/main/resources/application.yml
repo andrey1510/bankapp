@@ -1,3 +1,6 @@
 spring:
   application:
     name: frontservice
+
+server:
+  port: 8888

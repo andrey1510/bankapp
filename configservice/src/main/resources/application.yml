@@ -1,5 +1,5 @@
 server:
-  port: 8888
+  port: 8884
 
 spring:
   application:
@@ -13,4 +13,4 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://localhost:8885/eureka/

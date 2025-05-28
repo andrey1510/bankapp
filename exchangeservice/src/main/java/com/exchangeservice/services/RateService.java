@@ -1,15 +1,15 @@
 package com.exchangeservice.services;
 
-import com.exchangeservice.dto.ConversionRate;
 import com.exchangeservice.dto.CurrencyRate;
+import com.exchangeservice.dto.ExchangeRate;
 
 import java.util.List;
 
 public interface RateService {
 
-    void updateRates(List<CurrencyRate> newRates);
+    void saveRates(List<CurrencyRate> newRates);
 
-    List<ConversionRate> getAllRates();
+    List<ExchangeRate> getLatestRates();
 
-    ConversionRate getRateByCurrency(String currency);
+    ExchangeRate getLatestRateByName(String name);
 }

@@ -2,6 +2,5 @@ spring:
   application:
     name: blockerservice
 
-
 server:
-  port: 8087
+  port: 8882

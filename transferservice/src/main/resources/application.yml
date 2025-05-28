@@ -1,18 +1,18 @@
 spring:
   application:
-
     name: transferservice
+
 server:
-  port: 8084
+  port: 8891
 
 exchangeservice:
-  url: http://exchangeservice/api/rates
+  url: http://localhost:8887/api/rates
 
 accountservice:
-  url: http://accountservice/api/accounts
+  url: http://localhost:8881/api/accounts
 
 blockerservice:
-  url: http://localhost:8087/api/fraud-check
+  url: http://localhost:8882/api/fraud-check
 
 notificationservice:
-  url: http://localhost:8089/api/notifications
+  url: http://localhost:8890/api/notifications

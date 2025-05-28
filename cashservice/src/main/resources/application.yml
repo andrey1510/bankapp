@@ -3,13 +3,13 @@ spring:
     name: cashservice
 
 server:
-  port: 8086
+  port: 8883
 
 accountservice:
-  url: http://accountservice/api/accounts
+  url: http://localhost:8881/api/accounts
 
 blockerservice:
-  url: http://localhost:8087/api/fraud-check
+  url: http://localhost:8882/api/fraud-check
 
 notificationservice:
-  url: http://notificationservice/api/notifications
+  url: http://localhost:8890/api/notifications
