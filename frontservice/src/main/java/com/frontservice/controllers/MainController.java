@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frontservice.dto.AccountInfoDto;
+import com.frontservice.dto.CashRequestDto;
 import com.frontservice.dto.UserAccountsDto;
 import com.frontservice.dto.UserInfoDto;
 import com.frontservice.dto.UserUpdateDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class MainController {
@@ -129,7 +133,7 @@ public class MainController {
 
             restTemplate.postForEntity(
                 "http://localhost:8881/api/users/edit-accounts",
-                new UserAccountsDto(login, updatedAccounts),
+                new UserAccountsDto(login, null, updatedAccounts),
                 Void.class
             );
 
@@ -145,62 +149,88 @@ public class MainController {
         return "redirect:/main";
     }
 
-//
-//    @PostMapping("/user/edit-accounts")
-//    public String handleCashForm(
-//        @RequestParam(required = false) List<String> account,
-//        Model model,
-//        RedirectAttributes redirectAttributes
-//    ) {
-//        String login = "test";
-//
-//        try {
-//            ResponseEntity<UserAccountsDto> response = restTemplate.getForEntity(
-//                "http://localhost:8881/api/users/accounts-info?login={login}",
-//                UserAccountsDto.class,
-//                login
-//            );
-//
-//            UserAccountsDto currentAccounts = response.getBody();
-//            if (currentAccounts == null || currentAccounts.accounts() == null) {
-//                model.addAttribute("userAccountsErrors", List.of("Нет данных о счетах"));
-//                return "redirect:/main";
-//            }
-//
-//            Set<String> enabledCurrencies = account != null ? new HashSet<>(account) : Set.of();
-//
-//            List<AccountInfoDto> updatedAccounts = currentAccounts.accounts().stream()
-//                .map(acc -> {
-//                    boolean enabled = enabledCurrencies.contains(acc.currency());
-//                    return new AccountInfoDto(
-//                        acc.accountId(),
-//                        acc.title(),
-//                        acc.currency(),
-//                        enabled ? acc.amount() : 0.0,
-//                        enabled
-//                    );
-//                })
-//                .collect(Collectors.toList());
-//
-//            restTemplate.postForEntity(
-//                "http://localhost:8881/api/users/edit-accounts",
-//                new UserAccountsDto(login, updatedAccounts),
-//                Void.class
-//            );
-//
-//            redirectAttributes.addFlashAttribute("success", "Данные успешно обновлены");
-//        } catch (HttpClientErrorException e) {
-//            handleErrorResponse(e, model);
-//            return "redirect:/main";
-//        } catch (Exception e) {
-//            model.addAttribute("userAccountsErrors", List.of("Ошибка сервера: " + e.getMessage()));
-//            return "redirect:/main";
-//        }
-//
-//        return "redirect:/main";
-//    }
-//
-//
+    @PostMapping("/user/cash")
+    public String handleCashOperation(
+        @RequestParam String currency,
+        @RequestParam Double value,
+        @RequestParam String action,
+        Model model
+    ) {
+
+        //todo
+        String login = "test";
+
+        try {
+            ResponseEntity<UserInfoDto> responseUser = restTemplate.getForEntity(
+                "http://localhost:8881/api/users/user-info?login={login}",
+                UserInfoDto.class,
+                login
+            );
+
+            UserInfoDto userInfo = responseUser.getBody();
+            model.addAttribute("login", userInfo.login());
+            model.addAttribute("name", userInfo.name());
+            model.addAttribute("birthdate", userInfo.birthdate());
+            model.addAttribute("email", userInfo.email());
+
+            ResponseEntity<UserAccountsDto> responseAccs = restTemplate.getForEntity(
+                "http://localhost:8881/api/users/accounts-info?login={login}",
+                UserAccountsDto.class,
+                login
+            );
+
+            UserAccountsDto dto = responseAccs.getBody();
+            model.addAttribute("accounts", dto.accounts());
+
+        } catch (HttpClientErrorException e) {
+            model.addAttribute("userAccountsErrors", List.of("Ошибка загрузки данных"));
+        }
+
+        String email = (String) model.getAttribute("email");
+
+        List<AccountInfoDto> accounts = (List<AccountInfoDto>) model.getAttribute("accounts");
+
+        AccountInfoDto selectedAccount = accounts.stream()
+            .filter(acc -> currency.equals(acc.currency()))
+            .findFirst()
+            .orElse(null);
+
+        if (selectedAccount == null) {
+            model.addAttribute("cashErrors", List.of("Выбранный счет не найден"));
+            return "main";
+        }
+
+        boolean isDeposit = "PUT".equals(action);
+
+        CashRequestDto request = new CashRequestDto(
+            email,
+            selectedAccount.accountId(),
+            selectedAccount.currency(),
+            value,
+            isDeposit
+        );
+
+        log.info(String.valueOf(request.amount()));
+
+        try {
+            ResponseEntity<Void> response = restTemplate.postForEntity(
+                "http://localhost:8883/api/cash/operation",
+                request,
+                Void.class
+            );
+
+            return "redirect:/main";
+
+        } catch (HttpClientErrorException e) {
+
+            log.warn("HttpClientErrorException e");
+
+            handleCashServiceError(e, model);
+            return "redirect:/main";
+        }
+    }
+
+
     private void handleErrorResponse(HttpClientErrorException e, Model model) {
         try {
             List<String> errors = new ObjectMapper().readValue(
@@ -213,7 +243,18 @@ public class MainController {
         }
     }
 
+    private void handleCashServiceError(HttpClientErrorException e, Model model) {
+        if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            String errorMessage = e.getResponseBodyAsString();
 
+            log.warn(errorMessage);
+
+            model.addAttribute("cashErrors", List.of(errorMessage));
+        } else {
+            model.addAttribute("cashErrors",
+                List.of("Ошибка обработки операции: " + e.getStatusCode()));
+        }
+    }
 
 }
 

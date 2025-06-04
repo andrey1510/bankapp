@@ -5,8 +5,8 @@ spring:
   application:
     name: notificationservice
   datasource:
-    url: jdbc:postgresql://localhost:5555/notification-db
-    username: user
+    url: jdbc:postgresql://localhost:5555/notificationdb
+    username: login
     password: password
   jpa:
     hibernate:
@@ -14,11 +14,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  mail:
-    host: localhost.com
-    port: 587
-    username: email@mail.com
-    password: password
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
+
+        #todo
+#  mail:
+#    host: localhost.com
+#    port: 587
+#    username: email@mail.com
+#    password: password
+#    properties:
+#      mail.smtp.auth: true
+#      mail.smtp.starttls.enable: true

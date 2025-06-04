@@ -1,12 +1,10 @@
 package com.blockerservice.dto;
 
-import java.util.UUID;
-
-public record TransferRequest(
+public record TransferRequestDto(
     String email,
-    UUID senderAccountId,
+    Long senderAccountId,
     String senderAccountCurrency,
     Double amount,
-    UUID recipientAccountId,
+    Long recipientAccountId,
     String recipientAccountCurrency
 ) {}

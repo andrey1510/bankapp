@@ -1,8 +1,8 @@
 package com.blockerservice.controller;
 
-import com.blockerservice.dto.CashRequest;
-import com.blockerservice.dto.SuspicionOperation;
-import com.blockerservice.dto.TransferRequest;
+import com.blockerservice.dto.CashRequestDto;
+import com.blockerservice.dto.SuspicionOperationDto;
+import com.blockerservice.dto.TransferRequestDto;
 import com.blockerservice.service.BlockerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,12 +19,12 @@ public class BlockerController {
     private final BlockerService blockerService;
 
     @PostMapping("/transfer")
-    public SuspicionOperation checkTransferOperation(@RequestBody TransferRequest request) {
+    public SuspicionOperationDto checkTransferOperation(@RequestBody TransferRequestDto request) {
         return blockerService.checkTransferOperation(request);
     }
 
     @PostMapping("/cash")
-    public SuspicionOperation checkCashOperation(@RequestBody CashRequest request) {
+    public SuspicionOperationDto checkCashOperation(@RequestBody CashRequestDto request) {
         return blockerService.checkCashOperation(request);
     }
 

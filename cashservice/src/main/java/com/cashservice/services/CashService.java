@@ -4,7 +4,6 @@ import com.cashservice.dto.CashRequestDto;
 
 public interface CashService {
 
-    void processDeposit(CashRequestDto request);
+    void processOperation(CashRequestDto request);
 
-    void processWithdraw(CashRequestDto request);
 }

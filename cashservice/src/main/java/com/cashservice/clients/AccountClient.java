@@ -1,6 +1,6 @@
 package com.cashservice.clients;
 
-import com.cashservice.dto.AccountBalanceChange;
+import com.cashservice.dto.AccountBalanceChangeDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,19 +16,12 @@ public class AccountClient {
     @Value("${accountservice.url}")
     private String accountServiceUrl;
 
-    public void deposit(UUID accountId, Double amount) {
+    public void sendAccountRequest(Long accountId, Double amount) {
         restTemplate.postForObject(
-            accountServiceUrl + "/deposit",
-            new AccountBalanceChange(accountId, amount),
+            accountServiceUrl + "/cash",
+            new AccountBalanceChangeDto(accountId, amount),
             Void.class
         );
     }
 
-    public void withdraw(UUID accountId, Double amount) {
-        restTemplate.postForObject(
-            accountServiceUrl + "/withdraw",
-            new AccountBalanceChange(accountId, amount),
-            Void.class
-        );
-    }
 }

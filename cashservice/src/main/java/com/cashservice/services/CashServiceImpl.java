@@ -4,10 +4,16 @@ import com.cashservice.clients.AccountClient;
 import com.cashservice.clients.BlockerClient;
 import com.cashservice.clients.NotificationClient;
 import com.cashservice.dto.CashRequestDto;
-import com.cashservice.dto.SuspicionOperation;
+import com.cashservice.dto.SuspicionOperationDto;
+import com.cashservice.exceptions.CashOperationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CashServiceImpl implements CashService {
@@ -17,27 +23,46 @@ public class CashServiceImpl implements CashService {
     private final NotificationClient notificationClient;
 
     @Override
-    public void processDeposit(CashRequestDto request) {
+    public void processOperation(CashRequestDto request) {
 
-        SuspicionOperation response = blockerClient.checkCashOperation(request);
+        SuspicionOperationDto response = blockerClient.checkCashOperation(request);
+
         if (response != null && response.isSuspicious()) {
-            notificationClient.sendBlockedCashNotification(request, true);
-            throw new IllegalStateException("Операция заблокирована");
+            notificationClient.sendBlockedCashNotification(request);
+            log.info("Операция заблокирована");
+            throw new CashOperationException("Операция заблокирована");
         }
 
-        accountClient.deposit(request.accountId(), request.amount());
+        Double amount = request.amount();
+        if (!request.isDeposit()) amount = -amount;
+
+        try {
+            accountClient.sendAccountRequest(request.accountId(), amount);
+        } catch (RestClientException e) {
+            handleAccountServiceError(e);
+        }
+
     }
 
-    @Override
-    public void processWithdraw(CashRequestDto request) {
+    private void handleAccountServiceError(RestClientException e) {
+        if (e instanceof HttpClientErrorException) {
+            HttpClientErrorException httpEx = (HttpClientErrorException) e;
 
-        SuspicionOperation response = blockerClient.checkCashOperation(request);
-        if (response != null && response.isSuspicious()) {
-            notificationClient.sendBlockedCashNotification(request, false);
-            throw new IllegalStateException("Операция заблокирована");
+            if (httpEx.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                String errorMessage = extractErrorMessage(httpEx);
+                throw new CashOperationException(errorMessage);
+            }
         }
 
-        accountClient.withdraw(request.accountId(), request.amount());
+        throw new CashOperationException("Ошибка: " + e.getMessage());
+    }
+
+    private String extractErrorMessage(HttpClientErrorException ex) {
+        try {
+            return ex.getResponseBodyAsString();
+        } catch (Exception e) {
+            return "Недостаточно средств";
+        }
     }
 
 }

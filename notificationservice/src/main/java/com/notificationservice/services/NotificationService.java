@@ -1,10 +1,9 @@
 package com.notificationservice.services;
 
-import com.notificationservice.dto.NotificationRequest;
-import jakarta.transaction.Transactional;
+import com.notificationservice.dto.NotificationRequestDto;
 
 public interface NotificationService {
 
-    void processNotification(NotificationRequest request);
+    void processNotification(NotificationRequestDto request);
 
 }

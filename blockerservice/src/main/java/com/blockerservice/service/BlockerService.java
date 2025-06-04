@@ -1,11 +1,11 @@
 package com.blockerservice.service;
 
-import com.blockerservice.dto.CashRequest;
-import com.blockerservice.dto.SuspicionOperation;
-import com.blockerservice.dto.TransferRequest;
+import com.blockerservice.dto.CashRequestDto;
+import com.blockerservice.dto.SuspicionOperationDto;
+import com.blockerservice.dto.TransferRequestDto;
 
 public interface BlockerService {
-    SuspicionOperation checkTransferOperation(TransferRequest request);
+    SuspicionOperationDto checkTransferOperation(TransferRequestDto request);
 
-    SuspicionOperation checkCashOperation(CashRequest request);
+    SuspicionOperationDto checkCashOperation(CashRequestDto request);
 }

@@ -1,6 +1,6 @@
 package com.notificationservice.controllers;
 
-import com.notificationservice.dto.NotificationRequest;
+import com.notificationservice.dto.NotificationRequestDto;
 import com.notificationservice.services.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class NotificationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void processNotification(@Valid @RequestBody NotificationRequest request) {
+    public void processNotification(@Valid @RequestBody NotificationRequestDto request) {
         notificationService.processNotification(request);
     }
 }

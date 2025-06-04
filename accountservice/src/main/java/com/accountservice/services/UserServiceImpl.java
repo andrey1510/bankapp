@@ -92,13 +92,14 @@ public class UserServiceImpl implements UserService {
     }
 
 
+
     @Transactional(readOnly = true)
     @Override
     public UserAccountsDto getAccountsInfo(String login) {
         User user = userRepository.findByLogin(login)
             .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
 
-        return new UserAccountsDto(login, user.getAccounts().stream()
+        return new UserAccountsDto(login, user.getEmail(), user.getAccounts().stream()
             .map(account -> new AccountInfoDto(
                 account.getId(),
                 account.getTitle(),
@@ -126,8 +127,6 @@ public class UserServiceImpl implements UserService {
         accounts.forEach(account -> {
             AccountInfoDto accountDto = dtoMap.get(account.getId());
 
-            account.setTitle(accountDto.title());
-            account.setCurrency(accountDto.currency());
             account.setIsEnabled(accountDto.isEnabled());
 
             if (!accountDto.isEnabled()) {

@@ -1,7 +1,7 @@
 package com.cashservice.clients;
 
 import com.cashservice.dto.CashRequestDto;
-import com.cashservice.dto.SuspicionOperation;
+import com.cashservice.dto.SuspicionOperationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,11 +16,11 @@ public class BlockerClient {
     @Value("${blockerservice.url}")
     private String baseUrl;
 
-    public SuspicionOperation checkCashOperation(CashRequestDto request) {
+    public SuspicionOperationDto checkCashOperation(CashRequestDto request) {
         return restTemplate.postForObject(
             baseUrl + "/cash",
             request,
-            SuspicionOperation.class
+            SuspicionOperationDto.class
         );
     }
 }

@@ -1,10 +1,8 @@
 package com.blockerservice.dto;
 
-import java.util.UUID;
-
-public record CashRequest(
+public record CashRequestDto(
     String email,
-    UUID accountId,
+    Long accountId,
     String currency,
     Double amount
 ) {}
