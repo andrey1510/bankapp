@@ -10,11 +10,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, UUID> {
+public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    List<Account> findByUserId(Long accountId);
+    List<Account> findByUser(User user);
+
+    Optional<Account> findByUserAndCurrency(User user, String currency);
 
     boolean existsByUserAndCurrency(User user, String currency);
 
-    Optional<Account> findByIdAndUser(UUID id, User user);
 }

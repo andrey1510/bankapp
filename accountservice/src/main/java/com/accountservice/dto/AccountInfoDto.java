@@ -1,0 +1,10 @@
+package com.accountservice.dto;
+
+
+public record AccountInfoDto(
+    Long accountId,
+    String title,
+    String currency,
+    Double amount,
+    boolean isEnabled
+) {}

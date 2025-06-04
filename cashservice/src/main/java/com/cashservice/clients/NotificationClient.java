@@ -1,6 +1,6 @@
 package com.cashservice.clients;
 
-import com.cashservice.dto.CashRequest;
+import com.cashservice.dto.CashRequestDto;
 import com.cashservice.dto.NotificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +19,7 @@ public class NotificationClient {
     @Value("${notificationservice.url}")
     private String notificationServiceUrl;
 
-    public void sendBlockedCashNotification(CashRequest request, boolean isDeposit) {
+    public void sendBlockedCashNotification(CashRequestDto request, boolean isDeposit) {
         String operationType = isDeposit ? "пополнению" : "снятию";
         String message = String.format("%s была заблокирована операция по %s счета %s на сумму %.2f %s",
             LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),

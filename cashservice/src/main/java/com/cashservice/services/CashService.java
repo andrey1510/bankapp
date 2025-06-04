@@ -1,10 +1,10 @@
 package com.cashservice.services;
 
-import com.cashservice.dto.CashRequest;
+import com.cashservice.dto.CashRequestDto;
 
 public interface CashService {
 
-    void processDeposit(CashRequest request);
+    void processDeposit(CashRequestDto request);
 
-    void processWithdraw(CashRequest request);
+    void processWithdraw(CashRequestDto request);
 }

@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.util.UUID;
 
-public record CashRequest(
+public record CashRequestDto(
     @Email String email,
     @NotNull UUID accountId,
     @NotBlank String currency,

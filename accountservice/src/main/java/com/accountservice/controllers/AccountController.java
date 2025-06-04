@@ -21,32 +21,5 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AccountController {
 
-    private final AccountService accountService;
 
-    @PostMapping
-    public ResponseEntity<Account> createAccount(
-        @PathVariable Long userId,
-        @RequestBody AccountDTO dto
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-            .body(accountService.createAccount(userId, dto));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Account> updateAccount(
-        @PathVariable UUID id,
-        @PathVariable Long userId,
-        @RequestBody AccountDTO dto
-    ) {
-        return ResponseEntity.ok(accountService.updateAccount(id, userId, dto));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccount(
-        @PathVariable UUID id,
-        @PathVariable Long userId
-    ) {
-        accountService.deleteAccount(id, userId);
-        return ResponseEntity.noContent().build();
-    }
 }

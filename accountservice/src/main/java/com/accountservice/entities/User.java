@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "users")
 public class User {
 
@@ -28,13 +30,10 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username;
+    private String login;
 
     @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
-    private String surname;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -43,14 +42,19 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private LocalDate birthday;
+    private LocalDate birthdate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
+//
+//    @Column
+//    private Boolean enabled = true;
+//
+//    @Column
+//    private String roles = "ROLE_USER";
 
-    @Column
-    private Boolean enabled = true;
-
-    @Column
-    private String roles = "ROLE_USER";
+    public void addAccount(Account account) {
+        account.setUser(this);
+        this.accounts.add(account);
+    }
 }

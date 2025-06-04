@@ -1,6 +1,6 @@
 package com.cashservice.controllers;
 
-import com.cashservice.dto.CashRequest;
+import com.cashservice.dto.CashRequestDto;
 import com.cashservice.services.CashService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +20,13 @@ public class CashController {
 
     @PostMapping("/deposit")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void deposit(@Valid @RequestBody CashRequest request) {
+    public void deposit(@Valid @RequestBody CashRequestDto request) {
         cashService.processDeposit(request);
     }
 
     @PostMapping("/withdraw")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void withdraw(@Valid @RequestBody CashRequest request) {
+    public void withdraw(@Valid @RequestBody CashRequestDto request) {
         cashService.processWithdraw(request);
     }
 }

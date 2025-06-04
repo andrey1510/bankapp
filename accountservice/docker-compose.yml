@@ -1,29 +1,29 @@
 services:
 
-  exchangeservice:
-    container_name: exchangeservice
+  accountservice:
+    container_name: accountservice
     build:
       context: .
       dockerfile: Dockerfile
       args:
         - MAVEN_SKIP_TESTS=true
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/exchangedb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/accountdb
       - SPRING_DATASOURCE_USERNAME=login
       - SPRING_DATASOURCE_PASSWORD=password
     ports:
-      - 8887:8887
+      - 8881:8881
     depends_on:
-      - exchangedb
+      - accountdb
     restart: unless-stopped
 
-  exchangedb:
-    container_name: exchangedb
+  accountdb:
+    container_name: accountdb
     image: postgres:14-alpine
     environment:
-      - POSTGRES_DB=exchangedb
+      - POSTGRES_DB=accountdb
       - POSTGRES_USER=login
       - POSTGRES_PASSWORD=password
     ports:
-      - 5556:5432
+      - 5554:5432
     restart: unless-stopped

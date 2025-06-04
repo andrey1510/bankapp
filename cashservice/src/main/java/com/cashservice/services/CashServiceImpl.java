@@ -3,7 +3,7 @@ package com.cashservice.services;
 import com.cashservice.clients.AccountClient;
 import com.cashservice.clients.BlockerClient;
 import com.cashservice.clients.NotificationClient;
-import com.cashservice.dto.CashRequest;
+import com.cashservice.dto.CashRequestDto;
 import com.cashservice.dto.SuspicionOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class CashServiceImpl implements CashService {
     private final NotificationClient notificationClient;
 
     @Override
-    public void processDeposit(CashRequest request) {
+    public void processDeposit(CashRequestDto request) {
 
         SuspicionOperation response = blockerClient.checkCashOperation(request);
         if (response != null && response.isSuspicious()) {
@@ -29,7 +29,7 @@ public class CashServiceImpl implements CashService {
     }
 
     @Override
-    public void processWithdraw(CashRequest request) {
+    public void processWithdraw(CashRequestDto request) {
 
         SuspicionOperation response = blockerClient.checkCashOperation(request);
         if (response != null && response.isSuspicious()) {

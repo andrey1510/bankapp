@@ -1,6 +1,16 @@
+server:
+  port: 8881
+
 spring:
   application:
     name: accountservice
-
-server:
-  port: 8881
+  datasource:
+    url: jdbc:postgresql://localhost:5554/accountdb
+    username: login
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

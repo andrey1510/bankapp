@@ -6,11 +6,9 @@ import jakarta.validation.constraints.Past;
 
 import java.time.LocalDate;
 
-public record RegisterRequest(
-    @NotBlank String login,
-    @NotBlank String password,
+public record UserUpdateDto(
+    String login,
     @NotBlank String name,
-    @NotBlank String surname,
-    @Past LocalDate dateOfBirth,
+    @Past LocalDate birthdate,
     @Email String email
 ) {}

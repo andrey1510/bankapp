@@ -1,6 +1,6 @@
 package com.cashservice.clients;
 
-import com.cashservice.dto.CashRequest;
+import com.cashservice.dto.CashRequestDto;
 import com.cashservice.dto.SuspicionOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +16,7 @@ public class BlockerClient {
     @Value("${blockerservice.url}")
     private String baseUrl;
 
-    public SuspicionOperation checkCashOperation(CashRequest request) {
+    public SuspicionOperation checkCashOperation(CashRequestDto request) {
         return restTemplate.postForObject(
             baseUrl + "/cash",
             request,
