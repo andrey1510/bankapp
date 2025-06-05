@@ -15,12 +15,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-        #todo
-#  mail:
-#    host: localhost.com
-#    port: 587
-#    username: email@mail.com
-#    password: password
-#    properties:
-#      mail.smtp.auth: true
-#      mail.smtp.starttls.enable: true
+
+  mail:
+    host: localhost #todo mailhog
+    port: 1025
+    username:
+    password:

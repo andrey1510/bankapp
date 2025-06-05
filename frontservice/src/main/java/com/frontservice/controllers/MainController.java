@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frontservice.dto.AccountInfoDto;
 import com.frontservice.dto.CashRequestDto;
+import com.frontservice.dto.CurrenciesDto;
+import com.frontservice.dto.TransferRequestDto;
 import com.frontservice.dto.UserAccountsDto;
 import com.frontservice.dto.UserInfoDto;
 import com.frontservice.dto.UserUpdateDto;
@@ -23,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,18 +61,103 @@ public class MainController {
                 UserAccountsDto.class,
                 login
             );
+            UserAccountsDto currentAccounts = responseAccs.getBody();
 
-            UserAccountsDto dto = responseAccs.getBody();
-            List<AccountInfoDto> accounts = dto.accounts();
+            model.addAttribute("transferAccounts", currentAccounts.accounts());
 
+            ResponseEntity<CurrenciesDto> responseCurrencies = restTemplate.getForEntity(
+                "http://localhost:8887/api/currencies",
+                CurrenciesDto.class
+            );
+            CurrenciesDto currencies = responseCurrencies.getBody();
+
+            List<AccountInfoDto> accounts = combineCurrencies(currentAccounts, currencies);
 
             model.addAttribute("accounts", accounts);
+
 
         } catch (HttpClientErrorException e) {
             model.addAttribute("userAccountsErrors", List.of("Ошибка загрузки данных"));
         }
 
         return "main";
+    }
+
+    @PostMapping("/user/transfer-self")
+    public String handleTransferSelfForm(
+        @RequestParam String fromCurrency,
+        @RequestParam String toCurrency,
+        @RequestParam Double value,
+        RedirectAttributes redirectAttributes) {
+
+        //todo
+        String login = "test";
+
+        try {
+            if (fromCurrency.equals(toCurrency)) {
+                redirectAttributes.addFlashAttribute("transferErrors",
+                    List.of("Нельзя переводить между счетами с одинаковой валютой"));
+                return "redirect:/main";
+            }
+
+            if (value <= 0) {
+                redirectAttributes.addFlashAttribute("transferErrors",
+                    List.of("Сумма перевода должна быть положительной"));
+                return "redirect:/main";
+            }
+
+            ResponseEntity<UserAccountsDto> accountsResponse = restTemplate.getForEntity(
+                "http://localhost:8881/api/users/accounts-info?login={login}",
+                UserAccountsDto.class,
+                login
+            );
+            UserAccountsDto accountsDto = accountsResponse.getBody();
+
+
+            AccountInfoDto senderAccount = accountsDto.accounts().stream()
+                .filter(acc -> acc.currency().equals(fromCurrency) && acc.isExisting())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Счет отправителя не найден"));
+
+            AccountInfoDto recipientAccount = accountsDto.accounts().stream()
+                .filter(acc -> acc.currency().equals(toCurrency) && acc.isExisting())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Счет получателя не найден"));
+
+
+            TransferRequestDto transferRequest = new TransferRequestDto(
+                accountsDto.email(),
+                senderAccount.accountId(),
+                senderAccount.currency(),
+                value,
+                recipientAccount.accountId(),
+                recipientAccount.currency()
+            );
+
+            ResponseEntity<Void> transferResponse = restTemplate.postForEntity(
+                "http://localhost:8891/api/transfers/transfer",
+                transferRequest,
+                Void.class
+            );
+
+            if (!transferResponse.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("Ошибка при выполнении перевода");
+            }
+
+            redirectAttributes.addFlashAttribute("transferSuccess", true);
+            return "redirect:/main";
+
+        } catch (HttpClientErrorException e) {
+            log.error("Transfer error", e);
+            redirectAttributes.addFlashAttribute("transferErrors",
+                List.of("Ошибка при выполнении перевода: " + e.getStatusCode()));
+            return "redirect:/main";
+        } catch (Exception e) {
+            log.error("Unexpected error", e);
+            redirectAttributes.addFlashAttribute("transferErrors",
+                List.of("Внутренняя ошибка сервера: " + e.getMessage()));
+            return "redirect:/main";
+        }
     }
 
 
@@ -109,23 +197,32 @@ public class MainController {
                 UserAccountsDto.class,
                 login
             );
-
             UserAccountsDto currentAccounts = response.getBody();
-            if (currentAccounts == null || currentAccounts.accounts() == null) {
+
+            ResponseEntity<CurrenciesDto> responseCurrencies = restTemplate.getForEntity(
+                "http://localhost:8887/api/currencies",
+                CurrenciesDto.class
+            );
+            CurrenciesDto currencies = responseCurrencies.getBody();
+
+
+            List<AccountInfoDto> allAccounts = combineCurrencies(currentAccounts, currencies);
+
+            if (allAccounts == null || allAccounts.isEmpty()) {
                 model.addAttribute("userAccountsErrors", List.of("Нет данных о счетах"));
                 return "redirect:/main";
             }
 
-            Set<String> enabledCurrencies = account != null ? new HashSet<>(account) : Set.of();
+            Set<String> updatedModel = account != null ? new HashSet<>(account) : Set.of();
 
-            List<AccountInfoDto> updatedAccounts = currentAccounts.accounts().stream()
+            List<AccountInfoDto> updatedAccounts = allAccounts.stream()
                 .map(acc -> {
-                    boolean enabled = enabledCurrencies.contains(acc.currency());
+                    boolean enabled = updatedModel.contains(acc.currency());
                     return new AccountInfoDto(
                         acc.accountId(),
                         acc.title(),
                         acc.currency(),
-                        enabled ? acc.amount() : 0.0,
+                        acc.amount(),
                         enabled
                     );
                 })
@@ -254,6 +351,32 @@ public class MainController {
             model.addAttribute("cashErrors",
                 List.of("Ошибка обработки операции: " + e.getStatusCode()));
         }
+    }
+
+
+    public List<AccountInfoDto> combineCurrencies(
+        UserAccountsDto userAccountsDto,
+        CurrenciesDto currenciesDto) {
+
+        List<AccountInfoDto> allAccounts = new ArrayList<>(userAccountsDto.accounts());
+
+        Set<String> existingCurrencies = userAccountsDto.accounts().stream()
+            .map(AccountInfoDto::currency)
+            .collect(Collectors.toSet());
+
+        currenciesDto.currencies().forEach((currencyName, currencyTitle) -> {
+            if (!existingCurrencies.contains(currencyName)) {
+                allAccounts.add(new AccountInfoDto(
+                    null,
+                    currencyTitle,
+                    currencyName,
+                    0.0,
+                    false
+                ));
+            }
+        });
+
+        return allAccounts;
     }
 
 }

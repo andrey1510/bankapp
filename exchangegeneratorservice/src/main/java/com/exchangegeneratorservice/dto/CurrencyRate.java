@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record CurrencyRate(
     String title,
-    String name,
+    String currency,
     Double value,
     LocalDateTime timestamp
 ) {}

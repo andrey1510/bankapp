@@ -1,7 +1,7 @@
 package com.transferservice.services;
 
-import com.transferservice.dto.TransferRequest;
+import com.transferservice.dto.TransferRequestDto;
 
 public interface TransferService {
-    void processTransfer(TransferRequest request);
+    void processTransfer(TransferRequestDto request);
 }

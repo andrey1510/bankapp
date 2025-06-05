@@ -42,6 +42,7 @@ public class CashServiceImpl implements CashService {
             handleAccountServiceError(e);
         }
 
+        notificationClient.sendCashNotification(request);
     }
 
     private void handleAccountServiceError(RestClientException e) {

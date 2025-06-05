@@ -2,6 +2,6 @@ package com.exchangeservice.dto;
 
 public record ExchangeRate(
     String title,
-    String name,
+    String currency,
     Double value
 ) {}

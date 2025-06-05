@@ -1,7 +1,7 @@
 package com.transferservice.clients;
 
-import com.transferservice.dto.NotificationRequest;
-import com.transferservice.dto.TransferRequest;
+import com.transferservice.dto.NotificationRequestDto;
+import com.transferservice.dto.TransferRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,17 +19,28 @@ public class NotificationClient {
     @Value("${notificationservice.url}")
     private String notificationServiceUrl;
 
-    public void sendBlockedTransferNotification(TransferRequest request) {
-        String message = String.format("%s была заблокирована операция по переводу %.2f %s со счета %s на счет %s",
-            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+    public void sendBlockedTransferNotification(TransferRequestDto request) {
+        String message = String.format("%s была заблокирована операция по переводу %.2f %s ",
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
             request.amount(),
-            request.senderAccountCurrency().toUpperCase(),
-            request.senderAccountId(),
-            request.recipientAccountId());
+            request.senderAccountCurrency());
 
         restTemplate.postForObject(
-            notificationServiceUrl + "/api/notifications",
-            new NotificationRequest(request.email(), message),
+            notificationServiceUrl,
+            new NotificationRequestDto(request.email(), message),
+            Void.class
+        );
+    }
+
+    public void sendTransferNotification(TransferRequestDto request) {
+        String message = String.format("%s была проведена операция по переводу %.2f %s ",
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
+            request.amount(),
+            request.senderAccountCurrency());
+
+        restTemplate.postForObject(
+            notificationServiceUrl,
+            new NotificationRequestDto(request.email(), message),
             Void.class
         );
     }

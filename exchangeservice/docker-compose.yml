@@ -25,5 +25,5 @@ services:
       - POSTGRES_USER=login
       - POSTGRES_PASSWORD=password
     ports:
-      - 5556:5432
+      - 5558:5432
     restart: unless-stopped

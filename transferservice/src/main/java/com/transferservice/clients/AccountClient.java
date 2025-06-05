@@ -1,6 +1,6 @@
 package com.transferservice.clients;
 
-import com.transferservice.dto.BalanceUpdateRequest;
+import com.transferservice.dto.BalanceUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,9 +15,9 @@ public class AccountClient {
     @Value("${accountservice.url}")
     private String accountServiceUrl;
 
-    public void updateBalances(BalanceUpdateRequest updateRequest) {
+    public void updateBalances(BalanceUpdateRequestDto updateRequest) {
         restTemplate.postForObject(
-            accountServiceUrl + "/balances/update",
+            accountServiceUrl + "/transfer-update",
             updateRequest,
             Void.class
         );

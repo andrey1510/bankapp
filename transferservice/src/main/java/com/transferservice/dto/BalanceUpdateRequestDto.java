@@ -1,10 +1,8 @@
 package com.transferservice.dto;
 
-import java.util.UUID;
-
-public record BalanceUpdateRequest(
-    UUID senderAccountId,
+public record BalanceUpdateRequestDto(
+    Long senderAccountId,
     Double senderAccountBalanceChange,
-    UUID recipientAccountId,
+    Long recipientAccountId,
     Double recipientAccountBalanceChange
 ) {}

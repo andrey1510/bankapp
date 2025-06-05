@@ -5,7 +5,7 @@ spring:
   application:
     name: exchangeservice
   datasource:
-    url: jdbc:postgresql://localhost:5556/exchangedb
+    url: jdbc:postgresql://localhost:5558/exchangedb
     username: login
     password: password
   jpa:

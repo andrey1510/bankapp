@@ -32,7 +32,7 @@ public class Rate {
     private String title;
 
     @Column(nullable = false)
-    String name;
+    String currency;
 
     @Column(nullable = false)
     Double value;

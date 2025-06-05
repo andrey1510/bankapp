@@ -6,5 +6,5 @@ public record AccountInfoDto(
     String title,
     String currency,
     Double amount,
-    boolean isEnabled
+    boolean isExisting
 ) {}

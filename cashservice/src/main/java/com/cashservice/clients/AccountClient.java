@@ -18,7 +18,7 @@ public class AccountClient {
 
     public void sendAccountRequest(Long accountId, Double amount) {
         restTemplate.postForObject(
-            accountServiceUrl + "/cash",
+            accountServiceUrl + "/cash-update",
             new AccountBalanceChangeDto(accountId, amount),
             Void.class
         );

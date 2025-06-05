@@ -1,12 +1,11 @@
 package com.accountservice.services;
 
 import com.accountservice.dto.AccountBalanceChangeDto;
-import com.accountservice.dto.AccountDTO;
-import com.accountservice.entities.Account;
-
-import java.util.UUID;
+import com.accountservice.dto.BalanceUpdateRequestDto;
 
 public interface AccountService {
 
-    void updateAccountBalance(AccountBalanceChangeDto request);
+    void updateBalanceCash(AccountBalanceChangeDto request);
+
+    void updateBalanceTransfer(BalanceUpdateRequestDto request);
 }

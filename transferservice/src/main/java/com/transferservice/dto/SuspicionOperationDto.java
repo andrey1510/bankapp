@@ -1,5 +1,5 @@
 package com.transferservice.dto;
 
-public record SuspicionOperation(
+public record SuspicionOperationDto(
     boolean isSuspicious
 ) {}

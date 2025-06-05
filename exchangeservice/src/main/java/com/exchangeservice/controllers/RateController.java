@@ -1,7 +1,10 @@
 package com.exchangeservice.controllers;
 
+import com.exchangeservice.dto.ConversionRateDto;
+import com.exchangeservice.dto.ConversionRateRequestDto;
 import com.exchangeservice.dto.CurrencyRate;
 import com.exchangeservice.dto.ExchangeRate;
+import com.exchangeservice.dto.CurrenciesDto;
 import com.exchangeservice.services.RateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,6 +38,17 @@ public class RateController {
 
     @GetMapping("/rates/{name}")
     public ExchangeRate getRateByName(@PathVariable String name) {
-        return rateService.getLatestRateByName(name.toUpperCase());
+        return rateService.getLatestRateByCurrency(name.toUpperCase());
     }
+
+    @PostMapping("/rates/conversion")
+    public ConversionRateDto getConversionRate(@RequestBody ConversionRateRequestDto dto) {
+        return rateService.getConversionRate(dto);
+    }
+
+    @GetMapping("/currencies")
+    public CurrenciesDto getCurrencies() {
+        return rateService.getCurrencies();
+    }
+
 }

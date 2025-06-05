@@ -1,6 +1,7 @@
 package com.accountservice.controllers;
 
 import com.accountservice.dto.AccountBalanceChangeDto;
+import com.accountservice.dto.BalanceUpdateRequestDto;
 import com.accountservice.exceptions.InsufficientFundsException;
 import com.accountservice.services.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +19,12 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    @PostMapping("/cash")
-    public ResponseEntity<?> updateBalance(
+    @PostMapping("/cash-update")
+    public ResponseEntity<?> updateBalanceCash(
         @RequestBody AccountBalanceChangeDto request
     ) {
         try {
-            accountService.updateAccountBalance(request);
+            accountService.updateBalanceCash(request);
             return ResponseEntity.ok().build();
         } catch (InsufficientFundsException e) {
             return ResponseEntity
@@ -31,4 +32,19 @@ public class AccountController {
                 .body(e.getMessage());
         }
     }
+
+    @PostMapping("/transfer-update")
+    public ResponseEntity<?> updateBalanceTransfer(
+        @RequestBody BalanceUpdateRequestDto request
+    ) {
+        try {
+            accountService.updateBalanceTransfer(request);
+            return ResponseEntity.ok().build();
+        } catch (InsufficientFundsException e) {
+            return ResponseEntity
+                .badRequest()
+                .body(e.getMessage());
+        }
+    }
+
 }

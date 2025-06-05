@@ -27,3 +27,10 @@ services:
     ports:
       - 5555:5432
     restart: unless-stopped
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
