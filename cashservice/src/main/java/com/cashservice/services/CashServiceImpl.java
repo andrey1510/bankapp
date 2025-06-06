@@ -29,7 +29,6 @@ public class CashServiceImpl implements CashService {
 
         if (response != null && response.isSuspicious()) {
             notificationClient.sendBlockedCashNotification(request);
-            log.info("Операция заблокирована");
             throw new CashOperationException("Операция заблокирована");
         }
 
@@ -42,7 +41,6 @@ public class CashServiceImpl implements CashService {
             handleAccountServiceError(e);
         }
 
-        notificationClient.sendCashNotification(request);
     }
 
     private void handleAccountServiceError(RestClientException e) {

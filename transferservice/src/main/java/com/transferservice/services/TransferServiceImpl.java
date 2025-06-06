@@ -54,7 +54,7 @@ public class TransferServiceImpl implements TransferService {
             request.senderAccountId(),
             request.amount(),
             request.recipientAccountId(),
-            Math.round(request.amount() * conversionRate * 100.0) / 100.0
+            Double.parseDouble(String.format("%.2f", Math.round(request.amount() * conversionRate * 100.0) / 100.0))
         );
 
         try {
@@ -63,8 +63,6 @@ public class TransferServiceImpl implements TransferService {
             RestClientException e) {
               handleAccountServiceError(e);
         }
-
-        notificationClient.sendTransferNotification(request);
     }
 
     private void handleAccountServiceError(RestClientException e) {

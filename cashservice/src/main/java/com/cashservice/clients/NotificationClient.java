@@ -34,18 +34,4 @@ public class NotificationClient {
         );
     }
 
-    public void sendCashNotification(CashRequestDto request) {
-        String operationType = request.isDeposit() ? "пополнению" : "снятию со";
-        String message = String.format("%s была проведена операция по %s счета на сумму %.2f %s",
-            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
-            operationType,
-            request.amount(),
-            request.currency());
-
-        restTemplate.postForObject(
-            notificationServiceUrl,
-            new NotificationRequestDto(request.email(), message),
-            Void.class
-        );
-    }
 }

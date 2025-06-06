@@ -14,3 +14,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+notificationservice:
+  url: http://localhost:8890/api/notifications

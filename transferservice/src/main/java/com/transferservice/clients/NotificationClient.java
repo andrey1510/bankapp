@@ -32,17 +32,5 @@ public class NotificationClient {
         );
     }
 
-    public void sendTransferNotification(TransferRequestDto request) {
-        String message = String.format("%s была проведена операция по переводу %.2f %s ",
-            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
-            request.amount(),
-            request.senderAccountCurrency());
-
-        restTemplate.postForObject(
-            notificationServiceUrl,
-            new NotificationRequestDto(request.email(), message),
-            Void.class
-        );
-    }
 }
 
