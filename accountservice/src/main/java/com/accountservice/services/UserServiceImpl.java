@@ -2,6 +2,8 @@ package com.accountservice.services;
 
 
 import com.accountservice.dto.AccountInfoDto;
+import com.accountservice.dto.AllUsersInfoExceptCurrentDto;
+import com.accountservice.dto.PasswordChangeDto;
 import com.accountservice.dto.UserAccountsDto;
 import com.accountservice.dto.UserDto;
 import com.accountservice.dto.UserInfoDto;
@@ -10,6 +12,7 @@ import com.accountservice.entities.Account;
 import com.accountservice.entities.User;
 import com.accountservice.exceptions.AccountWithSuchCurrencyAlreadyExists;
 import com.accountservice.exceptions.NoSuchUserException;
+import com.accountservice.exceptions.NotNullBalanceException;
 import com.accountservice.exceptions.WrongAgeException;
 import com.accountservice.exceptions.EmailAlreadyExistsException;
 import com.accountservice.exceptions.LoginAlreadyExistsException;
@@ -22,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,6 +65,18 @@ public class UserServiceImpl implements UserService {
             .build());
     }
 
+    @Transactional
+    @Override
+    public User changePassword(PasswordChangeDto passwordChangeDto) {
+
+        User user = userRepository.findByLogin(passwordChangeDto.login())
+            .orElseThrow(() -> new NoSuchUserException(USER_NOT_FOUND));
+
+        user.setPassword(passwordChangeDto.password());
+
+        return userRepository.save(user);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public UserInfoDto getUserInfo(String login) {
@@ -80,14 +94,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserInfoDto updateUser(String login, UserUpdateDto dto) {
+    public UserInfoDto updateUser(String login, UserUpdateDto userDto) {
+
+        if (userDto.birthdate().isAfter(LocalDate.now().minusYears(18)))
+            throw new WrongAgeException(WRONG_AGE);
 
         User user = userRepository.findByLogin(login)
             .orElseThrow(() -> new NoSuchUserException(USER_NOT_FOUND));
 
-        user.setName(dto.name());
-        user.setBirthdate(dto.birthdate());
-        user.setEmail(dto.email());
+        user.setName(userDto.name());
+        user.setBirthdate(userDto.birthdate());
+        user.setEmail(userDto.email());
 
         userRepository.save(user);
 
@@ -96,11 +113,41 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
+    public AllUsersInfoExceptCurrentDto getAllUsersInfoExceptCurrent(String currentUserLogin) {
+        List<User> users = userRepository.findAllExceptCurrentUserWithAccounts(currentUserLogin);
+
+        List<UserAccountsDto> userDtos = users.stream()
+            .map(user -> {
+                List<AccountInfoDto> accountDtos = user.getAccounts().stream()
+                    .map(account -> new AccountInfoDto(
+                        account.getId(),
+                        account.getTitle(),
+                        account.getCurrency(),
+                        account.getAmount(),
+                        true
+                    ))
+                    .collect(Collectors.toList());
+
+                return new UserAccountsDto(
+                    user.getLogin(),
+                    user.getName(),
+                    user.getEmail(),
+                    accountDtos
+                );
+            })
+            .collect(Collectors.toList());
+
+        return new AllUsersInfoExceptCurrentDto(userDtos);
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
     public UserAccountsDto getAccountsInfo(String login) {
         User user = userRepository.findByLogin(login)
             .orElseThrow(() -> new NoSuchUserException(USER_NOT_FOUND));
 
-        return new UserAccountsDto(login, user.getEmail(), user.getAccounts().stream()
+        return new UserAccountsDto(login, user.getName(), user.getEmail(), user.getAccounts().stream()
             .map(account -> new AccountInfoDto(
                 account.getId(),
                 account.getTitle(),
@@ -125,13 +172,21 @@ public class UserServiceImpl implements UserService {
             .map(currency -> accountRepository.findByUserAndCurrency(user, currency))
             .filter(Optional::isPresent)
             .map(Optional::get)
+            .peek(account -> {
+                if (account.getAmount() != null && account.getAmount() != 0.0) {
+                    throw new NotNullBalanceException(
+                        String.format("Нельзя удалить счет %s (валюта: %s) - ненулевой баланс",
+                            account.getTitle(),
+                            account.getCurrency()));
+                }
+            })
             .collect(Collectors.toList());
 
         accountRepository.deleteAll(accountsToDelete);
 
         List<Account> accountsToCreate = dto.accounts().stream()
             .filter(AccountInfoDto::isExisting)
-            .filter(acc -> acc.accountId() == null)
+            .filter(acc -> acc.accountId() == null || acc.accountId() == 0)
             .map(acc -> Account.builder()
                 .amount(0.0)
                 .title(acc.title())

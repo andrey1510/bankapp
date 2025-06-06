@@ -1,6 +1,7 @@
 package com.transferservice.controllers;
 
 import com.transferservice.dto.TransferRequestDto;
+import com.transferservice.exceptions.SameAccountTransferException;
 import com.transferservice.exceptions.TransferOperationException;
 import com.transferservice.services.TransferService;
 import jakarta.validation.Valid;
@@ -22,23 +23,14 @@ public class TransferController {
 
     private final TransferService transferService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void handleTransfer(@Valid @RequestBody TransferRequestDto request) {
-        transferService.processTransfer(request);
-    }
-
-
     @PostMapping("/transfer")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<?> processTransfer(@Valid @RequestBody TransferRequestDto request) {
 
-        log.info("Received request: {}", request);
-
         try {
             transferService.processTransfer(request);
             return ResponseEntity.accepted().build();
-        } catch (TransferOperationException e) {
+        } catch (TransferOperationException | SameAccountTransferException e) {
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());

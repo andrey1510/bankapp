@@ -1,14 +1,20 @@
 package com.accountservice.controllers;
 
+import com.accountservice.dto.AllUsersInfoExceptCurrentDto;
+import com.accountservice.dto.PasswordChangeDto;
 import com.accountservice.dto.UserAccountsDto;
 import com.accountservice.dto.UserDto;
 import com.accountservice.dto.UserInfoDto;
 import com.accountservice.dto.UserUpdateDto;
+import com.accountservice.exceptions.AccountWithSuchCurrencyAlreadyExists;
+import com.accountservice.exceptions.EmailAlreadyExistsException;
+import com.accountservice.exceptions.InsufficientFundsException;
+import com.accountservice.exceptions.LoginAlreadyExistsException;
+import com.accountservice.exceptions.NotNullBalanceException;
+import com.accountservice.exceptions.WrongAgeException;
 import com.accountservice.services.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -42,7 +48,26 @@ public class UserController {
         try {
             userService.createUser(userDto);
             return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
+        } catch (EmailAlreadyExistsException | LoginAlreadyExistsException | InsufficientFundsException |
+                 WrongAgeException e  ) {
+            return ResponseEntity.badRequest().body(List.of(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordChangeDto passwordChangeDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(
+                bindingResult.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.toList())
+            );
+        }
+
+        try {
+            userService.changePassword(passwordChangeDto);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e  ) {
             return ResponseEntity.badRequest().body(List.of(e.getMessage()));
         }
     }
@@ -64,7 +89,13 @@ public class UserController {
                     .toList()
             );
         }
-        return ResponseEntity.ok(userService.updateUser(dto.login(), dto));
+
+        try {
+            return ResponseEntity.ok(userService.updateUser(dto.login(), dto));
+        } catch (EmailAlreadyExistsException | WrongAgeException e  ) {
+            return ResponseEntity.badRequest().body(List.of(e.getMessage()));
+        }
+
     }
 
     @GetMapping("/accounts-info")
@@ -88,12 +119,19 @@ public class UserController {
         try {
             userService.updateAccounts(dto);
             return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+        } catch (NotNullBalanceException | AccountWithSuchCurrencyAlreadyExists e) {
+            return ResponseEntity.badRequest().body(List.of(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Ошибка сервера");
         }
     }
+
+    @GetMapping("/users-except-current")
+    public ResponseEntity<AllUsersInfoExceptCurrentDto> getAllUsersExceptCurrent(@RequestParam String login) {
+        return ResponseEntity.ok(userService.getAllUsersInfoExceptCurrent(login));
+    }
+
 }
 
 

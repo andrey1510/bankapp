@@ -35,7 +35,6 @@ public class TransferServiceImpl implements TransferService {
         SuspicionOperationDto response = blockerClient.checkTransferOperation(request);
         if (response != null && response.isSuspicious()) {
             notificationClient.sendBlockedTransferNotification(request);
-            log.info("Операция заблокирована");
             throw new TransferOperationException("Операция заблокирована");
         }
 

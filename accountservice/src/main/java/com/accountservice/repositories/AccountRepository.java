@@ -19,12 +19,4 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Optional<Account> findByUserAndCurrency(User user, String currency);
 
-    boolean existsByUserAndCurrency(User user, String currency);
-
-    @Query("DELETE FROM Account a WHERE a.user = :user AND a.currency NOT IN :currencies")
-    void deleteByUserAndCurrencyNotIn(
-        @Param("user") User user,
-        @Param("currencies") Set<String> currencies
-    );
-
 }
