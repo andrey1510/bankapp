@@ -63,6 +63,7 @@ public class SignupController {
             );
             redirectAttributes.addFlashAttribute("success", "Регистрация прошла успешно!");
             return "redirect:/login";
+
         } catch (HttpClientErrorException e) {
 
             try {

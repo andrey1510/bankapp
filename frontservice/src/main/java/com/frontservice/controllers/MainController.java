@@ -1,6 +1,8 @@
 package com.frontservice.controllers;
 
-import com.frontservice.clients.MainClient;
+import com.frontservice.clients.CashClient;
+import com.frontservice.clients.AccountsClient;
+import com.frontservice.clients.TransferClient;
 import com.frontservice.dto.AccountInfoDto;
 import com.frontservice.dto.CashRequestDto;
 import com.frontservice.dto.PasswordChangeDto;
@@ -37,7 +39,10 @@ public class MainController {
 
     String logintest = "test";
 
-    private final MainClient mainClient;
+    private final AccountsClient accountsClient;
+    private final TransferClient transferClient;
+    private final CashClient cashClient;
+
     private final RestTemplate restTemplate;
     private final MainService mainService;
 
@@ -46,7 +51,7 @@ public class MainController {
         //todo
         String login = logintest;
 
-        UserInfoDto userInfo = mainClient.getUserInfoDto(login);
+        UserInfoDto userInfo = accountsClient.getUserInfoDto(login);
 
         model.addAttribute("login", userInfo.login());
         model.addAttribute("name", userInfo.name());
@@ -54,14 +59,14 @@ public class MainController {
         model.addAttribute("email", userInfo.email());
 
         try {
-            UserAccountsDto currentAccounts = mainClient.getUserAccountsDto(login);
+            UserAccountsDto currentAccounts = accountsClient.getUserAccountsDto(login);
 
             model.addAttribute("transferAccounts",
                 mainService.convertToAccountUserInfoList(currentAccounts));
             model.addAttribute("accounts",
-                mainService.combineCurrencies(currentAccounts, mainClient.getCurrenciesDto()));
+                mainService.combineCurrencies(currentAccounts, accountsClient.getCurrenciesDto()));
             model.addAttribute("transferOtherAccounts",
-                mainService.convertAllUsersToAccountInfo(mainClient.getAllUsersInfoExceptCurrentDto(login)));
+                mainService.convertAllUsersToAccountInfo(accountsClient.getAllUsersInfoExceptCurrentDto(login)));
 
         } catch (HttpClientErrorException e) {
             model.addAttribute("userAccountsErrors", List.of("Ошибка загрузки данных"));
@@ -81,7 +86,7 @@ public class MainController {
         //todo
         String login  = logintest;
 
-        UserAccountsDto currentAccounts = mainClient.getUserAccountsDto(login);
+        UserAccountsDto currentAccounts = accountsClient.getUserAccountsDto(login);
 
         AccountInfoDto senderAccount = mainService.findAccountById(currentAccounts, fromAccount)
             .orElseThrow(() -> new AccountNotFoundException("Счет отправителя не найден"));
@@ -89,21 +94,15 @@ public class MainController {
         AccountInfoDto recipientAccount = mainService.findAccountById(currentAccounts, toAccount)
             .orElseThrow(() -> new AccountNotFoundException("Счет получателя не найден"));
 
-        TransferRequestDto transferRequest = new TransferRequestDto(
-            currentAccounts.email(),
-            senderAccount.accountId(),
-            senderAccount.currency(),
-            value,
-            recipientAccount.accountId(),
-            recipientAccount.currency()
-        );
-
         try {
-            restTemplate.postForEntity(
-                "http://localhost:8891/api/transfers/transfer",
-                transferRequest,
-                Void.class
-            );
+            transferClient.sendTransferRequest(new TransferRequestDto(
+                currentAccounts.email(),
+                senderAccount.accountId(),
+                senderAccount.currency(),
+                value,
+                recipientAccount.accountId(),
+                recipientAccount.currency()
+            ));
 
             redirectAttributes.addFlashAttribute("transferSuccess", "Успешный перевод");
             return "redirect:/main";
@@ -129,30 +128,24 @@ public class MainController {
         //todo
         String login  = logintest;
 
-        UserAccountsDto currentAccounts = mainClient.getUserAccountsDto(login);
+        UserAccountsDto currentAccounts = accountsClient.getUserAccountsDto(login);
 
         AccountInfoDto senderAccount = mainService.findAccountById(currentAccounts, fromAccount)
             .orElseThrow(() -> new AccountNotFoundException("Счет отправителя не найден"));
 
         AccountInfoDto recipientAccount = mainService.findAccountById(
-            mainClient.getAllUsersInfoExceptCurrentDto(login).users(), toAccount)
+            accountsClient.getAllUsersInfoExceptCurrentDto(login).users(), toAccount)
             .orElseThrow(() -> new AccountNotFoundException("Счет получателя не найден"));
 
-        TransferRequestDto transferRequest = new TransferRequestDto(
-            currentAccounts.email(),
-            senderAccount.accountId(),
-            senderAccount.currency(),
-            value,
-            recipientAccount.accountId(),
-            recipientAccount.currency()
-        );
-
         try {
-            restTemplate.postForEntity(
-                "http://localhost:8891/api/transfers/transfer",
-                transferRequest,
-                Void.class
-            );
+            transferClient.sendTransferRequest(new TransferRequestDto(
+                currentAccounts.email(),
+                senderAccount.accountId(),
+                senderAccount.currency(),
+                value,
+                recipientAccount.accountId(),
+                recipientAccount.currency()
+            ));
 
             redirectAttributes.addFlashAttribute("transferOtherSuccess", "Успешный перевод");
             return "redirect:/main";
@@ -181,11 +174,9 @@ public class MainController {
         UserUpdateDto dto = new UserUpdateDto(login, name, birthdate, email);
 
         try {
-            restTemplate.postForEntity(
-                "http://localhost:8881/api/users/edit-user",
-                dto,
-                Void.class
-            );
+
+            accountsClient.sendUserUpdateRequest(dto);
+
             redirectAttributes.addFlashAttribute("successUpdatedUser", "Данные успешно обновлены");
         } catch (HttpClientErrorException e) {
             redirectAttributes.addFlashAttribute("errorUsers",
@@ -208,7 +199,7 @@ public class MainController {
         String login = "test";
 
             Set<String> updatedModel = account != null ? new HashSet<>(account) : Set.of();
-            List<AccountInfoDto> updatedAccounts = mainService.combineCurrencies(mainClient.getUserAccountsDto(login), mainClient.getCurrenciesDto()).stream()
+            List<AccountInfoDto> updatedAccounts = mainService.combineCurrencies(accountsClient.getUserAccountsDto(login), accountsClient.getCurrenciesDto()).stream()
                 .map(acc -> {
                     boolean enabled = updatedModel.contains(acc.currency());
                     return new AccountInfoDto(
@@ -222,12 +213,7 @@ public class MainController {
                 .collect(Collectors.toList());
 
         try {
-
-            restTemplate.postForEntity(
-                "http://localhost:8881/api/users/edit-accounts",
-                new UserAccountsDto(login, null, null, updatedAccounts),
-                Void.class
-            );
+            accountsClient.sendAccountsUpdateRequest(login, updatedAccounts);
 
             redirectAttributes.addFlashAttribute("successUpdatedAcc", "Данные успешно обновлены");
 
@@ -255,27 +241,22 @@ public class MainController {
         //todo
         String login  = logintest;
 
-        UserAccountsDto currentAccounts = mainClient.getUserAccountsDto(login);
+        UserAccountsDto currentAccounts = accountsClient.getUserAccountsDto(login);
 
         AccountInfoDto account = mainService.findAccountById(currentAccounts, accountId)
             .orElseThrow(() -> new AccountNotFoundException("Счет не найден"));
 
-        CashRequestDto request = new CashRequestDto(
-            currentAccounts.email(),
-            account.accountId(),
-            account.currency(),
-            value,
-            "PUT".equals(action)
-        );
-
         try {
-            restTemplate.postForEntity(
-                "http://localhost:8883/api/cash/operation",
-                request,
-                Void.class
-            );
+            cashClient.sendCashRequest(new CashRequestDto(
+                currentAccounts.email(),
+                account.accountId(),
+                account.currency(),
+                value,
+                "PUT".equals(action)
+            ));
 
             redirectAttributes.addFlashAttribute("cashSuccess", "Операция успешна");
+
             return "redirect:/main";
 
         } catch (HttpClientErrorException e) {
@@ -305,11 +286,7 @@ public class MainController {
             if (!Objects.equals(password, repeat))
                 throw new PasswordsAreNotEqualException("Пароли должны совпадать");
 
-            restTemplate.postForEntity(
-                "http://localhost:8881/api/users/change-password",
-                new PasswordChangeDto(login, password),
-                Void.class
-            );
+            accountsClient.sendPasswordChangeRequest(password, login);
 
             redirectAttributes.addFlashAttribute("passwordChangeSuccess", "Пароль изменен");
             return "redirect:/main";
@@ -330,7 +307,4 @@ public class MainController {
 
     }
 
-
 }
-
-
