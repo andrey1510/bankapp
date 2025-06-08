@@ -9,6 +9,7 @@ import com.frontservice.dto.UserAccountsDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +19,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BankService {
-
-    private final ExchangeClient exchangeClient;
 
     public List<AccountInfoDto> combineCurrencies(
         UserAccountsDto userAccountsDto,
@@ -37,7 +36,7 @@ public class BankService {
                     0L,
                     currencyTitle,
                     currencyName,
-                    0.0,
+                    BigDecimal.ZERO,
                     false
                 ));
             }

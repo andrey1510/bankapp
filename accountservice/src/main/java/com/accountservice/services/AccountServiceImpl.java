@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -27,9 +30,10 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findById(request.accountId())
             .orElseThrow(() -> new EntityNotFoundException("Счет не найден."));
 
-        double newBalance = account.getAmount() + request.amount();
+        BigDecimal newBalance = account.getAmount().add(request.amount()).setScale(2, RoundingMode.HALF_UP);;
 
-        if (newBalance < 0) throw new InsufficientFundsException("Недостаточно средств для снятия.");
+        if (newBalance.compareTo(BigDecimal.ZERO) < 0 )
+            throw new InsufficientFundsException("Недостаточно средств для снятия.");
 
         account.setAmount(newBalance);
 
@@ -51,11 +55,14 @@ public class AccountServiceImpl implements AccountService {
         Account recipientAccount = accountRepository.findById(request.recipientAccountId())
             .orElseThrow(() -> new AccountNotFoundException("Счет не найден."));
 
-        double newSenderBalance = senderAccount.getAmount() - request.senderAccountBalanceChange();
+        BigDecimal newSenderBalance = senderAccount.getAmount().subtract(request.senderAccountBalanceChange())
+            .setScale(2, RoundingMode.HALF_UP);
 
-        if (newSenderBalance < 0) throw new InsufficientFundsException("Недостаточно средств для перевода.");
+        if (newSenderBalance.compareTo(BigDecimal.ZERO) < 0)
+            throw new InsufficientFundsException("Недостаточно средств для перевода.");
 
-        double newRecipientBalance = recipientAccount.getAmount() + request.recipientAccountBalanceChange();
+        BigDecimal newRecipientBalance = recipientAccount.getAmount().add(request.recipientAccountBalanceChange())
+            .setScale(2, RoundingMode.HALF_UP);
 
         senderAccount.setAmount(newSenderBalance);
         recipientAccount.setAmount(newRecipientBalance);

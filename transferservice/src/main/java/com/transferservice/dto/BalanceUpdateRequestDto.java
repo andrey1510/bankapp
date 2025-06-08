@@ -1,8 +1,10 @@
 package com.transferservice.dto;
 
+import java.math.BigDecimal;
+
 public record BalanceUpdateRequestDto(
     Long senderAccountId,
-    Double senderAccountBalanceChange,
+    BigDecimal senderAccountBalanceChange,
     Long recipientAccountId,
-    Double recipientAccountBalanceChange
+    BigDecimal recipientAccountBalanceChange
 ) {}

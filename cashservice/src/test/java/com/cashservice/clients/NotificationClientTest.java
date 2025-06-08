@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -29,7 +31,8 @@ public class NotificationClientTest {
     @BeforeEach
     void setUp() {
         notificationClient.notificationServiceUrl = "http://notification-service";
-        testRequest = new CashRequestDto("test@email.com", 1L, "USD", 100.0, true);
+        testRequest = new CashRequestDto(
+            "test@email.com", 1L, "USD", new BigDecimal("100.00"), true);
 
     }
     @Test

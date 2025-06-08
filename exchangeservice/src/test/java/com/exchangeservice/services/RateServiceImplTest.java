@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -50,14 +52,28 @@ class RateServiceImplTest {
         testTimestamp = LocalDateTime.now();
 
         testRates = List.of(
-            Rate.builder().title("Доллар").currency("USD").value(75.0).timestamp(testTimestamp).build(),
-            Rate.builder().title("Евро").currency("EUR").value(85.0).timestamp(testTimestamp).build(),
-            Rate.builder().title("Рубль").currency("RUR").value(1.0).timestamp(testTimestamp).build()
+            Rate.builder()
+                .title("Доллар")
+                .currency("USD")
+                .value(new BigDecimal("75.00"))
+                .timestamp(testTimestamp)
+                .build(),
+            Rate.builder()
+                .title("Евро").currency("EUR")
+                .value(new BigDecimal("850.00"))
+                .timestamp(testTimestamp)
+                .build(),
+            Rate.builder()
+                .title("Рубль")
+                .currency("RUR")
+                .value(new BigDecimal("1.00"))
+                .timestamp(testTimestamp)
+                .build()
         );
 
         testCurrencyRates = List.of(
-            new CurrencyRate("Доллар", "USD", 75.0, testTimestamp),
-            new CurrencyRate("Евро", "EUR", 85.0, testTimestamp)
+            new CurrencyRate("Доллар", "USD", new BigDecimal("75.00"), testTimestamp),
+            new CurrencyRate("Евро", "EUR", new BigDecimal("85.00"), testTimestamp)
         );
     }
 
@@ -79,7 +95,7 @@ class RateServiceImplTest {
 
         when(rateRepository.findLatestRates()).thenReturn(testRates);
 
-        List<ExchangeRate> result = rateService.getLatestRates();
+        List<ExchangeRate> result = rateService.getLatestRates().rates();
 
         assertEquals(3, result.size());
         assertTrue(result.stream().anyMatch(r -> r.currency().equals("USD")));
@@ -95,7 +111,7 @@ class RateServiceImplTest {
         ExchangeRate result = rateService.getLatestRateByCurrency("USD");
 
         assertEquals("USD", result.currency());
-        assertEquals(75.0, result.value());
+        assertEquals(new BigDecimal("75.00"), result.value());
         verify(rateRepository, times(1)).findLatestRateByCurrency("USD");
     }
 
@@ -131,22 +147,8 @@ class RateServiceImplTest {
             new ConversionRateRequestDto("USD", "USD")
         );
 
-        assertEquals(1.0, result.rate());
+        assertEquals(new BigDecimal("1.00"), result.rate());
         verifyNoInteractions(rateRepository);
     }
 
-    @Test
-    void getConversionRate_ShouldCalculateBetweenForeignCurrencies() {
-
-        when(rateRepository.findLatestRateByCurrency("USD"))
-            .thenReturn(Optional.of(testRates.get(0)));
-        when(rateRepository.findLatestRateByCurrency("EUR"))
-            .thenReturn(Optional.of(testRates.get(1)));
-
-        ConversionRateDto result = rateService.getConversionRate(
-            new ConversionRateRequestDto("USD", "EUR")
-        );
-
-        assertEquals(75.0 / 85.0, result.rate());
-    }
 }

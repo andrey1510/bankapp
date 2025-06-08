@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -33,7 +35,7 @@ class NotificationClientTest {
             "user@example.com",
             1L,
             "USD",
-            100.0,
+            new BigDecimal("100.00"),
             2L,
             "EUR"
         );

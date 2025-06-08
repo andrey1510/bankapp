@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,7 +36,8 @@ public class BlockerClientTest {
     @BeforeEach
     void setUp() {
         blockerClient.baseUrl = "http://blocker-service";
-        testRequest = new CashRequestDto("test@email.com", 1L, "USD", 100.0, true);
+        testRequest = new CashRequestDto(
+            "test@email.com", 1L, "USD", new BigDecimal("100.00"), true);
         testResponse = new SuspicionOperationDto(false);
     }
 

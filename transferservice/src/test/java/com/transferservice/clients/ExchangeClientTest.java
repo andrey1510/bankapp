@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -31,7 +33,7 @@ class ExchangeClientTest {
     void setUp() {
         exchangeClient.exchangeServiceUrl = "http://exchange-service";
         conversionRequest = new ConversionRateRequestDto("USD", "EUR");
-        conversionResponse = new ConversionRateDto(0.85);
+        conversionResponse = new ConversionRateDto(new BigDecimal("0.85"));
     }
 
     @Test
@@ -55,6 +57,6 @@ class ExchangeClientTest {
 
         ConversionRateDto result = exchangeClient.getConversionRate(conversionRequest);
 
-        assertEquals(0.85, result.rate());
+        assertEquals(new BigDecimal("0.85"), result.rate());
     }
 }

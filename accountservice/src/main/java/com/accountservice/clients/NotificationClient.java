@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
@@ -26,19 +28,19 @@ public class NotificationClient {
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
-    public void sendCashNotification(Double amount, String currency, String email) {
+    public void sendCashNotification(BigDecimal amount, String currency, String email) {
 
         String operationType = "пополнению";
 
-        if(amount < 0) {
-            amount = -amount;
+        if(amount.compareTo(BigDecimal.ZERO) < 0) {
+            amount = amount.negate().setScale(2, RoundingMode.HALF_UP);
             operationType = "снятию со";
         }
 
         String message = String.format("%s была проведена операция по %s счета на сумму %.2f %s",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
             operationType,
-            amount,
+            amount.setScale(2, RoundingMode.HALF_UP).doubleValue(),
             currency);
 
         restTemplate.postForObject(
@@ -48,10 +50,10 @@ public class NotificationClient {
         );
     }
 
-    public void sendTransferNotification(Double amount, String currency, String email) {
+    public void sendTransferNotification(BigDecimal amount, String currency, String email) {
         String message = String.format("%s была проведена операция по переводу %.2f %s ",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
-            amount,
+            amount.setScale(2, RoundingMode.HALF_UP).doubleValue(),
             currency);
 
         restTemplate.postForObject(

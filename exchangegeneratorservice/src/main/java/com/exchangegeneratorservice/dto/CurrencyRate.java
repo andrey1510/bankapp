@@ -1,10 +1,11 @@
 package com.exchangegeneratorservice.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record CurrencyRate(
     String title,
     String currency,
-    Double value,
+    BigDecimal value,
     LocalDateTime timestamp
 ) {}

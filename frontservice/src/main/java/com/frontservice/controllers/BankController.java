@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -46,7 +47,7 @@ public class BankController {
     public String transferToSelf(
         @RequestParam Long fromAccount,
         @RequestParam Long toAccount,
-        @RequestParam Double value,
+        @RequestParam BigDecimal value,
         RedirectAttributes redirectAttributes) {
 
         UserAccountsDto currentAccounts = accountsClient.getUserAccountsDto(authService.getLoginFromSecurityContext());
@@ -86,7 +87,7 @@ public class BankController {
     public String transferToOther(
         @RequestParam Long fromAccount,
         @RequestParam Long toAccount,
-        @RequestParam Double value,
+        @RequestParam BigDecimal value,
         RedirectAttributes redirectAttributes){
 
         UserAccountsDto currentAccounts = accountsClient.getUserAccountsDto(authService.getLoginFromSecurityContext());
@@ -194,7 +195,7 @@ public class BankController {
     @PreAuthorize("hasRole('USER')")
     public String processCash(
         @RequestParam Long accountId,
-        @RequestParam Double value,
+        @RequestParam BigDecimal value,
         @RequestParam String action,
         RedirectAttributes redirectAttributes
     ) {

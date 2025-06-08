@@ -9,6 +9,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -24,13 +26,13 @@ public class AccountClientTest {
     private AccountClient accountClient;
 
     private Long testAccountId;
-    private Double testAmount;
+    private BigDecimal testAmount;
     private AccountBalanceChangeDto expectedDto;
 
     @BeforeEach
     void setUp() {
         testAccountId = 123L;
-        testAmount = 100.0;
+        testAmount = new BigDecimal("100.00");
         expectedDto = new AccountBalanceChangeDto(testAccountId, testAmount);
         accountClient.accountServiceUrl = "http://localhost:8080";
     }

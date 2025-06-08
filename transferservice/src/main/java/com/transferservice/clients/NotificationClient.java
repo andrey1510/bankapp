@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.RoundingMode;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
@@ -32,7 +33,7 @@ public class NotificationClient {
     public void sendBlockedTransferNotification(TransferRequestDto request) {
         String message = String.format("%s была заблокирована операция по переводу %.2f %s ",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
-            request.amount(),
+            request.amount().setScale(2, RoundingMode.HALF_UP).doubleValue(),
             request.senderAccountCurrency());
 
         restTemplate.postForObject(

@@ -16,6 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -45,16 +47,16 @@ class TransferServiceImplTest {
             "user@example.com",
             1L,
             "USD",
-            100.0,
+            new BigDecimal("100.00"),
             2L,
             "EUR"
         );
 
         balanceUpdateRequest = new BalanceUpdateRequestDto(
             1L,
-            100.5,
+            new BigDecimal("100.50"),
             2L,
-            85.5
+            new BigDecimal("85.50")
         );
     }
 
@@ -74,13 +76,15 @@ class TransferServiceImplTest {
 
     @Test
     void processTransfer_ShouldUseConversionRate_WhenCurrenciesDifferent() {
-        when(exchangeClient.getConversionRate(any())).thenReturn(new ConversionRateDto(0.85));
+        when(exchangeClient.getConversionRate(any())).thenReturn(new ConversionRateDto(new BigDecimal("0.85")));
         when(blockerClient.checkTransferOperation(any())).thenReturn(new SuspicionOperationDto(false));
 
         transferService.processTransfer(transferRequest);
 
         verify(exchangeClient).getConversionRate(new ConversionRateRequestDto("USD", "EUR"));
-        verify(accountClient).updateBalances(argThat(req -> req.recipientAccountBalanceChange() == 85.0));
+        verify(accountClient).updateBalances(
+            argThat(req -> req.recipientAccountBalanceChange()
+                .compareTo(new BigDecimal("85.00")) == 0));
     }
 
     @Test
@@ -107,15 +111,14 @@ class TransferServiceImplTest {
     @Test
     void processTransfer_ShouldFormatAmountCorrectly() {
         when(exchangeClient.getConversionRate(any()))
-            .thenReturn(new ConversionRateDto(0.85));
+            .thenReturn(new ConversionRateDto(new BigDecimal("0.85")));
         when(blockerClient.checkTransferOperation(any()))
             .thenReturn(new SuspicionOperationDto(false));
 
         transferService.processTransfer(transferRequest);
 
         verify(accountClient).updateBalances(argThat(req ->
-            req.recipientAccountBalanceChange() == 85.00
-        ));
+            req.recipientAccountBalanceChange().compareTo(new BigDecimal("85.00")) == 0));
     }
 
 }

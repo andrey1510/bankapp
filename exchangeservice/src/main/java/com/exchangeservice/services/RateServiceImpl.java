@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,19 +74,20 @@ public class RateServiceImpl implements RateService {
     @Override
     public ConversionRateDto getConversionRate(ConversionRateRequestDto dto) {
 
-        if (dto.fromCurrency().equals(dto.toCurrency())) return new ConversionRateDto(1.0);
+        if (dto.fromCurrency().equals(dto.toCurrency())) return new ConversionRateDto(new BigDecimal("1.00"));
 
         ExchangeRate fromRate = getLatestRateByCurrency(dto.fromCurrency());
         ExchangeRate toRate = getLatestRateByCurrency(dto.toCurrency());
 
         if ("RUR".equals(dto.fromCurrency())) {
-            return new ConversionRateDto(1 / toRate.value());
+            BigDecimal rate = BigDecimal.ONE.divide(toRate.value(), 2, RoundingMode.HALF_UP);
+            return new ConversionRateDto(rate);
         } else if ("RUR".equals(dto.toCurrency())) {
             return new ConversionRateDto(fromRate.value());
         }
 
-        return new ConversionRateDto(fromRate.value() * (1 / toRate.value()));
-
+        BigDecimal inverseToRate = BigDecimal.ONE.divide(toRate.value(), 2, RoundingMode.HALF_UP);
+        return new ConversionRateDto(fromRate.value().multiply(inverseToRate).setScale(2, RoundingMode.HALF_UP));
     }
 
 }

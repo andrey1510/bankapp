@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,7 +29,7 @@ class BlockerServiceImplTest {
             "user@example.com",
             12345L,
             "USD",
-            300.0,
+            new BigDecimal("300.00"),
             67890L,
             "EUR"
         );
@@ -36,7 +38,7 @@ class BlockerServiceImplTest {
             "user@example.com",
             12345L,
             "USD",
-            800.0
+            new BigDecimal("800.00")
         );
     }
 
@@ -55,7 +57,7 @@ class BlockerServiceImplTest {
             typicalTransferRequest.email(),
             typicalTransferRequest.senderAccountId(),
             typicalTransferRequest.senderAccountCurrency(),
-            505.0,
+            new BigDecimal("505.01"),
             typicalTransferRequest.recipientAccountId(),
             typicalTransferRequest.recipientAccountCurrency()
         );
@@ -80,7 +82,7 @@ class BlockerServiceImplTest {
             typicalCashRequest.email(),
             typicalCashRequest.accountId(),
             typicalCashRequest.currency(),
-            1011.0
+            new BigDecimal("1011.50")
         );
 
         SuspicionOperationDto result = blockerService.checkCashOperation(suspiciousRequest);
@@ -95,7 +97,7 @@ class BlockerServiceImplTest {
             typicalTransferRequest.email(),
             typicalTransferRequest.senderAccountId(),
             typicalTransferRequest.senderAccountCurrency(),
-            500.0,
+            new BigDecimal("500.00"),
             typicalTransferRequest.recipientAccountId(),
             typicalTransferRequest.recipientAccountCurrency()
         );
@@ -106,7 +108,7 @@ class BlockerServiceImplTest {
             typicalTransferRequest.email(),
             typicalTransferRequest.senderAccountId(),
             typicalTransferRequest.senderAccountCurrency(),
-            505.01,
+            new BigDecimal("505.01"),
             typicalTransferRequest.recipientAccountId(),
             typicalTransferRequest.recipientAccountCurrency()
         );
@@ -120,7 +122,7 @@ class BlockerServiceImplTest {
             typicalCashRequest.email(),
             typicalCashRequest.accountId(),
             typicalCashRequest.currency(),
-            1000.0
+            new BigDecimal("1000.0")
         );
 
         assertFalse(blockerService.checkCashOperation(edgeCaseRequest).isSuspicious());
@@ -129,7 +131,7 @@ class BlockerServiceImplTest {
             typicalCashRequest.email(),
             typicalCashRequest.accountId(),
             typicalCashRequest.currency(),
-            1000.01
+            new BigDecimal("1001.00")
         );
 
         assertTrue(blockerService.checkCashOperation(aboveEdgeRequest).isSuspicious());

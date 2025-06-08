@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,7 +38,7 @@ class BlockerClientTest {
             "user@example.com",
             1L,
             "USD",
-            100.0,
+            new BigDecimal("100.00"),
             2L,
             "EUR"
         );

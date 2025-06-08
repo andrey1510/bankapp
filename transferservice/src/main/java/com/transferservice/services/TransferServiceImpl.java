@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -36,7 +38,7 @@ public class TransferServiceImpl implements TransferService {
         if (Objects.equals(request.senderAccountId(), request.recipientAccountId()))
             throw new SameAccountTransferException("Счета должны быть разными.");
 
-        Double conversionRate = 1.0;
+        BigDecimal conversionRate = BigDecimal.ONE;
 
         if (!request.senderAccountCurrency().equalsIgnoreCase(request.recipientAccountCurrency())) {
             conversionRate = exchangeClient.getConversionRate(new ConversionRateRequestDto(
@@ -49,8 +51,9 @@ public class TransferServiceImpl implements TransferService {
             request.senderAccountId(),
             request.amount(),
             request.recipientAccountId(),
-            Double.parseDouble(String.format(
-                Locale.US, "%.2f", Math.round(request.amount() * conversionRate * 100.0) / 100.0))
+            request.amount()
+                .multiply(conversionRate)
+                .setScale(2, RoundingMode.HALF_UP)
         );
 
         SuspicionOperationDto response = blockerClient.checkTransferOperation(request);

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
@@ -26,7 +27,7 @@ public class AccountClient {
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
-    public void sendAccountRequest(Long accountId, Double amount) {
+    public void sendAccountRequest(Long accountId, BigDecimal amount) {
         restTemplate.postForObject(
             accountServiceUrl + "/cash-update",
             new AccountBalanceChangeDto(accountId, amount),

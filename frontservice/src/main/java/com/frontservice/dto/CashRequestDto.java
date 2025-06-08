@@ -1,10 +1,12 @@
 package com.frontservice.dto;
 
 
+import java.math.BigDecimal;
+
 public record CashRequestDto(
     String email,
     Long accountId,
     String currency,
-    Double amount,
+    BigDecimal amount,
     boolean isDeposit
 ) {}

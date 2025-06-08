@@ -9,8 +9,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -50,10 +52,16 @@ class ExchangeClientTest {
         double base = 70.0;
         double spread = 20.0;
 
-        for (int i = 0; i < 100; i++) {
-            double rate = exchangeClient.generateRate(base, spread);
+        BigDecimal minExpected = new BigDecimal(Double.toString(base));
+        BigDecimal maxExpected = new BigDecimal(Double.toString(base + spread));
+        int expectedScale = 2;
 
-            assertTrue(rate >= base && rate <= (base + spread));
+        for (int i = 0; i < 100; i++) {
+            BigDecimal rate = exchangeClient.generateRate(base, spread);
+
+            assertTrue(rate.compareTo(minExpected) >= 0);
+            assertTrue(rate.compareTo(maxExpected) <= 0);
+            assertEquals(expectedScale, rate.scale());
         }
     }
 

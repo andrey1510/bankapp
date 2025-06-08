@@ -15,6 +15,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 
 @Data
 @NoArgsConstructor
@@ -30,7 +32,7 @@ public class Account {
     private Long id;
 
     @Column(nullable = false)
-    private Double amount = 0.0;
+    private BigDecimal amount;
 
     @Column(nullable = false)
     private String title;

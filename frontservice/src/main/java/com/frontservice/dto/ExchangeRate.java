@@ -1,7 +1,9 @@
 package com.frontservice.dto;
 
+import java.math.BigDecimal;
+
 public record ExchangeRate(
     String title,
     String currency,
-    Double value
+    BigDecimal value
 ) {}

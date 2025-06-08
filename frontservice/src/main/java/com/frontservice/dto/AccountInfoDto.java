@@ -1,9 +1,11 @@
 package com.frontservice.dto;
 
+import java.math.BigDecimal;
+
 public record AccountInfoDto(
     Long accountId,
     String title,
     String currency,
-    Double amount,
+    BigDecimal amount,
     boolean isExisting
 ) {}

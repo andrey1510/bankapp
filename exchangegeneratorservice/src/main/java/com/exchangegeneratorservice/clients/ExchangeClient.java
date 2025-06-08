@@ -7,6 +7,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
@@ -16,6 +18,7 @@ import java.util.Random;
 public class ExchangeClient {
 
     private static final Random RANDOM = new Random();
+    private static final int SCALE = 2;
 
     private final RestTemplate restTemplate;
 
@@ -24,9 +27,8 @@ public class ExchangeClient {
 
     @Scheduled(fixedRate = 1000)
     public void generateAndSendRates() {
-
         List<CurrencyRate> rates = List.of(
-            new CurrencyRate("Рубль", "RUR", 1.0, LocalDateTime.now()),
+            new CurrencyRate("Рубль", "RUR", BigDecimal.ONE, LocalDateTime.now()),
             new CurrencyRate("Доллар", "USD", generateRate(70, 20), LocalDateTime.now()),
             new CurrencyRate("Юань", "CNY", generateRate(10, 5), LocalDateTime.now())
         );
@@ -34,9 +36,12 @@ public class ExchangeClient {
         restTemplate.postForObject(exchangeServiceUrl, rates, Void.class);
     }
 
-    protected double generateRate(double base, double spread) {
+    protected BigDecimal generateRate(double base, double spread) {
 
-        return Math.round((base + spread * RANDOM.nextDouble()) * 100.0) / 100.0;
+        double randomFactor = spread * RANDOM.nextDouble();
+
+        return new BigDecimal(Double.toString(base + randomFactor))
+            .setScale(SCALE, RoundingMode.HALF_UP);
     }
 
 }

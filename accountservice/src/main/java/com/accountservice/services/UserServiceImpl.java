@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +162,6 @@ public class UserServiceImpl implements UserService {
                 true
             ))
             .collect(Collectors.toList()));
-
     }
 
     @Transactional
@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .peek(account -> {
-                if (account.getAmount() != null && account.getAmount() != 0.0) {
+                if (account.getAmount() != null && !(account.getAmount().compareTo(BigDecimal.ZERO) == 0)) {
                     throw new NotNullBalanceException(
                         String.format("Нельзя удалить счет %s (валюта: %s) - ненулевой баланс",
                             account.getTitle(),
@@ -193,7 +193,7 @@ public class UserServiceImpl implements UserService {
             .filter(AccountInfoDto::isExisting)
             .filter(acc -> acc.accountId() == null || acc.accountId() == 0)
             .map(acc -> Account.builder()
-                .amount(0.0)
+                .amount(BigDecimal.ZERO)
                 .title(acc.title())
                 .currency(acc.currency())
                 .user(user)

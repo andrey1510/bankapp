@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,8 +35,8 @@ public class CashServiceImpl implements CashService {
             throw new CashOperationException("Операция заблокирована");
         }
 
-        Double amount = request.amount();
-        if (!request.isDeposit()) amount = -amount;
+        BigDecimal amount = request.amount();
+        if (!request.isDeposit()) amount = amount.negate().setScale(2, RoundingMode.HALF_UP);
 
         try {
             accountClient.sendAccountRequest(request.accountId(), amount);

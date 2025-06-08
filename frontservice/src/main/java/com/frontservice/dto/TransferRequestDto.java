@@ -1,10 +1,12 @@
 package com.frontservice.dto;
 
+import java.math.BigDecimal;
+
 public record TransferRequestDto(
     String email,
     Long senderAccountId,
     String senderAccountCurrency,
-    Double amount,
+    BigDecimal amount,
     Long recipientAccountId,
     String recipientAccountCurrency
 ) {}

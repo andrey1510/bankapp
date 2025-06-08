@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -35,7 +36,7 @@ public class Rate {
     String currency;
 
     @Column(nullable = false)
-    Double value;
+    BigDecimal value;
 
     @Column(nullable = false)
     LocalDateTime timestamp;

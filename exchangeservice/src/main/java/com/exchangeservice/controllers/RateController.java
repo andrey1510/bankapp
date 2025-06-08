@@ -43,7 +43,7 @@ public class RateController {
     @GetMapping("/rates/{name}")
     @PreAuthorize("hasAuthority('SCOPE_exchangeservice.get')")
     public ExchangeRate getRateByName(@PathVariable String name) {
-        return rateService.getLatestRateByCurrency(name.toUpperCase());
+        return rateService.getLatestRateByCurrency(name);
     }
 
     @PostMapping("/rates/conversion")
