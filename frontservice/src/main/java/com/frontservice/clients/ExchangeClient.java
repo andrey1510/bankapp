@@ -20,10 +20,10 @@ import java.util.Objects;
 public class ExchangeClient {
 
     @Value("${exchangeservice.url.currencies}")
-    private String currenciesUrl;
+    protected String currenciesUrl;
 
     @Value("${exchangeservice.url.rates}")
-    private String ratesUrl;
+    protected String ratesUrl;
 
     @Qualifier("exchangeRestTemplate")
     private final RestTemplate restTemplate;

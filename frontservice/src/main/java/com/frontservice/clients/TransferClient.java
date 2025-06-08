@@ -18,7 +18,7 @@ import java.net.SocketTimeoutException;
 public class TransferClient {
 
     @Value("${transferservice.url.transfer}")
-    private String transferserviceUrl;
+    protected String transferserviceUrl;
 
     @Qualifier("transferRestTemplate")
     private final RestTemplate restTemplate;

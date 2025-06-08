@@ -26,7 +26,7 @@ import java.util.List;
 public class AccountsClient {
 
     @Value("${accountservice.url.users}")
-    private String usersUrl;
+    protected String usersUrl;
 
     @Qualifier("accountRestTemplate")
     private final RestTemplate restTemplate;

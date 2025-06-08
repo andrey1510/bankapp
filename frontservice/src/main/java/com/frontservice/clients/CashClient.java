@@ -18,7 +18,7 @@ import java.net.SocketTimeoutException;
 public class CashClient {
 
     @Value("${cashservice.url.operation}")
-    private String cashserviceUrl;
+    protected String cashserviceUrl;
 
     @Qualifier("cashRestTemplate")
     private final RestTemplate restTemplate;

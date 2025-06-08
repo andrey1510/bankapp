@@ -20,10 +20,10 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class NotificationClient {
 
-    private final RestTemplate restTemplate;
-
     @Value("${notificationservice.url}")
-    private String notificationServiceUrl;
+    protected String notificationServiceUrl;
+
+    private final RestTemplate restTemplate;
 
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
