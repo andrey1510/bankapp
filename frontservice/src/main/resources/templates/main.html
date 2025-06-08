@@ -4,9 +4,12 @@
 <head>
     <title>Личный кабинет</title>
     <script language="JavaScript">
+        /*<![CDATA[*/
+        const ratesEndpoint = /*[[${ratesEndpoint}]]*/ '/api/rates';
+        /*]]>*/
         setInterval(() => {
             var td = document.getElementById('exchange_rates');
-            fetch('http://localhost:8887/api/rates')
+            fetch(ratesEndpoint)
                 .then(response => response.json())
                 .then(json => {
                     var table = '<table style="width:100%;margin-left:auto;margin-right:auto;border-radius:2%;padding:10px;background-color:whitesmoke;">';
@@ -37,7 +40,7 @@
 </a>
 <table style="width:70%;margin-left:auto;margin-right:auto;">
     <tr><td style="padding:2px;">
-        <form method="post" th:action="${'/user/editPassword'}">
+        <form method="post" th:action="${'/user/change-password'}">
         <table style="width:100%;margin-left:auto;margin-right:auto;border-radius:2%;padding:10px;background-color:whitesmoke;">
             <tr>
                 <td style="font-weight:bold;">Логин</td>
@@ -243,6 +246,7 @@
         </form>
     </td></tr>
     <tr><td style="padding:2px;" id="exchange_rates">
+
     </td></tr>
 </table>
 </body>

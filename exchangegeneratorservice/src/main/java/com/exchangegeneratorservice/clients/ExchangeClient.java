@@ -20,7 +20,7 @@ public class ExchangeClient {
     private final RestTemplate restTemplate;
 
     @Value("${exchangeservice.url}")
-    private String exchangeServiceUrl;
+    protected String exchangeServiceUrl;
 
     @Scheduled(fixedRate = 1000)
     public void generateAndSendRates() {
@@ -34,11 +34,9 @@ public class ExchangeClient {
         restTemplate.postForObject(exchangeServiceUrl, rates, Void.class);
     }
 
-    private double generateRate(double base, double spread) {
+    protected double generateRate(double base, double spread) {
 
-        double value = base + spread * RANDOM.nextDouble();
-
-        return Math.round(value * 100.0) / 100.0;
+        return Math.round((base + spread * RANDOM.nextDouble()) * 100.0) / 100.0;
     }
 
 }

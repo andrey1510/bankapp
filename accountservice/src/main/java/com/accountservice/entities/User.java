@@ -46,15 +46,5 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Account> accounts = new ArrayList<>();
-//
-//    @Column
-//    private Boolean enabled = true;
-//
-//    @Column
-//    private String roles = "ROLE_USER";
 
-    public void addAccount(Account account) {
-        account.setUser(this);
-        this.accounts.add(account);
-    }
 }

@@ -1,0 +1,250 @@
+services:
+
+  accountservice:
+    container_name: accountservice
+    build:
+      context: ./accountservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/accountdb
+      - SPRING_DATASOURCE_USERNAME=login
+      - SPRING_DATASOURCE_PASSWORD=password
+    ports:
+      - 8881:8881
+    depends_on:
+      - accountdb
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  blockerservice:
+    container_name: blockerservice
+    build:
+      context: ./blockerservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    ports:
+      - 8882:8882
+    depends_on:
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  cashservice:
+    container_name: cashservice
+    build:
+      context: ./cashservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    ports:
+      - 8883:8883
+    depends_on:
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  configservice:
+    container_name: configservice
+    build:
+      context: ./configservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    ports:
+      - 8884:8884
+    depends_on:
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  eurekaservice:
+    container_name: eurekaservice
+    build:
+      context: ./eurekaservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    ports:
+      - 8885:8885
+    depends_on:
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  exchangegeneratorservice:
+    container_name: exchangegeneratorservice
+    build:
+      context: ./exchangegeneratorservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    ports:
+      - 8886:8886
+    depends_on:
+      - keycloak
+      - exchangeservice
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  exchangeservice:
+    container_name: exchangeservice
+    build:
+      context: ./exchangeservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/exchangedb
+      - SPRING_DATASOURCE_USERNAME=login
+      - SPRING_DATASOURCE_PASSWORD=password
+    ports:
+      - 8887:8887
+    depends_on:
+      - exchangedb
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  frontservice:
+    container_name: frontservice
+    build:
+      context: ./frontservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    ports:
+      - 8888:8888
+    depends_on:
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  gatewayservice:
+    container_name: gatewayservice
+    build:
+      context: ./gatewayservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    ports:
+      - 8889:8889
+    depends_on:
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  notificationservice:
+    container_name: notificationservice
+    build:
+      context: ./notificationservice
+      dockerfile: Dockerfile
+      args:
+        - MAVEN_SKIP_TESTS=true
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/notificationdb
+      - SPRING_DATASOURCE_USERNAME=login
+      - SPRING_DATASOURCE_PASSWORD=password
+    ports:
+      - 8890:8890
+    depends_on:
+      - notificationdb
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  transferservice:
+    container_name: transferservice
+    build:
+      context: ./transferservice
+      dockerfile: Dockerfile
+      args:
+        - GRADLE_SKIP_TESTS=true
+    ports:
+      - 8891:8891
+    depends_on:
+      - keycloak
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:26.2
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: localhost
+      KC_HTTP_ENABLED: true
+    ports:
+      - "8892:8080"
+    networks:
+      - bankapp-network
+    volumes:
+      - ./keycloak-config.json:/opt/keycloak/data/import/keycloak-config.json
+    command:
+      - start-dev
+      - --import-realm
+
+  accountdb:
+    container_name: accountdb
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_DB=accountdb
+      - POSTGRES_USER=login
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5554:5432
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  notificationdb:
+    container_name: notificationdb
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_DB=notificationdb
+      - POSTGRES_USER=login
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5555:5432
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  exchangedb:
+    container_name: exchangedb
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_DB=exchangedb
+      - POSTGRES_USER=login
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5558:5432
+    restart: unless-stopped
+    networks:
+      - bankapp-network
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+    networks:
+      - bankapp-network
+
+networks:
+  bankapp-network:

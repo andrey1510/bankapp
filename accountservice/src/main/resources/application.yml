@@ -14,6 +14,23 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8892/realms/banksapp
+      client:
+        registration:
+          notification-service:
+            client-id: accountservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: notificationservice.post
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: http://localhost:8892/realms/banksapp/protocol/openid-connect/token
+            issuer-uri: http://localhost:8892/realms/banksapp
 
 notificationservice:
   url: http://localhost:8890/api/notifications

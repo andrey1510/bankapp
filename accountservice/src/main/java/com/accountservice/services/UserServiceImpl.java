@@ -19,6 +19,8 @@ import com.accountservice.exceptions.LoginAlreadyExistsException;
 import com.accountservice.repositories.AccountRepository;
 import com.accountservice.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -38,6 +41,8 @@ public class UserServiceImpl implements UserService {
     private static final String EMAIL_EXISTS = "Email уже занят";
     private static final String USER_NOT_FOUND = "Пользователь не найден";
     private static final String ACCOUNT_WITH_SUCH_CURRENCY_EXISTS = "Счет с такой валютой уже есть";
+
+    private final PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
@@ -57,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.save(User.builder()
             .login(userDto.login())
-            .password(userDto.password())
+            .password(passwordEncoder.encode(userDto.password()))
             .name(userDto.name())
             .email(userDto.email())
             .birthdate(userDto.birthdate())
@@ -72,7 +77,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByLogin(passwordChangeDto.login())
             .orElseThrow(() -> new NoSuchUserException(USER_NOT_FOUND));
 
-        user.setPassword(passwordChangeDto.password());
+        user.setPassword(passwordEncoder.encode(passwordChangeDto.password()));
 
         return userRepository.save(user);
     }
@@ -207,4 +212,13 @@ public class UserServiceImpl implements UserService {
 
         accountRepository.saveAll(accountsToCreate);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean authenticateUser(String login, String password) {
+        return userRepository.findByLogin(login)
+            .map(user -> passwordEncoder.matches(password, user.getPassword()))
+            .orElse(false);
+    }
+
 }

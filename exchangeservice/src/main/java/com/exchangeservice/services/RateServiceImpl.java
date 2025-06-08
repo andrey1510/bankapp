@@ -5,6 +5,7 @@ import com.exchangeservice.dto.ConversionRateRequestDto;
 import com.exchangeservice.dto.CurrencyRate;
 import com.exchangeservice.dto.ExchangeRate;
 import com.exchangeservice.dto.CurrenciesDto;
+import com.exchangeservice.dto.RatesDto;
 import com.exchangeservice.entities.Rate;
 import com.exchangeservice.repositories.RateRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,14 +37,16 @@ public class RateServiceImpl implements RateService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ExchangeRate> getLatestRates() {
-        return rateRepository.findLatestRates().stream()
-            .map(rate -> new ExchangeRate(
-                rate.getTitle(),
-                rate.getCurrency(),
-                rate.getValue()
-            ))
-            .collect(Collectors.toList());
+    public RatesDto getLatestRates() {
+        return new RatesDto(
+            rateRepository.findLatestRates().stream()
+                .map(rate -> new ExchangeRate(
+                    rate.getTitle(),
+                    rate.getCurrency(),
+                    rate.getValue()
+                ))
+                .toList()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -80,12 +83,8 @@ public class RateServiceImpl implements RateService {
             return new ConversionRateDto(fromRate.value());
         }
 
-        double rubles = fromRate.value();
-        double targetValue = 1 / toRate.value();
-
-        return new ConversionRateDto(rubles * targetValue);
+        return new ConversionRateDto(fromRate.value() * (1 / toRate.value()));
 
     }
-
 
 }

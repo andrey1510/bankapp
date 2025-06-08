@@ -1,6 +1,11 @@
+server:
+  port: 8882
+
 spring:
   application:
     name: blockerservice
-
-server:
-  port: 8882
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8892/realms/banksapp

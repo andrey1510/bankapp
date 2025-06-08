@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
+import java.util.Locale;
 import java.util.Objects;
 
 @Slf4j
@@ -31,12 +32,6 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public void processTransfer(TransferRequestDto request) {
-
-        SuspicionOperationDto response = blockerClient.checkTransferOperation(request);
-        if (response != null && response.isSuspicious()) {
-            notificationClient.sendBlockedTransferNotification(request);
-            throw new TransferOperationException("Операция заблокирована");
-        }
 
         if (Objects.equals(request.senderAccountId(), request.recipientAccountId()))
             throw new SameAccountTransferException("Счета должны быть разными.");
@@ -54,8 +49,15 @@ public class TransferServiceImpl implements TransferService {
             request.senderAccountId(),
             request.amount(),
             request.recipientAccountId(),
-            Double.parseDouble(String.format("%.2f", Math.round(request.amount() * conversionRate * 100.0) / 100.0))
+            Double.parseDouble(String.format(
+                Locale.US, "%.2f", Math.round(request.amount() * conversionRate * 100.0) / 100.0))
         );
+
+        SuspicionOperationDto response = blockerClient.checkTransferOperation(request);
+        if (response != null && response.isSuspicious()) {
+            notificationClient.sendBlockedTransferNotification(request);
+            throw new TransferOperationException("Операция заблокирована");
+        }
 
         try {
             accountClient.updateBalances(updateRequest);

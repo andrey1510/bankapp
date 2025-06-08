@@ -3,9 +3,14 @@ package com.accountservice.clients;
 import com.accountservice.dto.NotificationRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -18,6 +23,9 @@ public class NotificationClient {
     @Value("${notificationservice.url}")
     private String notificationServiceUrl;
 
+    @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
+        maxAttempts = 2, backoff = @Backoff(delay = 1000)
+    )
     public void sendCashNotification(Double amount, String currency, String email) {
 
         String operationType = "пополнению";

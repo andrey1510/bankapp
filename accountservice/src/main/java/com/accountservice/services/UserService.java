@@ -7,6 +7,7 @@ import com.accountservice.dto.UserDto;
 import com.accountservice.dto.UserInfoDto;
 import com.accountservice.dto.UserUpdateDto;
 import com.accountservice.entities.User;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface UserService {
     UserAccountsDto getAccountsInfo(String login);
 
     void updateAccounts(UserAccountsDto dto);
+
+    boolean authenticateUser(String login, String password);
 }

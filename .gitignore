@@ -22,3 +22,25 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+/build/
+/.gradle/
+/blockerservice/.gradle/
+/blockerservice/build/
+/.idea/
+/transferservice/.gradle/
+/notificationservice/.gradle/
+/notificationservice/build/
+/transferservice/build/
+/cashservice/.gradle/
+/cashservice/build/
+/configservice/.gradle/
+/eurekaservice/.gradle/
+/exchangegeneratorservice/build/
+/exchangegeneratorservice/.gradle/
+/exchangeservice/build/
+/exchangeservice/.gradle/
+/frontservice/.gradle/
+/frontservice/build/
+/gatewayservice/.gradle/
+/accountservice/.gradle/
+/accountservice/build/
