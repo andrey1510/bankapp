@@ -9,7 +9,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -35,6 +34,6 @@ public class Notification {
     private String message;
 
     @Column(nullable = false)
-    private Boolean isSent = false;
+    private Boolean isSent;
 
 }

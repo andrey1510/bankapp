@@ -1,7 +1,6 @@
 package com.transferservice.configs;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
@@ -41,28 +40,24 @@ public class ClientsSecurityConfig {
     }
 
     @Bean
-    @LoadBalanced
     @Qualifier("accountRestTemplate")
     public RestTemplate accountRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
         return createSecuredRestTemplate(authorizedClientManager, "account-service");
     }
 
     @Bean
-    @LoadBalanced
     @Qualifier("exchangeRestTemplate")
     public RestTemplate exchangeRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
         return createSecuredRestTemplate(authorizedClientManager, "exchange-service");
     }
 
     @Bean
-    @LoadBalanced
     @Qualifier("blockerRestTemplate")
     public RestTemplate blockerRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
         return createSecuredRestTemplate(authorizedClientManager, "blocker-service");
     }
 
     @Bean
-    @LoadBalanced
     @Qualifier("notificationRestTemplate")
     public RestTemplate notificationRestRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
         return createSecuredRestTemplate(authorizedClientManager, "notificationRest-service");

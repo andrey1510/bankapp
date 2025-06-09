@@ -1,5 +1,8 @@
+server:
+  port: 8889
+
 spring:
   application:
     name: gatewayservice
   config:
-    import: configserver:http://localhost:8884
+    import: "configserver:http://configservice:8884"

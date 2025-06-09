@@ -1,7 +1,6 @@
 package com.cashservice.configs;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -41,21 +40,18 @@ public class ClientsSecurityConfig {
     }
 
     @Bean
-    @LoadBalanced
     @Qualifier("accountRestTemplate")
     public RestTemplate accountRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
         return createSecuredRestTemplate(authorizedClientManager, "account-service");
     }
 
     @Bean
-    @LoadBalanced
     @Qualifier("blockerRestTemplate")
     public RestTemplate blockerRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
         return createSecuredRestTemplate(authorizedClientManager, "blocker-service");
     }
 
     @Bean
-    @LoadBalanced
     @Qualifier("notificationRestTemplate")
     public RestTemplate notificationRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
         return createSecuredRestTemplate(authorizedClientManager, "notification-service");

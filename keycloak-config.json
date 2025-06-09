@@ -2,7 +2,7 @@
   "realm": "banksapp",
   "enabled": true,
   "attributes": {
-    "frontendUrl": "http://localhost:8892"
+    "frontendUrl": "http://keycloak:8080"
   },
   "clients": [
     {

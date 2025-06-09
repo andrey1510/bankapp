@@ -1,5 +1,8 @@
+server:
+  port: 8886
+
 spring:
   application:
     name: exchangegeneratorservice
   config:
-    import: configserver:http://localhost:8884
+    import: "configserver:http://configservice:8884"

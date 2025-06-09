@@ -5,17 +5,29 @@ services:
     build:
       context: ./accountservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/accountdb
-      - SPRING_DATASOURCE_USERNAME=login
-      - SPRING_DATASOURCE_PASSWORD=password
+      DATASOURCE_URL: jdbc:postgresql://db:5432/accountdb
+      DATASOURCE_USERNAME: login
+      DATASOURCE_PASSWORD: password
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     ports:
       - 8881:8881
     depends_on:
-      - accountdb
-      - gatewayservice
+      gatewayservice:
+        condition: service_healthy
+      eurekaservice:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+      accountdb:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8881/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -25,12 +37,24 @@ services:
     build:
       context: ./blockerservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     ports:
       - 8882:8882
+    environment:
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     depends_on:
-      - gatewayservice
+      gatewayservice:
+        condition: service_healthy
+      eurekaservice:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8882/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -40,12 +64,24 @@ services:
     build:
       context: ./cashservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     ports:
       - 8883:8883
+    environment:
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     depends_on:
-      - gatewayservice
+      gatewayservice:
+        condition: service_healthy
+      eurekaservice:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8883/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -55,12 +91,17 @@ services:
     build:
       context: ./configservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     ports:
       - 8884:8884
-    depends_on:
-      - keycloak
+    environment:
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8884/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -70,12 +111,16 @@ services:
     build:
       context: ./eurekaservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     ports:
       - 8885:8885
     depends_on:
-      - configservice
+      configservice:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8885/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -85,13 +130,26 @@ services:
     build:
       context: ./exchangegeneratorservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     ports:
       - 8886:8886
+    environment:
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     depends_on:
-      - keycloak
-      - exchangeservice
+      gatewayservice:
+        condition: service_healthy
+      eurekaservice:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+      exchangeservice:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8886/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -101,17 +159,29 @@ services:
     build:
       context: ./exchangeservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/exchangedb
-      - SPRING_DATASOURCE_USERNAME=login
-      - SPRING_DATASOURCE_PASSWORD=password
+      DATASOURCE_URL: jdbc:postgresql://db:5432/exchangedb
+      DATASOURCE_USERNAME: login
+      DATASOURCE_PASSWORD: password
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     ports:
       - 8887:8887
     depends_on:
-      - exchangedb
-      - gatewayservice
+      gatewayservice:
+        condition: service_healthy
+      eurekaservice:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+      exchangedb:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8887/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -121,12 +191,24 @@ services:
     build:
       context: ./frontservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     ports:
       - 8888:8888
+    environment:
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     depends_on:
-      - gatewayservice
+      gatewayservice:
+        condition: service_healthy
+      eurekaservice:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -136,12 +218,22 @@ services:
     build:
       context: ./gatewayservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     ports:
       - 8889:8889
+    environment:
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     depends_on:
-      - eurekaservice
+      eurekaservice:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8889/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -151,18 +243,29 @@ services:
     build:
       context: ./notificationservice
       dockerfile: Dockerfile
-      args:
-        - MAVEN_SKIP_TESTS=true
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/notificationdb
-      - SPRING_DATASOURCE_USERNAME=login
-      - SPRING_DATASOURCE_PASSWORD=password
+      DATASOURCE_URL: jdbc:postgresql://db:5432/notificationdb
+      DATASOURCE_USERNAME: login
+      DATASOURCE_PASSWORD: password
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     ports:
       - 8890:8890
     depends_on:
-      - notificationdb
-      - mailhog
-      - gatewayservice
+      gatewayservice:
+        condition: service_healthy
+      eurekaservice:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+      notificationdb:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8890/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -172,12 +275,24 @@ services:
     build:
       context: ./transferservice
       dockerfile: Dockerfile
-      args:
-        - GRADLE_SKIP_TESTS=true
     ports:
       - 8891:8891
+    environment:
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
+      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
+      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     depends_on:
-      - gatewayservice
+      gatewayservice:
+        condition: service_healthy
+      eurekaservice:
+        condition: service_healthy
+      configservice:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8891/actuator/health"]
+      interval: 10s
+      timeout: 8s
+      retries: 30
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -186,10 +301,13 @@ services:
     container_name: keycloak
     image: quay.io/keycloak/keycloak:26.2
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HOSTNAME: localhost
-      KC_HTTP_ENABLED: true
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_LOG_LEVEL: INFO
     ports:
       - "8892:8080"
     networks:

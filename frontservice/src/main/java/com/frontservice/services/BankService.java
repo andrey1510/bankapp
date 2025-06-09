@@ -1,6 +1,5 @@
 package com.frontservice.services;
 
-import com.frontservice.clients.ExchangeClient;
 import com.frontservice.dto.AccountInfoDto;
 import com.frontservice.dto.AccountUserInfoDto;
 import com.frontservice.dto.AllUsersInfoExceptCurrentDto;

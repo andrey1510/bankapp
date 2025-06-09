@@ -1,0 +1,11 @@
+server:
+  port: 8885
+spring:
+  application:
+    name: eurekaservice
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://eurekaservice:8885/eureka/

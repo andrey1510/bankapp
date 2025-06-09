@@ -1,5 +1,10 @@
+server:
+  port: 8887
+
 spring:
   application:
     name: exchangeservice
   config:
-    import: configserver:http://localhost:8884
+    import: "configserver:http://configservice:8884"
+  profiles:
+    active: default

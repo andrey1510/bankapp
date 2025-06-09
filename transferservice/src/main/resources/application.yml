@@ -1,5 +1,10 @@
+server:
+  port: 8891
+
 spring:
   application:
     name: transferservice
   config:
-    import: configserver:http://localhost:8884
+    import: "configserver:http://configservice:8884"
+  profiles:
+    active: default

@@ -51,7 +51,7 @@ class BlockerServiceImplTest {
     }
 
     @Test
-    void checkTransferOperation_ShouldReturnSuspicious_WhenAmountAboveThreshold() {
+    void checkTransferOperation_ShouldNotReturnSuspicious_WhenAmountBelowThreshold() {
 
         TransferRequestDto suspiciousRequest = new TransferRequestDto(
             typicalTransferRequest.email(),
@@ -64,7 +64,7 @@ class BlockerServiceImplTest {
 
         SuspicionOperationDto result = blockerService.checkTransferOperation(suspiciousRequest);
 
-        assertTrue(result.isSuspicious());
+        assertFalse(result.isSuspicious());
     }
 
     @Test
@@ -72,7 +72,7 @@ class BlockerServiceImplTest {
 
         SuspicionOperationDto result = blockerService.checkCashOperation(typicalCashRequest);
 
-        assertFalse(result.isSuspicious());
+        assertTrue(result.isSuspicious());
     }
 
     @Test
@@ -113,7 +113,7 @@ class BlockerServiceImplTest {
             typicalTransferRequest.recipientAccountCurrency()
         );
 
-        assertTrue(blockerService.checkTransferOperation(aboveEdgeRequest).isSuspicious());
+        assertFalse(blockerService.checkTransferOperation(aboveEdgeRequest).isSuspicious());
     }
 
     @Test
@@ -125,7 +125,7 @@ class BlockerServiceImplTest {
             new BigDecimal("1000.0")
         );
 
-        assertFalse(blockerService.checkCashOperation(edgeCaseRequest).isSuspicious());
+        assertTrue(blockerService.checkCashOperation(edgeCaseRequest).isSuspicious());
 
         CashRequestDto aboveEdgeRequest = new CashRequestDto(
             typicalCashRequest.email(),

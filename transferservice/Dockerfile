@@ -1,10 +1,4 @@
-FROM amazoncorretto:21 AS build
-COPY src /app/src
+FROM amazoncorretto:21
 WORKDIR /app
-RUN ./gradlew clean build -x test
-
-FROM amazoncorretto:21-al2023-headful
-COPY --from=build /app/build/libs/transferservice*.jar /app/transferservice.jar
-WORKDIR /app
-EXPOSE 8891
-ENTRYPOINT ["java", "-jar", "/app/transferservice.jar"]
+COPY build/libs/*.jar transferservice.jar
+ENTRYPOINT ["java", "-jar", "transferservice.jar"]

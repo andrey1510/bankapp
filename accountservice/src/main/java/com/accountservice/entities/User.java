@@ -45,6 +45,6 @@ public class User {
     private LocalDate birthdate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Account> accounts = new ArrayList<>();
+    private List<Account> accounts;
 
 }
