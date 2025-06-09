@@ -15,7 +15,7 @@ services:
       - 8881:8881
     depends_on:
       - accountdb
-      - keycloak
+      - gatewayservice
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -30,7 +30,7 @@ services:
     ports:
       - 8882:8882
     depends_on:
-      - keycloak
+      - gatewayservice
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -45,7 +45,7 @@ services:
     ports:
       - 8883:8883
     depends_on:
-      - keycloak
+      - gatewayservice
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -75,7 +75,7 @@ services:
     ports:
       - 8885:8885
     depends_on:
-      - keycloak
+      - configservice
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -111,7 +111,7 @@ services:
       - 8887:8887
     depends_on:
       - exchangedb
-      - keycloak
+      - gatewayservice
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -126,7 +126,7 @@ services:
     ports:
       - 8888:8888
     depends_on:
-      - keycloak
+      - gatewayservice
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -141,7 +141,7 @@ services:
     ports:
       - 8889:8889
     depends_on:
-      - keycloak
+      - eurekaservice
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -161,6 +161,8 @@ services:
       - 8890:8890
     depends_on:
       - notificationdb
+      - mailhog
+      - gatewayservice
     restart: unless-stopped
     networks:
       - bankapp-network
@@ -175,7 +177,7 @@ services:
     ports:
       - 8891:8891
     depends_on:
-      - keycloak
+      - gatewayservice
     restart: unless-stopped
     networks:
       - bankapp-network

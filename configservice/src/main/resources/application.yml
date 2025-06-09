@@ -9,8 +9,11 @@ spring:
       server:
         native:
           search-locations: classpath:/config-repo/
+  profiles:
+    active: native
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8885/eureka/
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

@@ -3,6 +3,8 @@ package com.exchangegeneratorservice.clients;
 import com.exchangegeneratorservice.dto.CurrencyRate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -26,14 +28,25 @@ public class ExchangeClient {
     protected String exchangeServiceUrl;
 
     @Scheduled(fixedRate = 1000)
-    public void generateAndSendRates() {
-        List<CurrencyRate> rates = List.of(
-            new CurrencyRate("Рубль", "RUR", BigDecimal.ONE, LocalDateTime.now()),
-            new CurrencyRate("Доллар", "USD", generateRate(70, 20), LocalDateTime.now()),
-            new CurrencyRate("Юань", "CNY", generateRate(10, 5), LocalDateTime.now())
-        );
+    public void scheduledGenerateAndSendRates() {
+        generateAndSendRates();
+    }
 
-        restTemplate.postForObject(exchangeServiceUrl, rates, Void.class);
+    public ResponseEntity<Void> generateAndSendRates() {
+        try {
+            List<CurrencyRate> rates = List.of(
+                new CurrencyRate("Рубль", "RUR", BigDecimal.ONE, LocalDateTime.now()),
+                new CurrencyRate("Доллар", "USD", generateRate(70, 20), LocalDateTime.now()),
+                new CurrencyRate("Юань", "CNY", generateRate(10, 5), LocalDateTime.now())
+            );
+
+            restTemplate.postForObject(exchangeServiceUrl, rates, Void.class);
+
+            return ResponseEntity.accepted().build();
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+        }
     }
 
     protected BigDecimal generateRate(double base, double spread) {

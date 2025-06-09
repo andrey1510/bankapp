@@ -1,6 +1,6 @@
 package com.exchangegeneratorservice.configs;
 
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
@@ -19,33 +19,35 @@ import org.springframework.web.client.RestTemplate;
 public class ClientsSecurityConfig {
 
     @Bean
-    public OAuth2AuthorizedClientManager authorizedClientManager(ClientRegistrationRepository clientRegistrationRepository) {
+    public OAuth2AuthorizedClientManager authorizedClientManager(
+        ClientRegistrationRepository clientRegistrationRepository) {
 
-        OAuth2AuthorizedClientProvider authorizedClientProvider =
-            OAuth2AuthorizedClientProviderBuilder.builder()
-                .clientCredentials()
-                .build();
+        OAuth2AuthorizedClientProvider provider = OAuth2AuthorizedClientProviderBuilder.builder()
+            .clientCredentials()
+            .build();
 
-        AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager =
+        AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
             new AuthorizedClientServiceOAuth2AuthorizedClientManager(
-                clientRegistrationRepository,
-                authorizedClientService(clientRegistrationRepository));
+                clientRegistrationRepository, authorizedClientService(clientRegistrationRepository));
 
-        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
-        return authorizedClientManager;
+        manager.setAuthorizedClientProvider(provider);
+        return manager;
     }
 
     @Bean
-    public OAuth2AuthorizedClientService authorizedClientService(ClientRegistrationRepository clientRegistrationRepository) {
+    public OAuth2AuthorizedClientService authorizedClientService(
+        ClientRegistrationRepository clientRegistrationRepository) {
         return new InMemoryOAuth2AuthorizedClientService(clientRegistrationRepository);
     }
 
     @Bean
+    @LoadBalanced
     public RestTemplate restTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
         RestTemplate restTemplate = new RestTemplate();
 
         restTemplate.getInterceptors().add((request, body, execution) -> {
-            OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId("exchange-generator")
+            OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+                .withClientRegistrationId("exchange-generator")
                 .principal("exchange-generator-service")
                 .build();
 

@@ -1,0 +1,27 @@
+server:
+  port: 8886
+
+spring:
+  application:
+    name: exchangegeneratorservice
+  security:
+    oauth2:
+      client:
+        registration:
+          exchange-generator:
+            client-id: exchangegeneratorservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: exchangeservice.post
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: http://localhost:8892/realms/banksapp/protocol/openid-connect/token
+            issuer-uri: http://localhost:8892/realms/banksapp
+
+eureka:
+  client:
+    enabled: false
+
+exchangeservice:
+    url: http://localhost:8889/exchange/api/generation

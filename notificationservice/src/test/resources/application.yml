@@ -1,0 +1,31 @@
+server:
+  port: 8890
+
+spring:
+  application:
+    name: notificationservice
+  datasource:
+    url: jdbc:postgresql://localhost:5555/notificationdb
+    username: login
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8892/realms/banksapp
+
+  mail:
+    host: localhost #todo mailhog in prod
+    port: 1025
+    username:
+    password:
+
+eureka:
+  client:
+    enabled: false

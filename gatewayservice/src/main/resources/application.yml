@@ -1,34 +1,5 @@
-server:
-  port: 8889
-
 spring:
   application:
     name: gatewayservice
-  cloud:
-    gateway:
-      routes:
-        - id: accountservice
-          uri: lb://ACCOUNTSERVICE
-          predicates:
-            - Path=/account/**
-        - id: transferservice
-          uri: lb://TRANSFERSERVICE
-          predicates:
-            - Path=/transfer/**
-        - id: cashservice
-          uri: lb://CASHSERVICE
-          predicates:
-            - Path=/cash/**
-        - id: blockerservice
-          uri: lb://BLOCKERSERVICE
-          predicates:
-            - Path=/fraud-check/**
-        - id: notificationservice
-          uri: lb://NOTIFICATIONSERVICE
-          predicates:
-            - Path=/notification/**
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8885/eureka/
+  config:
+    import: configserver:http://localhost:8884

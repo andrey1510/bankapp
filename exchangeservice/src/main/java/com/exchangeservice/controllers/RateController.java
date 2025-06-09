@@ -9,6 +9,7 @@ import com.exchangeservice.dto.RatesDto;
 import com.exchangeservice.services.RateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,8 +31,9 @@ public class RateController {
     @PostMapping("/generation")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PreAuthorize("hasAuthority('SCOPE_exchangeservice.post')")
-    public void receiveRates(@RequestBody List<CurrencyRate> rates) {
+    public ResponseEntity<Void> receiveRates(@RequestBody List<CurrencyRate> rates) {
         rateService.saveRates(rates);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/rates")

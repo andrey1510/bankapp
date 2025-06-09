@@ -1,6 +1,7 @@
 package com.frontservice.configs;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
@@ -15,25 +16,22 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-public class ClientsServiceConfig {
+public class ClientsSecurityConfig {
 
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(
-        ClientRegistrationRepository clientRegistrationRepository,
-        OAuth2AuthorizedClientService authorizedClientService) {
+        ClientRegistrationRepository clientRegistrationRepository) {
 
-        OAuth2AuthorizedClientProvider authorizedClientProvider =
-            OAuth2AuthorizedClientProviderBuilder.builder()
-                .clientCredentials()
-                .build();
+        OAuth2AuthorizedClientProvider provider = OAuth2AuthorizedClientProviderBuilder.builder()
+            .clientCredentials()
+            .build();
 
-        AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager =
+        AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
             new AuthorizedClientServiceOAuth2AuthorizedClientManager(
-                clientRegistrationRepository,
-                authorizedClientService);
+                clientRegistrationRepository, authorizedClientService(clientRegistrationRepository));
 
-        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
-        return authorizedClientManager;
+        manager.setAuthorizedClientProvider(provider);
+        return manager;
     }
 
     @Bean
@@ -43,34 +41,42 @@ public class ClientsServiceConfig {
     }
 
     @Bean
-    @Qualifier("transferRestTemplate")
-    public RestTemplate transferRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createRestTemplate(authorizedClientManager, "transfer-service");
-    }
-
-    @Bean
-    @Qualifier("cashRestTemplate")
-    public RestTemplate cashRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createRestTemplate(authorizedClientManager, "cash-service");
-    }
-
-    @Bean
+    @LoadBalanced
     @Qualifier("accountRestTemplate")
     public RestTemplate accountRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createRestTemplate(authorizedClientManager, "account-service");
+        return createSecuredRestTemplate(authorizedClientManager, "account-service");
     }
 
     @Bean
+    @LoadBalanced
     @Qualifier("exchangeRestTemplate")
     public RestTemplate exchangeRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createRestTemplate(authorizedClientManager, "exchange-service");
+        return createSecuredRestTemplate(authorizedClientManager, "exchange-service");
     }
 
-    private RestTemplate createRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager, String registrationId) {
+    @Bean
+    @LoadBalanced
+    @Qualifier("transferRestTemplate")
+    public RestTemplate transferRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
+        return createSecuredRestTemplate(authorizedClientManager, "transfer-service");
+    }
+
+    @Bean
+    @LoadBalanced
+    @Qualifier("cashRestTemplate")
+    public RestTemplate cashRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
+        return createSecuredRestTemplate(authorizedClientManager, "cash-service");
+    }
+
+    private RestTemplate createSecuredRestTemplate(
+        OAuth2AuthorizedClientManager authorizedClientManager,
+        String registrationId) {
+
         RestTemplate restTemplate = new RestTemplate();
 
         restTemplate.getInterceptors().add((request, body, execution) -> {
-            OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId(registrationId)
+            OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+                .withClientRegistrationId(registrationId)
                 .principal(registrationId)
                 .build();
 
@@ -85,4 +91,5 @@ public class ClientsServiceConfig {
 
         return restTemplate;
     }
+
 }

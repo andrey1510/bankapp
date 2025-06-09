@@ -1,6 +1,7 @@
 package com.cashservice.configs;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -19,21 +20,18 @@ public class ClientsSecurityConfig {
 
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(
-        ClientRegistrationRepository clientRegistrationRepository,
-        OAuth2AuthorizedClientService authorizedClientService) {
+        ClientRegistrationRepository clientRegistrationRepository) {
 
-        OAuth2AuthorizedClientProvider authorizedClientProvider =
-            OAuth2AuthorizedClientProviderBuilder.builder()
-                .clientCredentials()
-                .build();
+        OAuth2AuthorizedClientProvider provider = OAuth2AuthorizedClientProviderBuilder.builder()
+            .clientCredentials()
+            .build();
 
-        AuthorizedClientServiceOAuth2AuthorizedClientManager authorizedClientManager =
+        AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
             new AuthorizedClientServiceOAuth2AuthorizedClientManager(
-                clientRegistrationRepository,
-                authorizedClientService);
+                clientRegistrationRepository, authorizedClientService(clientRegistrationRepository));
 
-        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
-        return authorizedClientManager;
+        manager.setAuthorizedClientProvider(provider);
+        return manager;
     }
 
     @Bean
@@ -43,28 +41,35 @@ public class ClientsSecurityConfig {
     }
 
     @Bean
+    @LoadBalanced
     @Qualifier("accountRestTemplate")
     public RestTemplate accountRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createRestTemplate(authorizedClientManager, "account-service");
+        return createSecuredRestTemplate(authorizedClientManager, "account-service");
     }
 
     @Bean
+    @LoadBalanced
     @Qualifier("blockerRestTemplate")
     public RestTemplate blockerRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createRestTemplate(authorizedClientManager, "blocker-service");
+        return createSecuredRestTemplate(authorizedClientManager, "blocker-service");
     }
 
     @Bean
+    @LoadBalanced
     @Qualifier("notificationRestTemplate")
     public RestTemplate notificationRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createRestTemplate(authorizedClientManager, "notification-service");
+        return createSecuredRestTemplate(authorizedClientManager, "notification-service");
     }
 
-    private RestTemplate createRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager, String registrationId) {
+    private RestTemplate createSecuredRestTemplate(
+        OAuth2AuthorizedClientManager authorizedClientManager,
+        String registrationId) {
+
         RestTemplate restTemplate = new RestTemplate();
 
         restTemplate.getInterceptors().add((request, body, execution) -> {
-            OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest.withClientRegistrationId(registrationId)
+            OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest
+                .withClientRegistrationId(registrationId)
                 .principal(registrationId)
                 .build();
 
@@ -79,4 +84,5 @@ public class ClientsSecurityConfig {
 
         return restTemplate;
     }
+
 }
