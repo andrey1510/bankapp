@@ -1,0 +1,10 @@
+server:
+  port: 8890
+
+spring:
+  application:
+    name: notificationservice
+  config:
+    import: "configserver:http://configservice:8884"
+  profiles:
+    active: default

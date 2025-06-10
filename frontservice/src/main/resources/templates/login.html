@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Логин</title>
+    <style>
+        .error-box {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<h1>Логин</h1>
+
+<form method="post" action="/login">
+    <div th:if="${error}" class="error-box" th:text="${error}"></div>
+    <div>
+        <label for="username">Логин:</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+    <div>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit">Логин</button>
+</form>
+
+<p>Не зарегистрированы? <a href="/signup">Регистрация</a></p>
+</body>
+</html>

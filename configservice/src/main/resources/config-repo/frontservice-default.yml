@@ -1,0 +1,65 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: frontservice
+  security:
+    oauth2:
+      client:
+        registration:
+          account-service:
+            client-id: frontservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope:
+              - accountservice.post
+              - accountservice.get
+            provider: keycloak
+          exchange-service:
+            client-id: frontservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: exchangeservice.get
+            provider: keycloak
+          cash-service:
+            client-id: frontservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: cashservice.post
+            provider: keycloak
+          transfer-service:
+            client-id: frontservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: transferservice.post
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: http://keycloak:8080/realms/banksapp/protocol/openid-connect/token
+            issuer-uri: http://keycloak:8080/realms/banksapp
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eurekaservice:8885/eureka/
+  instance:
+    hostname: frontservice
+    prefer-ip-address: true
+
+exchangeservice:
+  url:
+    rates: http://gatewayservice:8889/exchangeapp/api/rates
+    currencies: http://gatewayservice:8889/exchangeapp/api/currencies
+
+accountservice:
+  url:
+    users: http://gatewayservice:8889/accountapp/api/users
+
+transferservice:
+  url:
+    transfer: http://gatewayservice:8889/transferapp/api/transfers/transfer
+
+cashservice:
+  url:
+    operation: http://gatewayservice:8889/cashapp/api/cash/operation

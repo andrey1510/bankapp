@@ -1,0 +1,10 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: frontservice
+  config:
+    import: "configserver:http://configservice:8884"
+  profiles:
+    active: default

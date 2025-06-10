@@ -1,0 +1,8 @@
+server:
+  port: 8881
+
+spring:
+  application:
+    name: eurekaservice
+  config:
+    import: "configserver:http://configservice:8884"

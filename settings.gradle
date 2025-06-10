@@ -1,0 +1,15 @@
+rootProject.name = 'bankapp'
+
+include 'accountservice',
+        'blockerservice',
+        'cashservice',
+        'configservice',
+        'eurekaservice',
+        'exchangegeneratorservice',
+        'exchangeservice',
+        'frontservice',
+        'gatewayservice',
+        'notificationservice',
+        'transferservice'
+
+

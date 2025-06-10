@@ -1,0 +1,44 @@
+server:
+  port: 8881
+
+spring:
+  application:
+    name: accountservice
+  datasource:
+    url: jdbc:postgresql://accountdb:5432/accountdb
+    username: login
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/banksapp
+      client:
+        registration:
+          notification-service:
+            client-id: accountservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: notificationservice.post
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: http://keycloak:8080/realms/banksapp/protocol/openid-connect/token
+            issuer-uri: http://keycloak:8080/realms/banksapp
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eurekaservice:8885/eureka/
+  instance:
+    hostname: accountservice
+    prefer-ip-address: true
+
+notificationservice:
+  url: http://gatewayservice:8889/notificationapp/api/notifications
