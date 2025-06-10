@@ -1,0 +1,28 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080
+          jwk-set-uri: http://localhost:8080/.well-known/jwks.json
+
+server:
+  port: 8080
+
+accounts-service:
+  url: http://localhost:8081
+
+cash-service:
+  url: http://localhost:8082
+
+transfer-service:
+  url: http://localhost:8083
+
+exchange-service:
+  url: http://localhost:8084
+
+notification-service:
+  url: http://localhost:8085 

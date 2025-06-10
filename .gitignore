@@ -44,3 +44,14 @@ replay_pid*
 /gatewayservice/.gradle/
 /accountservice/.gradle/
 /accountservice/build/
+/blockerservice/bin/
+/accountservice/bin/
+/cashservice/bin/
+/configservice/bin/
+/eurekaservice/bin/
+/exchangegeneratorservice/bin/
+/exchangeservice/bin/
+/frontservice/bin/
+/gatewayservice/bin/
+/notificationservice/bin/
+/transferservice/bin/
