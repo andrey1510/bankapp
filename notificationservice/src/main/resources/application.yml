@@ -4,7 +4,24 @@ server:
 spring:
   application:
     name: notificationservice
-  config:
-    import: "configserver:http://configservice:8884"
-  profiles:
-    active: default
+  datasource:
+    url: jdbc:postgresql://notificationdb:5432/notificationdb
+    username: login
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/banksapp
+
+  mail:
+    host: mailhog
+    port: 1025
+    username:
+    password:

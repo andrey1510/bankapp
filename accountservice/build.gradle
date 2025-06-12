@@ -33,8 +33,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
     implementation 'org.springframework.retry:spring-retry:2.0.11'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.2.1'
-    implementation 'org.springframework.cloud:spring-cloud-starter-config:4.2.1'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'

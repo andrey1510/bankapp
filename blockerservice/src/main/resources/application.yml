@@ -4,7 +4,8 @@ server:
 spring:
   application:
     name: blockerservice
-  config:
-    import: "configserver:http://configservice:8884"
-  profiles:
-    active: default
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/banksapp

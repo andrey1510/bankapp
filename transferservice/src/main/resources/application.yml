@@ -4,7 +4,50 @@ server:
 spring:
   application:
     name: transferservice
-  config:
-    import: "configserver:http://configservice:8884"
-  profiles:
-    active: default
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/banksapp
+      client:
+        registration:
+          account-service:
+            client-id: transferservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: accountservice.post
+            provider: keycloak
+          blocker-service:
+            client-id: transferservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: blockerservice.post
+            provider: keycloak
+          notification-service:
+            client-id: transferservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: notificationservice.post
+            provider: keycloak
+          exchange-service:
+            client-id: transferservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: exchangeservice.post
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: http://keycloak:8080/realms/banksapp/protocol/openid-connect/token
+            issuer-uri: http://keycloak:8080/realms/banksapp
+
+exchangeservice:
+  url: http://exchangeservice:8887/api/rates
+
+accountservice:
+  url: http://accountservice:8881/api/accounts
+
+blockerservice:
+  url: http://blockerservice:8882/api/fraud-check
+
+notificationservice:
+  url: http://notificationservice:8890/api/notifications
