@@ -34,7 +34,7 @@ class AccountsClientTest {
     @InjectMocks
     private AccountsClient accountsClient;
 
-    private final String usersUrl = "http://account-service/users";
+    private final String usersUrl = "http://account-service";
     private final String testLogin = "testUser";
     private final String testPassword = "password123";
     private final LoginPasswordDto loginPasswordDto = new LoginPasswordDto(testLogin, testPassword);
@@ -49,7 +49,7 @@ class AccountsClientTest {
         accountsClient.sendAuthRequest(loginPasswordDto);
 
         verify(restTemplate).postForEntity(
-            eq(usersUrl + "/login"),
+            eq(usersUrl + "/users/login"),
             eq(loginPasswordDto),
             eq(Void.class)
         );
@@ -65,7 +65,7 @@ class AccountsClientTest {
         );
 
         when(restTemplate.getForEntity(
-            eq(usersUrl + "/user-info?login={login}"),
+            eq(usersUrl + "/users/user-info?login={login}"),
             eq(UserInfoDto.class),
             eq(testLogin)
         )).thenReturn(ResponseEntity.ok(expectedResponse));
@@ -80,7 +80,7 @@ class AccountsClientTest {
         AllUsersInfoExceptCurrentDto expectedResponse = new AllUsersInfoExceptCurrentDto(List.of());
 
         when(restTemplate.getForEntity(
-            eq(usersUrl + "/users-except-current?login={login}"),
+            eq(usersUrl + "/users/users-except-current?login={login}"),
             eq(AllUsersInfoExceptCurrentDto.class),
             eq(testLogin))
         ).thenReturn(ResponseEntity.ok(expectedResponse));
@@ -100,7 +100,7 @@ class AccountsClientTest {
         );
 
         when(restTemplate.getForEntity(
-            eq(usersUrl + "/accounts-info?login={login}"),
+            eq(usersUrl + "/users/accounts-info?login={login}"),
             eq(UserAccountsDto.class),
             eq(testLogin))
         ).thenReturn(ResponseEntity.ok(expectedResponse));
@@ -122,7 +122,7 @@ class AccountsClientTest {
         accountsClient.sendUserUpdateRequest(updateDto);
 
         verify(restTemplate).postForEntity(
-            eq(usersUrl + "/edit-user"),
+            eq(usersUrl + "/users/edit-user"),
             eq(updateDto),
             eq(Void.class)
         );
@@ -143,7 +143,7 @@ class AccountsClientTest {
         accountsClient.sendAccountsUpdateRequest(testLogin, accounts);
 
         verify(restTemplate).postForEntity(
-            eq(usersUrl + "/edit-accounts"),
+            eq(usersUrl + "/users/edit-accounts"),
             any(UserAccountsDto.class),
             eq(Void.class)
         );
@@ -154,7 +154,7 @@ class AccountsClientTest {
         accountsClient.sendPasswordChangeRequest("newPassword123", testLogin);
 
         verify(restTemplate).postForEntity(
-            eq(usersUrl + "/change-password"),
+            eq(usersUrl + "/users/change-password"),
             any(LoginPasswordDto.class),
             eq(Void.class)
         );
@@ -173,7 +173,7 @@ class AccountsClientTest {
         accountsClient.sendSignupRequest(userDto);
 
         verify(restTemplate).postForEntity(
-            eq(usersUrl + "/signup"),
+            eq(usersUrl + "/users/signup"),
             eq(userDto),
             eq(Void.class)
         );

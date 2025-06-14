@@ -41,7 +41,7 @@ class AccountClientTest {
     void updateBalances_ShouldCallRestTemplateWithCorrectUrl() {
         accountClient.updateBalances(balanceUpdateRequest);
         verify(restTemplate).postForObject(
-            "http://account-service/transfer-update",
+            "http://account-service/accounts/transfer-update",
             balanceUpdateRequest,
             Void.class
         );

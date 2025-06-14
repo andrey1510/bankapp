@@ -46,7 +46,7 @@ class NotificationClientTest {
         notificationClient.sendBlockedTransferNotification(transferRequest);
 
         verify(restTemplate).postForObject(
-            eq("http://notification-service"),
+            eq("http://notification-service/notifications"),
             any(NotificationRequestDto.class),
             eq(Void.class)
         );
@@ -57,7 +57,7 @@ class NotificationClientTest {
         notificationClient.sendBlockedTransferNotification(transferRequest);
 
         verify(restTemplate).postForObject(
-            eq("http://notification-service"),
+            eq("http://notification-service/notifications"),
             any(NotificationRequestDto.class),
             eq(Void.class)
         );

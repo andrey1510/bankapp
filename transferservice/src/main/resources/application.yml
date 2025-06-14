@@ -8,7 +8,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/banksapp
+          issuer-uri: ${ISSUER_URI}
       client:
         registration:
           account-service:
@@ -37,17 +37,17 @@ spring:
             provider: keycloak
         provider:
           keycloak:
-            token-uri: http://keycloak:8080/realms/banksapp/protocol/openid-connect/token
-            issuer-uri: http://keycloak:8080/realms/banksapp
+            token-uri: ${ISSUER_URI}/protocol/openid-connect/token
+            issuer-uri: ${ISSUER_URI}
 
 exchangeservice:
-  url: http://exchangeservice:8887/api/rates
+  url: ${EXCHANGESERVICE_API}
 
 accountservice:
-  url: http://accountservice:8881/api/accounts
+  url: ${ACCOUNTSERVICE_API}
 
 blockerservice:
-  url: http://blockerservice:8882/api/fraud-check
+  url: ${BLOCKERSERVICE_API}
 
 notificationservice:
-  url: http://notificationservice:8890/api/notifications
+  url: ${NOTIFICATIONSERVICE_API}

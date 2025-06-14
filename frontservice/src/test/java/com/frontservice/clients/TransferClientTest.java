@@ -42,7 +42,7 @@ class TransferClientTest {
         transferClient.sendTransferRequest(testRequest);
 
         verify(restTemplate).postForEntity(
-            eq(testUrl),
+            eq(testUrl + "/transfers/transfer"),
             eq(testRequest),
             eq(Void.class)
         );
@@ -62,7 +62,7 @@ class TransferClientTest {
         transferClient.sendTransferRequest(negativeAmountRequest);
 
         verify(restTemplate).postForEntity(
-            eq(testUrl),
+            eq(testUrl + "/transfers/transfer"),
             eq(negativeAmountRequest),
             eq(Void.class)
         );

@@ -39,7 +39,7 @@ class ExchangeClientTest {
         exchangeClient.generateAndSendRates();
 
         verify(restTemplate).postForObject(
-            eq("http://test.com"),
+            eq("http://test.com/generation"),
             argThat((List<CurrencyRate> rates) ->
                 rates.size() == 3 &&
                     rates.stream().anyMatch(r -> r.currency().equals("RUR"))),

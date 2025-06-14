@@ -1,0 +1,11 @@
+replicaCount: 1
+image:
+  repository: accountservice
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+database:
+  url: "jdbc:postgresql://accountdb-postgresql:5432/accountdb"
+  username: "login"
+  password: "password"

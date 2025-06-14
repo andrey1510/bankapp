@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "frontservice.fullname" . }}-config
+  labels:
+    {{- include "frontservice.labels" . | nindent 4 }}
+data:
+  ISSUER_URI: {{ tpl .Values.global.uri.issuer_uri . | quote }}
+  MAILHOG: {{ tpl .Values.global.uri.mailhog . | quote }}
+  MAIL_SMTP_PORT: "8025"
+  DB_URL: {{ .Values.database.url | quote }}
+  DB_USER: {{ .Values.database.username | quote }}
+  DB_PASSWORD: {{ .Values.database.password | quote }}

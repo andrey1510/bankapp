@@ -16,8 +16,8 @@ spring:
             provider: keycloak
         provider:
           keycloak:
-            token-uri: http://localhost:8892/realms/banksapp/protocol/openid-connect/token
-            issuer-uri: http://localhost:8892/realms/banksapp
+            token-uri: http://localhost:8892/realms/bankapp/protocol/openid-connect/token
+            issuer-uri: http://localhost:8892/realms/bankapp
 
 eureka:
   client:

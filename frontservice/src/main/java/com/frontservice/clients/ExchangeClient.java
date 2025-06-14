@@ -13,17 +13,13 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ExchangeClient {
 
-    @Value("${exchangeservice.url.currencies}")
-    protected String currenciesUrl;
-
-    @Value("${exchangeservice.url.rates}")
-    protected String ratesUrl;
+    @Value("${exchangeservice.url}")
+    protected String exchangeUrl;
 
     @Qualifier("exchangeRestTemplate")
     private final RestTemplate restTemplate;
@@ -33,14 +29,14 @@ public class ExchangeClient {
     )
     public CurrenciesDto getCurrenciesDto() {
         return restTemplate.getForEntity(
-            currenciesUrl,
+            String.format("%s/currencies", exchangeUrl),
             CurrenciesDto.class
         ).getBody();
     }
 
     public RatesDto getRates() {
         return restTemplate.getForEntity(
-            ratesUrl,
+            String.format("%s/rates", exchangeUrl),
             RatesDto.class
         ).getBody();
     }

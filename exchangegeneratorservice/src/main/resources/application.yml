@@ -16,8 +16,8 @@ spring:
             provider: keycloak
         provider:
           keycloak:
-            token-uri: http://keycloak:8080/realms/banksapp/protocol/openid-connect/token
-            issuer-uri: http://keycloak:8080/realms/banksapp
+            token-uri: ${ISSUER_URI}/protocol/openid-connect/token
+            issuer-uri: ${ISSUER_URI}
 
 exchangeservice:
-  url: http://exchangeservice:8885/api/generation
+  url: ${EXCHANGESERVICE_API}

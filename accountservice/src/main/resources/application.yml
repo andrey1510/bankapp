@@ -5,9 +5,9 @@ spring:
   application:
     name: accountservice
   datasource:
-    url: jdbc:postgresql://accountdb:5432/accountdb
-    username: login
-    password: password
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,7 +18,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/banksapp
+          issuer-uri: ${ISSUER_URI}
       client:
         registration:
           notification-service:
@@ -29,9 +29,9 @@ spring:
             provider: keycloak
         provider:
           keycloak:
-            token-uri: http://keycloak:8080/realms/banksapp/protocol/openid-connect/token
-            issuer-uri: http://keycloak:8080/realms/banksapp
+            token-uri: ${ISSUER_URI}/protocol/openid-connect/token
+            issuer-uri: ${ISSUER_URI}
 
 
 notificationservice:
-  url: http://notificationservice:8890/api/notifications
+  url: ${NOTIFICATIONSERVICE_API}

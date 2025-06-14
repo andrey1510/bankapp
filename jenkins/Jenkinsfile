@@ -1,0 +1,98 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
+        GITHUB_USERNAME = credentials('GITHUB_USERNAME')
+        IMAGE_TAG       = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Build and execute tests') {
+            parallel {
+                def microservices = [
+                    'accountservice',
+                    'blockerservice',
+                    'cashservice',
+                    'frontservice',
+                    'exchangeservice',
+                    'exchangegeneratorservice',
+                    'notificationservice',
+                    'transferservice',
+                ]
+
+                microservices.each { service ->
+                    stage("${service}") {
+                        steps {
+                            dir("${service}") {
+                                sh './gradlew clean test'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker images') {
+            steps {
+                sh """
+                docker build -t ${DOCKER_REGISTRY}/accountservice:${IMAGE_TAG} ./accountservice
+                docker build -t ${DOCKER_REGISTRY}/blockerservice:${IMAGE_TAG} ./blockerservice
+                docker build -t ${DOCKER_REGISTRY}/cashservice:${IMAGE_TAG} ./cashservice
+                docker build -t ${DOCKER_REGISTRY}/frontservice:${IMAGE_TAG} ./frontservice
+                docker build -t ${DOCKER_REGISTRY}/exchangeservice:${IMAGE_TAG} ./exchangeservice
+                docker build -t ${DOCKER_REGISTRY}/exchangegeneratorservice:${IMAGE_TAG} ./exchangegeneratorservice
+                docker build -t ${DOCKER_REGISTRY}/notificationservice:${IMAGE_TAG} ./notificationservice
+                docker build -t ${DOCKER_REGISTRY}/transferservice:${IMAGE_TAG} ./transferservice
+                """
+            }
+        }
+
+        stage('Push Docker images') {
+            steps {
+                withCredentials([string(credentialsId: 'GHCR_TOKEN', variable: 'GHCR_TOKEN')]) {
+                    sh """
+                    echo \$GHCR_TOKEN | docker login ghcr.io -u ${GITHUB_USERNAME} --password-stdin
+
+                    docker push ${DOCKER_REGISTRY}/accountservice:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/blockerservice:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/cashservice:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/frontservice:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/exchangeservice:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/exchangegeneratorservice:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/notificationservice:${IMAGE_TAG}
+                    docker push ${DOCKER_REGISTRY}/transferservice:${IMAGE_TAG}
+
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to TEST') {
+            steps {
+                sh """
+                helm dependency update .
+                helm upgrade --install bankapp ./ \\
+                  --namespace test --create-namespace \\
+                """
+            }
+        }
+
+        stage('Manual approval for PROD') {
+            steps {
+                input message: 'Confirm manually to deploy to PROD environment.', ok: 'Confirm'
+            }
+        }
+
+        stage('Deploy to PROD') {
+            steps {
+                sh """
+                helm dependency update .
+                helm upgrade --install bankapp ./ \\
+                  --namespace prod --create-namespace \\
+                """
+            }
+        }
+
+    }
+}

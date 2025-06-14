@@ -62,7 +62,7 @@ class NotificationClientTest {
         notificationClient.sendTransferNotification(new BigDecimal("200.00"), testCurrency, testEmail);
 
         verify(restTemplate).postForObject(
-            eq("http://notification-service"),
+            eq("http://notification-service/notifications"),
             any(NotificationRequestDto.class),
             eq(Void.class)
         );

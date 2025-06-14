@@ -17,7 +17,7 @@ import java.net.SocketTimeoutException;
 @RequiredArgsConstructor
 public class CashClient {
 
-    @Value("${cashservice.url.operation}")
+    @Value("${cashservice.url}")
     protected String cashserviceUrl;
 
     @Qualifier("cashRestTemplate")
@@ -28,7 +28,7 @@ public class CashClient {
     )
     public void sendCashRequest(CashRequestDto request) {
         restTemplate.postForEntity(
-            cashserviceUrl,
+            String.format("%s/cash/operation", cashserviceUrl),
             request,
             Void.class
         );

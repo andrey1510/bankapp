@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "transferservice.fullname" . }}-config
+  labels:
+    {{- include "transferservice.labels" . | nindent 4 }}
+data:
+  ISSUER_URI: {{ tpl .Values.global.uri.issuer_uri . | quote }}
+  ACCOUNTSERVICE_API: {{ tpl .Values.global.uri.accountservice_api . | quote }}
+  BLOCKERSERVICE_API: {{ tpl .Values.global.uri.blockerservice_api . | quote }}
+  NOTIFICATIONSERVICE_API: {{ tpl .Values.global.uri.notificationservice_api . | quote }}

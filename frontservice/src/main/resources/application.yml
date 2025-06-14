@@ -36,22 +36,17 @@ spring:
             provider: keycloak
         provider:
           keycloak:
-            token-uri: http://keycloak:8080/realms/banksapp/protocol/openid-connect/token
-            issuer-uri: http://keycloak:8080/realms/banksapp
+            token-uri: ${ISSUER_URI}/protocol/openid-connect/token
+            issuer-uri: ${ISSUER_URI}
 
 exchangeservice:
-  url:
-    rates: http://exchangeservice:8887/api/rates
-    currencies: http://exchangeservice:8887/api/currencies
+  url: ${EXCHANGESERVICE_API}
 
 accountservice:
-  url:
-    users: http://accountservice:8881/api/users
+  url: ${ACCOUNTSERVICE_API}
 
 transferservice:
-  url:
-    transfer: http://transferservice:8891/api/transfers/transfer
+  url: ${TRANSFERSERVICE_API}
 
 cashservice:
-  url:
-    operation: http://cashservice:8883/api/cash/operation
+  url: ${CASHSERVICE_API}

@@ -5,9 +5,9 @@ spring:
   application:
     name: notificationservice
   datasource:
-    url: jdbc:postgresql://notificationdb:5432/notificationdb
-    username: login
-    password: password
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,10 +18,10 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak:8080/realms/banksapp
+          issuer-uri: ${ISSUER_URI}
 
   mail:
-    host: mailhog
-    port: 1025
+    host: ${MAILHOG}
+    port: ${MAIL_SMTP_PORT}
     username:
     password:

@@ -19,7 +19,7 @@ import java.net.SocketTimeoutException;
 public class BlockerClient {
 
     @Value("${blockerservice.url}")
-    protected String baseUrl;
+    protected String blockerServiceUrl;
 
     @Qualifier("blockerRestTemplate")
     private final RestTemplate restTemplate;
@@ -29,7 +29,7 @@ public class BlockerClient {
     )
     public SuspicionOperationDto checkCashOperation(CashRequestDto request) {
         return restTemplate.postForObject(
-            baseUrl + "/cash",
+            String.format("%s/fraud-check/cash", blockerServiceUrl),
             request,
             SuspicionOperationDto.class
         );

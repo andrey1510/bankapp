@@ -1,0 +1,18 @@
+replicaCount: 1
+image:
+  repository: frontservice
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: { }
+  hosts:
+    - host: bankapp.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: [ ]

@@ -28,7 +28,7 @@ public class AccountClient {
     )
     public void updateBalances(BalanceUpdateRequestDto updateRequest) {
         restTemplate.postForObject(
-            accountServiceUrl + "/transfer-update",
+            String.format("%s/accounts/transfer-update", accountServiceUrl),
             updateRequest,
             Void.class
         );

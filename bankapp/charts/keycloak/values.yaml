@@ -1,0 +1,16 @@
+replicaCount: 1
+image:
+  repository: quay.io/keycloak/keycloak
+  tag: 26.2
+  pullPolicy: IfNotPresent
+keycloakConfig:
+  enabled: true
+  config: keycloak-config.json
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+persistence:
+  enabled: true
+  size: 1Gi
+

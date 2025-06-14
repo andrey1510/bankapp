@@ -1,9 +1,6 @@
 {
-  "realm": "banksapp",
+  "realm": "bankapp",
   "enabled": true,
-  "attributes": {
-    "frontendUrl": "http://keycloak:8080"
-  },
   "clients": [
     {
       "clientId": "accountservice",

@@ -35,7 +35,7 @@ public class BlockerClientTest {
 
     @BeforeEach
     void setUp() {
-        blockerClient.baseUrl = "http://blocker-service";
+        blockerClient.blockerServiceUrl = "http://blocker-service";
         testRequest = new CashRequestDto(
             "test@email.com", 1L, "USD", new BigDecimal("100.00"), true);
         testResponse = new SuspicionOperationDto(false);
@@ -49,7 +49,7 @@ public class BlockerClientTest {
         SuspicionOperationDto result = blockerClient.checkCashOperation(testRequest);
 
         verify(restTemplate).postForObject(
-            eq("http://blocker-service/cash"),
+            eq("http://blocker-service/fraud-check/cash"),
             eq(testRequest),
             eq(SuspicionOperationDto.class)
         );

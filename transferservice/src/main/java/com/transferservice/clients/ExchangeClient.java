@@ -29,7 +29,7 @@ public class ExchangeClient {
     )
     public ConversionRateDto getConversionRate(ConversionRateRequestDto requestDto) {
         return restTemplate.postForObject(
-            exchangeServiceUrl + "/conversion",
+            String.format("%s/rates/conversion", exchangeServiceUrl),
             requestDto,
             ConversionRateDto.class
         );
