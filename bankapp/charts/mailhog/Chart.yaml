@@ -1,4 +1,6 @@
 apiVersion: v2
 name: mailhog
 type: application
+description: mailhog chart
 version: 1.0.0
+appVersion: "1.0.0"
