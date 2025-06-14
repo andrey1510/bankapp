@@ -7,6 +7,31 @@ pipeline {
         IMAGE_TAG       = "${env.BUILD_NUMBER}"
     }
 
+    stages {
+        stage('Build and execute tests') {
+            steps {
+                script {
+                    def microservices = [
+                        'accountservice',
+                        'blockerservice',
+                        'cashservice',
+                        'frontservice',
+                        'exchangeservice',
+                        'exchangegeneratorservice',
+                        'notificationservice',
+                        'transferservice'
+                    ]
+
+                    microservices.each { service ->
+                        echo "Building and testing ${service}"
+                        dir("${service}") {
+                            sh 'chmod +x gradlew'
+                            sh './gradlew clean test'
+                        }
+                    }
+                }
+            }
+        }
 
         stage('Deploy to TEST') {
             steps {
