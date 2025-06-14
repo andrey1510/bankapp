@@ -77,12 +77,14 @@ pipeline {
 
         stage('Deploy to TEST') {
             steps {
-                sh 'find . -name "*.jar" -delete'
-                sh """
-                helm dependency update .
-                helm upgrade --install bankapp bankapp/. \\
-                  --namespace test --create-namespace
-                """
+                dir('bankapp') {
+                    sh 'find . -name "*.jar" -delete'
+                    sh """
+                    helm dependency update .
+                    helm upgrade --install bankapp . \\
+                      --namespace test --create-namespace
+                    """
+                }
             }
         }
 
@@ -94,11 +96,13 @@ pipeline {
 
         stage('Deploy to PROD') {
             steps {
-                sh """
-                helm dependency update .
-                helm upgrade --install bankapp bankapp/. \\
-                  --namespace prod --create-namespace
-                """
+                dir('bankapp') {
+                    sh """
+                    helm dependency update .
+                    helm upgrade --install bankapp . \\
+                      --namespace prod --create-namespace
+                    """
+                }
             }
         }
     }
