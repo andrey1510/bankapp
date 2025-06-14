@@ -9,24 +9,23 @@ pipeline {
 
     stages {
         stage('Build and execute tests') {
-            parallel {
-                def microservices = [
-                    'accountservice',
-                    'blockerservice',
-                    'cashservice',
-                    'frontservice',
-                    'exchangeservice',
-                    'exchangegeneratorservice',
-                    'notificationservice',
-                    'transferservice',
-                ]
+            steps {
+                script {
+                    def microservices = [
+                        'accountservice',
+                        'blockerservice',
+                        'cashservice',
+                        'frontservice',
+                        'exchangeservice',
+                        'exchangegeneratorservice',
+                        'notificationservice',
+                        'transferservice'
+                    ]
 
-                microservices.each { service ->
-                    stage("${service}") {
-                        steps {
-                            dir("${service}") {
-                                sh './gradlew clean test'
-                            }
+                    microservices.each { service ->
+                        echo "Building and testing ${service}"
+                        dir("${service}") {
+                            sh './gradlew clean test'
                         }
                     }
                 }
@@ -35,16 +34,21 @@ pipeline {
 
         stage('Build Docker images') {
             steps {
-                sh """
-                docker build -t ${DOCKER_REGISTRY}/accountservice:${IMAGE_TAG} ./accountservice
-                docker build -t ${DOCKER_REGISTRY}/blockerservice:${IMAGE_TAG} ./blockerservice
-                docker build -t ${DOCKER_REGISTRY}/cashservice:${IMAGE_TAG} ./cashservice
-                docker build -t ${DOCKER_REGISTRY}/frontservice:${IMAGE_TAG} ./frontservice
-                docker build -t ${DOCKER_REGISTRY}/exchangeservice:${IMAGE_TAG} ./exchangeservice
-                docker build -t ${DOCKER_REGISTRY}/exchangegeneratorservice:${IMAGE_TAG} ./exchangegeneratorservice
-                docker build -t ${DOCKER_REGISTRY}/notificationservice:${IMAGE_TAG} ./notificationservice
-                docker build -t ${DOCKER_REGISTRY}/transferservice:${IMAGE_TAG} ./transferservice
-                """
+                script {
+                    [
+                        'accountservice',
+                        'blockerservice',
+                        'cashservice',
+                        'frontservice',
+                        'exchangeservice',
+                        'exchangegeneratorservice',
+                        'notificationservice',
+                        'transferservice'
+                    ].each { service ->
+                        echo "Building Docker image for ${service}"
+                        sh "docker build -t ${DOCKER_REGISTRY}/${service}:${IMAGE_TAG} ./${service}"
+                    }
+                }
             }
         }
 
@@ -53,17 +57,23 @@ pipeline {
                 withCredentials([string(credentialsId: 'GHCR_TOKEN', variable: 'GHCR_TOKEN')]) {
                     sh """
                     echo \$GHCR_TOKEN | docker login ghcr.io -u ${GITHUB_USERNAME} --password-stdin
-
-                    docker push ${DOCKER_REGISTRY}/accountservice:${IMAGE_TAG}
-                    docker push ${DOCKER_REGISTRY}/blockerservice:${IMAGE_TAG}
-                    docker push ${DOCKER_REGISTRY}/cashservice:${IMAGE_TAG}
-                    docker push ${DOCKER_REGISTRY}/frontservice:${IMAGE_TAG}
-                    docker push ${DOCKER_REGISTRY}/exchangeservice:${IMAGE_TAG}
-                    docker push ${DOCKER_REGISTRY}/exchangegeneratorservice:${IMAGE_TAG}
-                    docker push ${DOCKER_REGISTRY}/notificationservice:${IMAGE_TAG}
-                    docker push ${DOCKER_REGISTRY}/transferservice:${IMAGE_TAG}
-
                     """
+
+                    script {
+                        [
+                            'accountservice',
+                            'blockerservice',
+                            'cashservice',
+                            'frontservice',
+                            'exchangeservice',
+                            'exchangegeneratorservice',
+                            'notificationservice',
+                            'transferservice'
+                        ].each { service ->
+                            echo "Pushing Docker image for ${service}"
+                            sh "docker push ${DOCKER_REGISTRY}/${service}:${IMAGE_TAG}"
+                        }
+                    }
                 }
             }
         }
@@ -73,7 +83,7 @@ pipeline {
                 sh """
                 helm dependency update .
                 helm upgrade --install bankapp ./ \\
-                  --namespace test --create-namespace \\
+                  --namespace test --create-namespace
                 """
             }
         }
@@ -89,10 +99,21 @@ pipeline {
                 sh """
                 helm dependency update .
                 helm upgrade --install bankapp ./ \\
-                  --namespace prod --create-namespace \\
+                  --namespace prod --create-namespace
                 """
             }
         }
+    }
 
+    post {
+        always {
+            echo 'Pipeline completed - cleaning up'
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
     }
 }
