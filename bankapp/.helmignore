@@ -22,5 +22,10 @@
 *.tmproj
 .vscode/
 *.jar
-.build/
-.target/
+build/
+target/
+.gradle/
+**/*.jar
+**/build/
+**/target/
+**/.gradle/

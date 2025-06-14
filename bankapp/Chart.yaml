@@ -5,34 +5,34 @@ version: 1.0.0
 dependencies:
   - name: accountservice
     version: 1.0.0
-    repository: file://charts/accountservice
+    repository: file://./charts/accountservice
   - name: blockerservice
     version: 1.0.0
-    repository: file://charts/blockerservice
+    repository: file://./charts/blockerservice
   - name: cashservice
     version: 1.0.0
-    repository: file://charts/cashservice
+    repository: file://./charts/cashservice
   - name: exchangeservice
     version: 1.0.0
-    repository: file://charts/exchangeservice
+    repository: file://./charts/exchangeservice
   - name: exchangegeneratorservice
     version: 1.0.0
-    repository: file://charts/exchangegeneratorservice
+    repository: file://./charts/exchangegeneratorservice
   - name: frontservice
     version: 1.0.0
-    repository: file://charts/frontservice
+    repository: file://./charts/frontservice
   - name: notificationservice
     version: 1.0.0
-    repository: file://charts/notificationservice
+    repository: file://./charts/notificationservice
   - name: transferservice
     version: 1.0.0
-    repository: file://charts/transferservice
+    repository: file://./charts/transferservice
   - name: mailhog
     version: 1.0.0
-    repository: file://charts/mailhog
+    repository: file://./charts/mailhog
   - name: keycloak
     version: 1.0.0
-    repository: file://charts/keycloak
+    repository: file://./charts/keycloak
   - name: postgresql
     version: 14.2.3
     repository: "https://charts.bitnami.com/bitnami"
