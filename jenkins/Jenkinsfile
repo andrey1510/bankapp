@@ -25,7 +25,8 @@ pipeline {
                     microservices.each { service ->
                         echo "Building and testing ${service}"
                         dir("${service}") {
-                            sh './gradlew clean test'
+                            sh 'chmod +x gradlew'
+                            sh './gradlew clean test --stacktrace'
                         }
                     }
                 }

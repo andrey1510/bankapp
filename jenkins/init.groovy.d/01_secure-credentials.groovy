@@ -11,8 +11,6 @@ def githubUsername = env['GITHUB_USERNAME']
 def githubToken = env['GITHUB_TOKEN']
 def ghcrToken = env['GHCR_TOKEN']
 def dockerRegistry = env['DOCKER_REGISTRY']
-def dockerHubUsername = env['DOCKER_HUB_USERNAME']
-def dockerHubPassword = env['DOCKER_HUB_PASSWORD']
 
 def store = Jenkins.instance.getExtensionList(
         'com.cloudbees.plugins.credentials.SystemCredentialsProvider'
@@ -50,26 +48,6 @@ if (ghcrToken) {
             Secret.fromString(ghcrToken)
     )
     store.addCredentials(Domain.global(), ghcrCred)
-}
-
-if (dockerHubUsername) {
-    println "--> Creating credential: docker hub creds"
-    def dockerHubUsernameCred = new StringCredentialsImpl(
-            CredentialsScope.GLOBAL,
-            "DOCKER_HUB_USERNAME",
-            "DOCKER_HUB_USERNAME token from ENV",
-            Secret.fromString(dockerHubUsername)
-    )
-
-    store.addCredentials(Domain.global(), dockerHubUsernameCred)
-
-    def dockerHubPasswordCred = new StringCredentialsImpl(
-            CredentialsScope.GLOBAL,
-            "DOCKER_HUB_PASSWORD",
-            "DOCKER_HUB_PASSWORD token from ENV",
-            Secret.fromString(dockerHubPassword)
-    )
-    store.addCredentials(Domain.global(), dockerHubPasswordCred)
 }
 
 if (dockerRegistry) {
