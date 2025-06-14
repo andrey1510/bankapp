@@ -33,6 +33,28 @@ pipeline {
             }
         }
 
+        stage('Build JARs') {
+            steps {
+                script {
+                    [
+                        'accountservice',
+                        'blockerservice',
+                        'cashservice',
+                        'frontservice',
+                        'exchangeservice',
+                        'exchangegeneratorservice',
+                        'notificationservice',
+                        'transferservice'
+                    ].each { service ->
+                        echo "Building JAR for ${service}"
+                        dir("${service}") {
+                            sh './gradlew build -x test'
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Build Docker images') {
             steps {
                 script {
