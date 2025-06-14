@@ -101,8 +101,32 @@ pipeline {
             }
         }
 
+        stage('Clean build artifacts') {
+            steps {
+                script {
+                    [
+                        'accountservice',
+                        'blockerservice',
+                        'cashservice',
+                        'frontservice',
+                        'exchangeservice',
+                        'exchangegeneratorservice',
+                        'notificationservice',
+                        'transferservice'
+                    ].each { service ->
+                        echo "Cleaning ${service}"
+                        dir("${service}") {
+                            sh './gradlew clean'
+                            sh 'rm -rf build/libs/*'
+                        }
+                    }
+                }
+            }
+        }
+
         stage('Deploy to TEST') {
             steps {
+                sh 'find . -name "*.jar" -delete'
                 sh """
                 helm dependency update .
                 helm upgrade --install bankapp ./ \\
