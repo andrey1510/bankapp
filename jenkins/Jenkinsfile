@@ -129,7 +129,7 @@ pipeline {
                 sh 'find . -name "*.jar" -delete'
                 sh """
                 helm dependency update .
-                helm upgrade --install bankapp ./ \\
+                helm upgrade --install bankapp bankapp/. \\
                   --namespace test --create-namespace
                 """
             }
@@ -145,7 +145,7 @@ pipeline {
             steps {
                 sh """
                 helm dependency update .
-                helm upgrade --install bankapp ./ \\
+                helm upgrade --install bankapp bankapp/. \\
                   --namespace prod --create-namespace
                 """
             }
