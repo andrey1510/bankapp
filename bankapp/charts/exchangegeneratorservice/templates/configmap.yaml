@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "exchangegeneratorservice.fullname" . }}-config
-  labels:
-    {{- include "exchangegeneratorservice.labels" . | nindent 4 }}
-data:
-  ISSUER_URI: {{ tpl .Values.global.uri.issuer_uri . | quote }}
-  EXCHANGESERVICE_API: {{ tpl .Values.global.uri.exchangeservice_api . | quote }}

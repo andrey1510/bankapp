@@ -1,8 +1,9 @@
 replicaCount: 1
 image:
-  repository: nginx
-  pullPolicy: IfNotPresent
+  repository: mailhog/mailhog
+  pullPolicy: Never
   tag: ""
 service:
   type: ClusterIP
   port: 8025
+  smtpport: 1025

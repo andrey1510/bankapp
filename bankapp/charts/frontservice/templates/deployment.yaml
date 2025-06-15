@@ -28,16 +28,19 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.global.ports.frontservice_port }}
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
-          envFrom:
-            - configMapRef:
-                name: {{ include "frontservice.fullname" . }}-config
           env:
-            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
-              value: http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.keycloak_port }}/realms/bankapp
-            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI
-              value: http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.keycloak_port }}/realms/bankapp/protocol/openid-connect/certs
+            - name: EXCHANGESERVICE_API
+              value: {{ tpl .Values.clients.exchangeservice . | quote }}
+            - name: ACCOUNTSERVICE_API
+              value: {{ tpl .Values.clients.accountservice . | quote }}
+            - name: CASHSERVICE_API
+              value: {{ tpl .Values.clients.cashservice . | quote }}
+            - name: TRANSFERSERVICE_API
+              value: {{ tpl .Values.clients.transferservice . | quote }}
+            - name: ISSUER_URI
+              value: {{ tpl .Values.keycloak.issuer . | quote }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

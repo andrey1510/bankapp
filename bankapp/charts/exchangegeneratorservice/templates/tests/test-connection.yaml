@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "exchangegeneratorservice.fullname" . }}:{{ .Values.global.ports.exchangegeneratorservice_port }}']
+      args: ['{{ include "exchangegeneratorservice.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never

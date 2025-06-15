@@ -16,5 +16,5 @@ spec:
         - name: mailhog
           image: mailhog/mailhog:latest
           ports:
-            - containerPort: {{ .Values.global.ports.mail_smtp_port }}
-            - containerPort: {{ .Values.global.ports.mail_http_port }}
+            - containerPort: {{ .Values.service.smtpport }}
+            - containerPort: {{ .Values.service.port }}

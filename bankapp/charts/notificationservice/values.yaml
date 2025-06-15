@@ -1,11 +1,18 @@
 replicaCount: 1
 image:
-  repository: notificationservice
-  tag: "1.0.0"
+  repository: ghcr.io/andrey1510/notificationservice
+  tag: 1
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
+  port: 8890
 database:
   url: "jdbc:postgresql://notificationdb-postgresql:5432/notificationdb"
   username: "login"
   password: "password"
+clients:
+  mailhog: "{{ .Release.Name }}-mailhog.{{ .Release.Namespace }}.svc.cluster.local"
+  port: "8025"
+keycloak:
+  issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
+  token: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp/protocol/openid-connect/certs"

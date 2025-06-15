@@ -7,9 +7,9 @@ spec:
     app: {{ include "mailhog.name" . }}
   ports:
     - name: smtp
-      port: {{ .Values.global.ports.mail_smtp_port }}
-      targetPort: {{ .Values.global.ports.mail_smtp_port }}
+      port: {{ .Values.service.smtpport }}
+      targetPort: {{ .Values.service.smtpport }}
     - name: http
-      port: {{ .Values.global.ports.mail_http_port }}
-      targetPort: {{ .Values.global.ports.mail_http_port }}
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
 

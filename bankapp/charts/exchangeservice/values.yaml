@@ -1,11 +1,15 @@
 replicaCount: 1
 image:
-  repository: exchangeservice
-  tag: "1.0.0"
+  repository: ghcr.io/andrey1510/exchangeservice
+  tag: 1
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
+  port: 8887
 database:
   url: "jdbc:postgresql://exchangedb-postgresql:5432/exchangedb"
   username: "login"
   password: "password"
+keycloak:
+  issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
+  token: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp/protocol/openid-connect/certs"

@@ -1,37 +1,3 @@
-global:
-  ports:
-    accountservice_port: 8881
-    blockerservice_port: 8882
-    cashservice_port: 8883
-    exchangegeneratorservice_port: 8886
-    exchangeservice_port: 8887
-    frontservice_port: 8888
-    notificationservice_port: 8890
-    transferservice_port: 8891
-    mail_smtp_port: 1025
-    mail_http_port: 8025
-    keycloak_port: 8080
-  uri:
-    accountservice_api: "http://{{ .Release.Name }}-accountservice.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.accountservice_port }}/api"
-    blockerservice_api: "http://{{ .Release.Name }}-blockerservice.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.blockerservice_port }}/api"
-    cashservice_api: "http://{{ .Release.Name }}-cashservice.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.cashservice_port }}/api"
-    exchangeservice_api: "http://{{ .Release.Name }}-exchangeservice.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.exchangeservice_port }}/api"
-    frontservice_api: "http://{{ .Release.Name }}-exchangeservice.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.frontservice_port }}/api"
-    transferservice_api: "http://{{ .Release.Name }}-transferservice.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.transferservice_port }}/api"
-    notificationservice_api: "http://{{ .Release.Name }}-notificationservice.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.notificationservice_port }}/api"
-    issuer_uri: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.keycloak_port }}/realms/bankapp"
-    mailhog: "{{ .Release.Name }}-mailhog.{{ .Release.Namespace }}.svc.cluster.local"
-
-ingress:
-  enabled: true
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-  hosts:
-    - host: bankapp.local
-      paths:
-        - path: /api(/|$)(.*)
-          pathType: Prefix
-
 accountdb:
   enabled: true
   image:
@@ -44,6 +10,9 @@ accountdb:
   primary:
     service:
       nodePort: 5554
+    persistence:
+      storageClass: "hostpath"
+      size: 1Gi
 
 notificationdb:
   enabled: true
@@ -57,6 +26,9 @@ notificationdb:
   primary:
     service:
       nodePort: 5555
+    persistence:
+      storageClass: "hostpath"
+      size: 1Gi
 
 exchangedb:
   enabled: true
@@ -70,4 +42,6 @@ exchangedb:
   primary:
     service:
       nodePort: 5558
-
+    persistence:
+      storageClass: "hostpath"
+      size: 1Gi

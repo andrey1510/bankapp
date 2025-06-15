@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "blockerservice.fullname" . }}:{{ .Values.global.ports.blockerservice_port }}']
+      args: ['{{ include "blockerservice.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never

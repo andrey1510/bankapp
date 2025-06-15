@@ -37,7 +37,7 @@ spec:
               service:
                 name: {{ include "frontservice.fullname" $ }}
                 port:
-                  number: {{ $.Values.global.ports.frontservice_port }}
+                  number: {{ $.Values.service.port }}
           {{- end }}
     {{- end }}
 {{- end }}

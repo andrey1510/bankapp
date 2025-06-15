@@ -11,7 +11,6 @@ def githubUsername = env['GITHUB_USERNAME']
 def githubToken = env['GITHUB_TOKEN']
 def ghcrToken = env['GHCR_TOKEN']
 def dockerRegistry = env['DOCKER_REGISTRY']
-def dbPassword = env['DB_PASSWORD']
 
 def store = Jenkins.instance.getExtensionList(
         'com.cloudbees.plugins.credentials.SystemCredentialsProvider'
