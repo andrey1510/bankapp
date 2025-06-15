@@ -62,15 +62,4 @@ if (dockerRegistry) {
     store.addCredentials(Domain.global(), registryCred)
 }
 
-if (dbPassword) {
-    println "--> Creating credential: DB_PASSWORD"
-    def dbCred = new StringCredentialsImpl(
-            CredentialsScope.GLOBAL,
-            "DB_PASSWORD",
-            "Database password from ENV",
-            Secret.fromString(dbPassword)
-    )
-    store.addCredentials(Domain.global(), dbCred)
-}
-
 println "--> Credential setup complete."

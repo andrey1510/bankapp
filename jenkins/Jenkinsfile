@@ -5,7 +5,6 @@ pipeline {
         DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
         GITHUB_USERNAME = credentials('GITHUB_USERNAME')
         IMAGE_TAG       = "${env.BUILD_NUMBER}"
-        DB_PASSWORD     = credentials('DB_PASSWORD')
     }
 
     stages {
@@ -18,8 +17,7 @@ pipeline {
                     sh """
                     helm dependency update .
                     helm upgrade --install bankapp . \\
-                      --namespace test --create-namespace \\
-                      --set global.databases.password=${DB_PASSWORD}
+                      --namespace test --create-namespace
                     """
                 }
             }

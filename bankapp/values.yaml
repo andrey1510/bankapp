@@ -21,8 +21,6 @@ global:
     notificationservice_api: "http://{{ .Release.Name }}-notificationservice.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.notificationservice_port }}/api"
     issuer_uri: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.ports.keycloak_port }}/realms/bankapp"
     mailhog: "{{ .Release.Name }}-mailhog.{{ .Release.Namespace }}.svc.cluster.local"
-  databases:
-    password: "password"
 
 ingress:
   enabled: true
@@ -42,7 +40,7 @@ accountdb:
   auth:
     database: accountdb
     username: login
-    password: {{ .Values.global.databases.password }}
+    password: password
   primary:
     service:
       nodePort: 5554
@@ -55,7 +53,7 @@ notificationdb:
   auth:
     database: notificationdb
     username: login
-    password: {{ .Values.global.databases.password }}
+    password: password
   primary:
     service:
       nodePort: 5555
@@ -68,7 +66,7 @@ exchangedb:
   auth:
     database: exchangedb
     username: login
-    password: {{ .Values.global.databases.password }}
+    password: password
   primary:
     service:
       nodePort: 5558
