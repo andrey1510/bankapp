@@ -5,28 +5,24 @@ __README__
 закрытия счетов, их пополнения и обналичивания, сервисами перевода денег между своими счетами, и на счета других 
 пользователей, а также виджетом с обновляющимися курсами валют.
 
-Использованный стек: Java SE 21, Spring Boot, Spring Security, JPA, PostgreSQL, Eureka Discovery Service, 
-Spring Gateway, Spring Cloud Config, Spring Retry, Keycloak, REST, Gradle, Lombok,
-Thymeleaf, JUnit 5, Mockito, Docker.
+Использованный стек: Java SE 21, Spring Boot, Spring Security, JPA, PostgreSQL, Spring Retry, Keycloak, REST, Gradle, Lombok,
+Thymeleaf, JUnit 5, Mockito, Docker, Kubernetes, Jenkins, Helm.
 
 Установка и запуск:
 -----------------------------------
 
 1) Склонируйте репозиторий.
 
-2) Запустите сборку приложения - с помощью IDE или в корневой директории репозитория командой:
-```
-   gradlew.bat build
-```
+2) На устройстве должны быть установлены и запущены Docker и Kubernetes. 
 
-3) Запустите приложение в Docker - с помощью IDE или в корневой директории репозитория командой:
-```
-   docker-compose up --build -d
-```
+3) Также нужно установить 
+и запустить Jenkins (директория jenkins в репозитории), для его установки нужно заполнить ```.env``` файл и 
+запустить прилагающийся ```docker-compose.yml```. Jenkins будет доступен по адресу: ``` http://localhost:8080 ```  и у 
+него автоматически запустится CI/CD-пайплайн.
 
-4) Приложение станет доступно по адресу:
+4) Приложение будет доступно по адресу:
 ```
-http://localhost:8888
+http://bankapp.local
 ```
 
 Функционал приложения:

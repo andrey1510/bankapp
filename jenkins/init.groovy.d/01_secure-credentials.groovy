@@ -11,6 +11,7 @@ def githubUsername = env['GITHUB_USERNAME']
 def githubToken = env['GITHUB_TOKEN']
 def ghcrToken = env['GHCR_TOKEN']
 def dockerRegistry = env['DOCKER_REGISTRY']
+def dbPassword = env['DB_PASSWORD']
 
 def store = Jenkins.instance.getExtensionList(
         'com.cloudbees.plugins.credentials.SystemCredentialsProvider'
@@ -59,6 +60,17 @@ if (dockerRegistry) {
             Secret.fromString(dockerRegistry)
     )
     store.addCredentials(Domain.global(), registryCred)
+}
+
+if (dbPassword) {
+    println "--> Creating credential: DB_PASSWORD"
+    def dbCred = new StringCredentialsImpl(
+            CredentialsScope.GLOBAL,
+            "DB_PASSWORD",
+            "Database password from ENV",
+            Secret.fromString(dbPassword)
+    )
+    store.addCredentials(Domain.global(), dbCred)
 }
 
 println "--> Credential setup complete."
