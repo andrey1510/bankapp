@@ -5,6 +5,7 @@ pipeline {
         DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
         GITHUB_USERNAME = credentials('GITHUB_USERNAME')
         IMAGE_TAG       = "${env.BUILD_NUMBER}"
+        DB_PASSWORD     = credentials('DB_PASSWORD')
     }
 
     stages {
