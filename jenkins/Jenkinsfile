@@ -18,7 +18,7 @@ pipeline {
                     helm dependency update .
                     helm upgrade --install bankapp . \\
                       --namespace test --create-namespace \\
-                      --set db.auth.password=${DB_PASSWORD}
+                      --set global.databases.password=${DB_PASSWORD}
                     """
                 }
             }
