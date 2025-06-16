@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/andrey1510/transferservice
-  tag: 1
+  repository: transferservice
+  tag: latest
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
@@ -13,4 +13,3 @@ clients:
   notificationservice: "http://{{ .Release.Name }}-notificationservice.{{ .Release.Namespace }}.svc.cluster.local:8890/api"
 keycloak:
   issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
-  token: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp/protocol/openid-connect/certs"

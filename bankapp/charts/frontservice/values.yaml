@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/andrey1510/frontservice
-  tag: 1
+  repository: frontservice
+  tag: latest
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
@@ -13,7 +13,6 @@ clients:
   transferservice: "http://{{ .Release.Name }}-transferservice.{{ .Release.Namespace }}.svc.cluster.local:8891/api"
 keycloak:
   issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
-  token: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp/protocol/openid-connect/certs"
 
 ingress:
   enabled: true

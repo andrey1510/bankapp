@@ -46,10 +46,14 @@ spec:
               value: {{ tpl .Values.clients.notificationservice . | quote }}
             - name: ISSUER_URI
               value: {{ tpl .Values.keycloak.issuer . | quote }}
-          {{- with .Values.livenessProbe }}
           livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 15
           {{- with .Values.readinessProbe }}
           readinessProbe:
             {{- toYaml . | nindent 12 }}

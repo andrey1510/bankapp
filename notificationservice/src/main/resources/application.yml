@@ -19,9 +19,16 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${ISSUER_URI}
-
   mail:
     host: ${MAILHOG}
     port: ${MAIL_SMTP_PORT}
     username:
     password:
+management:
+  endpoint:
+    health:
+      access: unrestricted
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh

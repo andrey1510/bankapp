@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/andrey1510/exchangegeneratorservice
-  tag: 1
+  repository: exchangegeneratorservice
+  tag: latest
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
@@ -10,4 +10,3 @@ clients:
   exchangeservice: "http://{{ .Release.Name }}-exchangeservice.{{ .Release.Namespace }}.svc.cluster.local:8887/api"
 keycloak:
   issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
-  token: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp/protocol/openid-connect/certs"

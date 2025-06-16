@@ -1,11 +1,10 @@
 replicaCount: 1
 image:
-  repository: ghcr.io/andrey1510/blockerservice
-  tag: 1
+  repository: blockerservice
+  tag: latest
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
   port: 8882
 keycloak:
   issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
-  token: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp/protocol/openid-connect/certs"
