@@ -40,7 +40,11 @@ public class ExchangeClient {
                 new CurrencyRate("Юань", "CNY", generateRate(10, 5), LocalDateTime.now())
             );
 
-            restTemplate.postForObject(exchangeServiceUrl, rates, Void.class);
+            restTemplate.postForObject(
+                String.format("%s/generation", exchangeServiceUrl),
+                rates,
+                Void.class
+            );
 
             return ResponseEntity.accepted().build();
 

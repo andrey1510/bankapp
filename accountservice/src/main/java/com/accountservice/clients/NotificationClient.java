@@ -57,7 +57,7 @@ public class NotificationClient {
             currency);
 
         restTemplate.postForObject(
-            notificationServiceUrl,
+            String.format("%s/notifications", notificationServiceUrl),
             new NotificationRequestDto(email, message),
             Void.class
         );

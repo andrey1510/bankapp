@@ -1,0 +1,14 @@
+replicaCount: 1
+image:
+  repository: exchangeservice
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 8887
+database:
+  url: "jdbc:postgresql://{{ .Release.Name }}-exchangedb.{{ .Release.Namespace }}.svc.cluster.local:5432/exchangedb"
+  username: "login"
+  password: "password"
+keycloak:
+  issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"

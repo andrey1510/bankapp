@@ -1,0 +1,26 @@
+replicaCount: 1
+image:
+  repository: frontservice
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 8888
+clients:
+  accountservice: "http://{{ .Release.Name }}-accountservice.{{ .Release.Namespace }}.svc.cluster.local:8881/api"
+  cashservice: "http://{{ .Release.Name }}-cashservice.{{ .Release.Namespace }}.svc.cluster.local:8883/api"
+  exchangeservice: "http://{{ .Release.Name }}-exchangeservice.{{ .Release.Namespace }}.svc.cluster.local:8887/api"
+  transferservice: "http://{{ .Release.Name }}-transferservice.{{ .Release.Namespace }}.svc.cluster.local:8891/api"
+keycloak:
+  issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: { }
+  hosts:
+    - host: bankapp.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: [ ]

@@ -29,7 +29,7 @@ public class AccountClient {
     )
     public void sendAccountRequest(Long accountId, BigDecimal amount) {
         restTemplate.postForObject(
-            accountServiceUrl + "/cash-update",
+            String.format("%s/accounts/cash-update", accountServiceUrl),
             new AccountBalanceChangeDto(accountId, amount),
             Void.class
         );

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: frontservice
+type: application
+description: frontservice chart
+version: 1.0.0
+appVersion: "1.0.0"

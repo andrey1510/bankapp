@@ -1,0 +1,176 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
+        GITHUB_USERNAME = credentials('GITHUB_USERNAME')
+        IMAGE_TAG       = "${env.BUILD_NUMBER}"
+    }
+
+    stages {
+
+
+        stage('Build and execute tests') {
+            steps {
+                script {
+                    def microservices = [
+                        'accountservice',
+                        'blockerservice',
+                        'cashservice',
+                        'frontservice',
+                        'exchangeservice',
+                        'exchangegeneratorservice',
+                        'notificationservice',
+                        'transferservice'
+                    ]
+
+                    microservices.each { service ->
+                        echo "Building and testing ${service}"
+                        dir("${service}") {
+                            sh 'chmod +x gradlew'
+                            sh './gradlew clean test'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build JARs') {
+            steps {
+                script {
+                    [
+                        'accountservice',
+                        'blockerservice',
+                        'cashservice',
+                        'frontservice',
+                        'exchangeservice',
+                        'exchangegeneratorservice',
+                        'notificationservice',
+                        'transferservice'
+                    ].each { service ->
+                        echo "Building JAR for ${service}"
+                        dir("${service}") {
+                            sh './gradlew build -x test'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker images') {
+            steps {
+                script {
+                    [
+                        'accountservice',
+                        'blockerservice',
+                        'cashservice',
+                        'frontservice',
+                        'exchangeservice',
+                        'exchangegeneratorservice',
+                        'notificationservice',
+                        'transferservice'
+                    ].each { service ->
+                        echo "Building Docker image for ${service}"
+                        sh "docker build -t ${DOCKER_REGISTRY}/${service}:${IMAGE_TAG} ./${service}"
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker images') {
+            steps {
+                withCredentials([string(credentialsId: 'GHCR_TOKEN', variable: 'GHCR_TOKEN')]) {
+                    sh """
+                    echo \$GHCR_TOKEN | docker login ghcr.io -u ${GITHUB_USERNAME} --password-stdin
+                    """
+
+                    script {
+                        [
+                            'accountservice',
+                            'blockerservice',
+                            'cashservice',
+                            'frontservice',
+                            'exchangeservice',
+                            'exchangegeneratorservice',
+                            'notificationservice',
+                            'transferservice'
+                        ].each { service ->
+                            echo "Pushing Docker image for ${service}"
+                            sh "docker push ${DOCKER_REGISTRY}/${service}:${IMAGE_TAG}"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy to TEST') {
+            steps {
+                dir('bankapp') {
+                     def servicesToRename = [
+                        'accountservice',
+                        'blockerservice',
+                        'cashservice',
+                        'frontservice',
+                        'exchangeservice',
+                        'exchangegeneratorservice',
+                        'notificationservice',
+                        'transferservice'
+                    ]
+
+                    script {
+                        servicesToRename.each { service ->
+                            sh """
+                            helm upgrade --install ${service} . \\
+                              --namespace test --create-namespace \\
+                              --set ${service}.image.repository=${DOCKER_REGISTRY}/${service} \\
+                              --set ${service}.image.tag=${IMAGE_TAG}
+                            """
+                        }
+                    }
+
+                    sh """
+                    helm dependency update .
+                    helm upgrade --install bankapp . \\
+                      --namespace test --create-namespace
+                    """
+                }
+            }
+        }
+
+        stage('Manual approval for PROD') {
+            steps {
+                input message: 'Confirm manually to deploy to PROD environment.', ok: 'Confirm'
+            }
+        }
+
+        stage('Deploy to PROD') {
+            steps {
+                dir('bankapp') {
+                    sh """
+                    helm dependency update .
+                    helm upgrade --install bankapp . \\
+                      --namespace prod --create-namespace
+                    """
+                }
+            }
+        }
+
+
+    }
+
+
+    post {
+        always {
+            echo 'Pipeline completed - cleaning up'
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+
+
+
+}

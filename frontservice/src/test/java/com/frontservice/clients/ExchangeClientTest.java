@@ -28,13 +28,11 @@ class ExchangeClientTest {
     @InjectMocks
     private ExchangeClient exchangeClient;
 
-    private final String currenciesUrl = "http://exchange-service/currencies";
-    private final String ratesUrl = "http://exchange-service/rates";
+    private final String exchangeUrl = "http://exchange-service";
 
     @BeforeEach
     void setUp() {
-        exchangeClient.currenciesUrl = currenciesUrl;
-        exchangeClient.ratesUrl = ratesUrl;
+        exchangeClient.exchangeUrl = exchangeUrl;
     }
 
     @Test
@@ -46,7 +44,7 @@ class ExchangeClientTest {
         CurrenciesDto expectedResponse = new CurrenciesDto(expectedCurrencies);
 
         when(restTemplate.getForEntity(
-            eq(currenciesUrl),
+            eq(exchangeUrl + "/currencies"),
             eq(CurrenciesDto.class)
         )).thenReturn(ResponseEntity.ok(expectedResponse));
 
@@ -64,7 +62,7 @@ class ExchangeClientTest {
         RatesDto expectedResponse = new RatesDto(expectedRates);
 
         when(restTemplate.getForEntity(
-            eq(ratesUrl),
+            eq(exchangeUrl + "/rates"),
             eq(RatesDto.class)
         )).thenReturn(ResponseEntity.ok(expectedResponse));
 
@@ -78,7 +76,7 @@ class ExchangeClientTest {
         RatesDto expectedResponse = new RatesDto(List.of());
 
         when(restTemplate.getForEntity(
-            eq(ratesUrl),
+            eq(exchangeUrl + "/rates"),
             eq(RatesDto.class)
         )).thenReturn(ResponseEntity.ok(expectedResponse));
 

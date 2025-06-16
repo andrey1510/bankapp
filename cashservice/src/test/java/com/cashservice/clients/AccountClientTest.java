@@ -41,7 +41,7 @@ public class AccountClientTest {
     void sendAccountRequest_shouldCallRestTemplateWithCorrectUrl() {
         accountClient.sendAccountRequest(testAccountId, testAmount);
         verify(restTemplate).postForObject(
-            eq("http://localhost:8080/cash-update"),
+            eq("http://localhost:8080/accounts/cash-update"),
             eq(expectedDto),
             eq(Void.class)
         );

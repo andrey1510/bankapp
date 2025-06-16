@@ -17,7 +17,7 @@ import java.net.SocketTimeoutException;
 @RequiredArgsConstructor
 public class TransferClient {
 
-    @Value("${transferservice.url.transfer}")
+    @Value("${transferservice.url}")
     protected String transferserviceUrl;
 
     @Qualifier("transferRestTemplate")
@@ -28,7 +28,7 @@ public class TransferClient {
     )
     public void sendTransferRequest(TransferRequestDto transferRequest) {
         restTemplate.postForEntity(
-            transferserviceUrl,
+            String.format("%s/transfers/transfer", transferserviceUrl),
             transferRequest,
             Void.class
         );

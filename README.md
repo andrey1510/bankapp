@@ -5,48 +5,69 @@ __README__
 закрытия счетов, их пополнения и обналичивания, сервисами перевода денег между своими счетами, и на счета других 
 пользователей, а также виджетом с обновляющимися курсами валют.
 
-Использованный стек: Java SE 21, Spring Boot, Spring Security, JPA, PostgreSQL, Eureka Discovery Service, 
-Spring Gateway, Spring Cloud Config, Spring Retry, Keycloak, REST, Gradle, Lombok,
-Thymeleaf, JUnit 5, Mockito, Docker.
+Использованный стек: Java SE 21, Spring Boot, Spring Security, JPA, PostgreSQL, Spring Retry, Keycloak, REST, Gradle, Lombok,
+Thymeleaf, JUnit 5, Mockito, Docker, Kubernetes, Jenkins, Helm.
 
 Установка и запуск:
 -----------------------------------
 
-1) Склонируйте репозиторий.
+**1.** Склонируйте репозиторий.
 
-2) Запустите сборку приложения - с помощью IDE или в корневой директории репозитория командой:
+**2.** На устройстве должны быть установлены Docker, Kubernetes и Helm. 
+
+**3.1** Для автоматического развертывания приложения с помощью Jenkins, нужно установить и запустить Jenkins 
+(директория ```jenkins``` в репозитории). Для этого нужно заполнить файл ```.env``` и файл конфигурации для подключения 
+Jenkins к Kubernetes (файл```config``` в директории ```jenkins/config``` ). Затем нужно запустить  ```docker-compose.yml``` в
+директории ```jenkins```. Jenkins будет доступен по адресу: ``` http://localhost:8080 ```  и автоматически запустит 
+CI/CD-пайплайн.
+
+**3.2** Для ручной установки нужно:
+
+- Запустить сборку приложения с помощью IDE или в корневой директории репозитория командой:  ```gradlew.bat build```.
+
+- Запустить сборку образов в корневой директории репозитория командами:
 ```
-   gradlew.bat build
+    docker build -t accountservice:latest ./accountservice
+    docker build -t blockerservice:latest ./blockerservice
+    docker build -t cashservice:latest ./blockerservice    
+    docker build -t exchangeservice:latest ./exchangeservice
+    docker build -t exchangegeneratorservice:latest ./exchangegeneratorservice
+    docker build -t frontservice:latest ./frontservice   
+    docker build -t notificationservice:latest ./notificationservice
+    docker build -t transferservice:latest ./transferservice
 ```
 
-3) Запустите приложение в Docker - с помощью IDE или в корневой директории репозитория командой:
-```
-   docker-compose up --build -d
-```
+- Запустить приложение в Kubernetes в корневой директории репозитория командой ```helm dependency update ./bankapp``` и  
+затем командой ```helm install bankapp ./bankapp```.
 
-4) Приложение станет доступно по адресу:
-```
-http://localhost:8888
-```
+**4.** Приложение будет доступно по адресу: ```http://bankapp.local```
+
+Для этого в Kubernetes должен быть установлен Ingress-контроллер 
+(```kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml``` ), 
+а в файл ```hosts``` в ```Windows\System32\drivers\etc``` нужно добавить строку ```127.0.0.1 bankapp.local```.
+
+Также можно запустить команду ```kubectl port-forward svc/bankapp-frontservice 8888:8888```, тогда приложение будет 
+доступно на ``` http://localhost:8888 ```
+
 
 Функционал приложения:
 ------------------------------------------
 
 **Регистрация приложении**
 
-``` http://localhost:8888 ``` автоматически перенаправляет на ``` http://localhost:8888/login ```. На этой странице 
-нужно начать на кнопку "Регистрация", чтобы перейти на ``` http://localhost:8888/signup ```. На этой странице 
+``` http://bankapp.local ``` автоматически перенаправляет на ``` http://bankapp.local/login ```. На этой странице 
+нужно нажать на кнопку "Регистрация", чтобы перейти на ``` http://bankapp.local/signup ```. На этой странице 
 нужно заполнить форму и отправить форму с данными (логин, имя, пароль, дата рождения, email). 
 
 Регистрация невозможна, если уже есть пользователь с таким логином или email, если пользователю нет 18 лет, 
 если пароль не совпадает, если указан email неправильного формата. В таком случае будет выдано сообщение об ошибке. 
 
-В случае успешной регистрации сработает перенаправление на ``` http://localhost:8888/login ```.
+В случае успешной регистрации сработает перенаправление на ``` http://bankapp.local/login ```.
 
 **Авторизация в приложении**
 
-На странице ``` http://localhost:8888/login ``` нужно заполнить логин и пароль. В случае успешной авторизации 
-произойдет перенаправление на ``` http://localhost:8888/main ```. Это страница личного кабинета, доступная только 
+На странице ``` http://bankapp.local/login ``` нужно заполнить логин и пароль. В случае успешной авторизации 
+произойдет перенаправление на ``` http://bankapp.local/main ```. Это страница личного кабинета, доступная только 
 авторизированному пользователю. Разлогиниться можно с помощью кнопки "Выйти".
 
 **Редактирование профиля**
@@ -83,7 +104,7 @@ http://localhost:8888
 
 В приложении реализованы уведомления. После блокирования операции или успешного перевода, 
 пользователю придет уведомление на почту. В настоящее время в приложении подключен демонстрационный почтовый 
-сервер *Mailhog*, у которого можно посмотреть отправленные письма на ``` http://localhost:8025/ ```.
+сервер *Mailhog*.
 
 **Виджет валют**
 

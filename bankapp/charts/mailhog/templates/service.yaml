@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mailhog.fullname" . }}
+spec:
+  selector:
+    app: {{ include "mailhog.name" . }}
+  ports:
+    - name: smtp
+      port: {{ .Values.service.smtpport }}
+      targetPort: {{ .Values.service.smtpport }}
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+

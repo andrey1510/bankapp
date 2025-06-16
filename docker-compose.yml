@@ -15,12 +15,6 @@ services:
     ports:
       - 8881:8881
     depends_on:
-      gatewayservice:
-        condition: service_healthy
-      eurekaservice:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
       accountdb:
         condition: service_started
     healthcheck:
@@ -43,13 +37,6 @@ services:
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
       MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
       MANAGEMENT_HEALTH_EUREKA_ENABLED: true
-    depends_on:
-      gatewayservice:
-        condition: service_healthy
-      eurekaservice:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8882/actuator/health"]
       interval: 10s
@@ -70,54 +57,8 @@ services:
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
       MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
       MANAGEMENT_HEALTH_EUREKA_ENABLED: true
-    depends_on:
-      gatewayservice:
-        condition: service_healthy
-      eurekaservice:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8883/actuator/health"]
-      interval: 10s
-      timeout: 8s
-      retries: 30
-    restart: unless-stopped
-    networks:
-      - bankapp-network
-
-  configservice:
-    container_name: configservice
-    build:
-      context: ./configservice
-      dockerfile: Dockerfile
-    ports:
-      - 8884:8884
-    environment:
-      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
-      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
-      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8884/actuator/health"]
-      interval: 10s
-      timeout: 8s
-      retries: 30
-    restart: unless-stopped
-    networks:
-      - bankapp-network
-
-  eurekaservice:
-    container_name: eurekaservice
-    build:
-      context: ./eurekaservice
-      dockerfile: Dockerfile
-    ports:
-      - 8885:8885
-    depends_on:
-      configservice:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8885/actuator/health"]
       interval: 10s
       timeout: 8s
       retries: 30
@@ -137,12 +78,6 @@ services:
       MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
       MANAGEMENT_HEALTH_EUREKA_ENABLED: true
     depends_on:
-      gatewayservice:
-        condition: service_healthy
-      eurekaservice:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
       exchangeservice:
         condition: service_healthy
     healthcheck:
@@ -169,12 +104,6 @@ services:
     ports:
       - 8887:8887
     depends_on:
-      gatewayservice:
-        condition: service_healthy
-      eurekaservice:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
       exchangedb:
         condition: service_started
     healthcheck:
@@ -197,40 +126,8 @@ services:
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
       MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
       MANAGEMENT_HEALTH_EUREKA_ENABLED: true
-    depends_on:
-      gatewayservice:
-        condition: service_healthy
-      eurekaservice:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
-      interval: 10s
-      timeout: 8s
-      retries: 30
-    restart: unless-stopped
-    networks:
-      - bankapp-network
-
-  gatewayservice:
-    container_name: gatewayservice
-    build:
-      context: ./gatewayservice
-      dockerfile: Dockerfile
-    ports:
-      - 8889:8889
-    environment:
-      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
-      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
-      MANAGEMENT_HEALTH_EUREKA_ENABLED: true
-    depends_on:
-      eurekaservice:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8889/actuator/health"]
       interval: 10s
       timeout: 8s
       retries: 30
@@ -253,12 +150,6 @@ services:
     ports:
       - 8890:8890
     depends_on:
-      gatewayservice:
-        condition: service_healthy
-      eurekaservice:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
       notificationdb:
         condition: service_started
     healthcheck:
@@ -281,13 +172,6 @@ services:
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
       MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: always
       MANAGEMENT_HEALTH_EUREKA_ENABLED: true
-    depends_on:
-      gatewayservice:
-        condition: service_healthy
-      eurekaservice:
-        condition: service_healthy
-      configservice:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8891/actuator/health"]
       interval: 10s

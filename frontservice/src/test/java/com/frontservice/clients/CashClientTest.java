@@ -22,7 +22,7 @@ class CashClientTest {
     @InjectMocks
     private CashClient cashClient;
 
-    private final String cashServiceUrl = "http://cash-service/operation";
+    private final String cashServiceUrl = "http://cash-service";
     private final CashRequestDto testRequest = new CashRequestDto(
         "user@example.com",
         12345L,
@@ -49,7 +49,7 @@ class CashClientTest {
         cashClient.sendCashRequest(depositRequest);
 
         verify(restTemplate).postForEntity(
-            eq(cashServiceUrl),
+            eq(cashServiceUrl + "/cash/operation"),
             eq(depositRequest),
             eq(Void.class)
         );
@@ -68,7 +68,7 @@ class CashClientTest {
         cashClient.sendCashRequest(withdrawalRequest);
 
         verify(restTemplate).postForEntity(
-            eq(cashServiceUrl),
+            eq(cashServiceUrl + "/cash/operation"),
             eq(withdrawalRequest),
             eq(Void.class)
         );
@@ -87,7 +87,7 @@ class CashClientTest {
         cashClient.sendCashRequest(negativeAmountRequest);
 
         verify(restTemplate).postForEntity(
-            eq(cashServiceUrl),
+            eq(cashServiceUrl + "/cash/operation"),
             eq(negativeAmountRequest),
             eq(Void.class)
         );
@@ -106,7 +106,7 @@ class CashClientTest {
         cashClient.sendCashRequest(zeroAmountRequest);
 
         verify(restTemplate).postForEntity(
-            eq(cashServiceUrl),
+            eq(cashServiceUrl + "/cash/operation"),
             eq(zeroAmountRequest),
             eq(Void.class)
         );

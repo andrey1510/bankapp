@@ -1,0 +1,47 @@
+accountdb:
+  enabled: true
+  image:
+    repository: bitnami/postgresql
+    tag: 14
+  auth:
+    database: accountdb
+    username: login
+    password: password
+  primary:
+    service:
+      nodePort: 5554
+    persistence:
+      storageClass: "hostpath"
+      size: 1Gi
+
+notificationdb:
+  enabled: true
+  image:
+    repository: bitnami/postgresql
+    tag: 14
+  auth:
+    database: notificationdb
+    username: login
+    password: password
+  primary:
+    service:
+      nodePort: 5555
+    persistence:
+      storageClass: "hostpath"
+      size: 1Gi
+
+exchangedb:
+  enabled: true
+  image:
+    repository: bitnami/postgresql
+    tag: 14
+  auth:
+    database: exchangedb
+    username: login
+    password: password
+  primary:
+    service:
+      nodePort: 5558
+    persistence:
+      storageClass: "hostpath"
+      size: 1Gi

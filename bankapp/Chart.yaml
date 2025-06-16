@@ -1,0 +1,58 @@
+apiVersion: v2
+name: bankapp
+type: application
+description: Umbrella chart
+version: 1.0.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: accountservice
+    version: 1.0.0
+    repository: file://./charts/accountservice
+  - name: blockerservice
+    version: 1.0.0
+    repository: file://./charts/blockerservice
+  - name: cashservice
+    version: 1.0.0
+    repository: file://./charts/cashservice
+  - name: exchangeservice
+    version: 1.0.0
+    repository: file://./charts/exchangeservice
+  - name: exchangegeneratorservice
+    version: 1.0.0
+    repository: file://./charts/exchangegeneratorservice
+  - name: frontservice
+    version: 1.0.0
+    repository: file://./charts/frontservice
+  - name: notificationservice
+    version: 1.0.0
+    repository: file://./charts/notificationservice
+  - name: transferservice
+    version: 1.0.0
+    repository: file://./charts/transferservice
+  - name: mailhog
+    version: 1.0.0
+    repository: file://./charts/mailhog
+  - name: keycloak
+    version: 1.0.0
+    repository: file://./charts/keycloak
+  - name: postgresql
+    version: 14.2.3
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: accountdb
+    condition: accountdb.enabled
+  - name: postgresql
+    version: 14.2.3
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: notificationdb
+    condition: notificationdb.enabled
+  - name: postgresql
+    version: 14.2.3
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: exchangedb
+    condition: exchangedb.enabled
+
+
+
+
+

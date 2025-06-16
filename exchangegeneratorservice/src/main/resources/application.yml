@@ -4,5 +4,20 @@ server:
 spring:
   application:
     name: exchangegeneratorservice
-  config:
-    import: "configserver:http://configservice:8884"
+  security:
+    oauth2:
+      client:
+        registration:
+          exchange-generator:
+            client-id: exchangegeneratorservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: exchangeservice.post
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: ${ISSUER_URI}/protocol/openid-connect/token
+            issuer-uri: ${ISSUER_URI}
+
+exchangeservice:
+  url: ${EXCHANGESERVICE_API}

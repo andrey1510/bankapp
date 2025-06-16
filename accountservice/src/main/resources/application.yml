@@ -4,7 +4,34 @@ server:
 spring:
   application:
     name: accountservice
-  config:
-    import: "configserver:http://configservice:8884"
-  profiles:
-    active: default
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${ISSUER_URI}
+      client:
+        registration:
+          notification-service:
+            client-id: accountservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: notificationservice.post
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: ${ISSUER_URI}/protocol/openid-connect/token
+            issuer-uri: ${ISSUER_URI}
+
+
+notificationservice:
+  url: ${NOTIFICATIONSERVICE_API}

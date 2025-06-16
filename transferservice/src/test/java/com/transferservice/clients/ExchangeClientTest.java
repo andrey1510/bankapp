@@ -44,7 +44,7 @@ class ExchangeClientTest {
         exchangeClient.getConversionRate(conversionRequest);
 
         verify(restTemplate).postForObject(
-            "http://exchange-service/conversion",
+            "http://exchange-service/rates/conversion",
             conversionRequest,
             ConversionRateDto.class
         );

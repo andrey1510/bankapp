@@ -33,7 +33,7 @@ class BlockerClientTest {
 
     @BeforeEach
     void setUp() {
-        blockerClient.baseUrl = "http://blocker-service";
+        blockerClient.blockerUrl = "http://blocker-service";
         transferRequest = new TransferRequestDto(
             "user@example.com",
             1L,
@@ -53,7 +53,7 @@ class BlockerClientTest {
         blockerClient.checkTransferOperation(transferRequest);
 
         verify(restTemplate).postForObject(
-            "http://blocker-service/transfer",
+            "http://blocker-service/fraud-check/transfer",
             transferRequest,
             SuspicionOperationDto.class
         );

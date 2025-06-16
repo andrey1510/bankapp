@@ -1,0 +1,19 @@
+replicaCount: 1
+image:
+  repository: accountservice
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 8881
+database:
+  url: "jdbc:postgresql://{{ .Release.Name }}-accountdb.{{ .Release.Namespace }}.svc.cluster.local:5432/accountdb"
+  username: "login"
+  password: "password"
+clients:
+  notificationservice: "http://{{ .Release.Name }}-notificationservice.{{ .Release.Namespace }}.svc.cluster.local:8890/api"
+keycloak:
+  issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
+
+
+

@@ -25,7 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountsClient {
 
-    @Value("${accountservice.url.users}")
+    @Value("${accountservice.url}")
     protected String usersUrl;
 
     @Qualifier("accountRestTemplate")
@@ -36,7 +36,7 @@ public class AccountsClient {
     )
     public ResponseEntity<Void> sendAuthRequest(LoginPasswordDto dto) {
         return restTemplate.postForEntity(
-            usersUrl + "/login",
+            String.format("%s/users/login", usersUrl),
             dto,
             Void.class
         );
@@ -47,7 +47,7 @@ public class AccountsClient {
     )
     public UserInfoDto getUserInfoDto(String login) {
         return restTemplate.getForEntity(
-            usersUrl + "/user-info?login={login}",
+            String.format("%s/users/user-info?login={login}", usersUrl),
             UserInfoDto.class,
             login
         ).getBody();
@@ -58,7 +58,7 @@ public class AccountsClient {
     )
     public AllUsersInfoExceptCurrentDto getAllUsersInfoExceptCurrentDto(String login) {
         return restTemplate.getForEntity(
-            usersUrl + "/users-except-current?login={login}",
+            String.format("%s/users/users-except-current?login={login}", usersUrl),
             AllUsersInfoExceptCurrentDto.class,
             login
         ).getBody();
@@ -69,7 +69,7 @@ public class AccountsClient {
     )
     public UserAccountsDto getUserAccountsDto(String login) {
         return restTemplate.getForEntity(
-            usersUrl + "/accounts-info?login={login}",
+            String.format("%s/users/accounts-info?login={login}", usersUrl),
             UserAccountsDto.class,
             login
         ).getBody();
@@ -80,7 +80,7 @@ public class AccountsClient {
     )
     public void sendUserUpdateRequest(UserUpdateDto dto) {
         restTemplate.postForEntity(
-            usersUrl + "/edit-user",
+            String.format("%s/users/edit-user", usersUrl),
             dto,
             Void.class
         );
@@ -91,7 +91,7 @@ public class AccountsClient {
     )
     public void sendAccountsUpdateRequest(String login, List<AccountInfoDto> updatedAccounts) {
         restTemplate.postForEntity(
-            usersUrl + "/edit-accounts",
+            String.format("%s/users/edit-accounts", usersUrl),
             new UserAccountsDto(login, null, null, updatedAccounts),
             Void.class
         );
@@ -102,7 +102,7 @@ public class AccountsClient {
     )
     public void sendPasswordChangeRequest(String password, String login) {
         restTemplate.postForEntity(
-            usersUrl + "/change-password",
+            String.format("%s/users/change-password", usersUrl),
             new LoginPasswordDto(login, password),
             Void.class
         );
@@ -113,7 +113,7 @@ public class AccountsClient {
     )
     public void sendSignupRequest(UserDto dto) {
         restTemplate.postForEntity(
-            usersUrl + "/signup",
+            String.format("%s/users/signup", usersUrl),
             dto,
             Void.class
         );

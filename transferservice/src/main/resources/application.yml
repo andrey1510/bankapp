@@ -4,7 +4,50 @@ server:
 spring:
   application:
     name: transferservice
-  config:
-    import: "configserver:http://configservice:8884"
-  profiles:
-    active: default
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${ISSUER_URI}
+      client:
+        registration:
+          account-service:
+            client-id: transferservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: accountservice.post
+            provider: keycloak
+          blocker-service:
+            client-id: transferservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: blockerservice.post
+            provider: keycloak
+          notification-service:
+            client-id: transferservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: notificationservice.post
+            provider: keycloak
+          exchange-service:
+            client-id: transferservice
+            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
+            authorization-grant-type: client_credentials
+            scope: exchangeservice.post
+            provider: keycloak
+        provider:
+          keycloak:
+            token-uri: ${ISSUER_URI}/protocol/openid-connect/token
+            issuer-uri: ${ISSUER_URI}
+
+exchangeservice:
+  url: ${EXCHANGESERVICE_API}
+
+accountservice:
+  url: ${ACCOUNTSERVICE_API}
+
+blockerservice:
+  url: ${BLOCKERSERVICE_API}
+
+notificationservice:
+  url: ${NOTIFICATIONSERVICE_API}
