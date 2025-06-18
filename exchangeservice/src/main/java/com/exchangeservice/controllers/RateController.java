@@ -2,7 +2,7 @@ package com.exchangeservice.controllers;
 
 import com.exchangeservice.dto.ConversionRateDto;
 import com.exchangeservice.dto.ConversionRateRequestDto;
-import com.exchangeservice.dto.CurrencyRate;
+import com.exchangeservice.dto.CurrencyRateDto;
 import com.exchangeservice.dto.ExchangeRate;
 import com.exchangeservice.dto.CurrenciesDto;
 import com.exchangeservice.dto.RatesDto;
@@ -27,14 +27,6 @@ import java.util.List;
 public class RateController {
 
     private final RateService rateService;
-
-    @PostMapping("/generation")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @PreAuthorize("hasAuthority('SCOPE_exchangeservice.post')")
-    public ResponseEntity<Void> receiveRates(@RequestBody List<CurrencyRate> rates) {
-        rateService.saveRates(rates);
-        return ResponseEntity.ok().build();
-    }
 
     @GetMapping("/rates")
     @PreAuthorize("hasAuthority('SCOPE_exchangeservice.get')")

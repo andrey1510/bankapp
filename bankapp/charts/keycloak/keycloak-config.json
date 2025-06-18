@@ -28,21 +28,7 @@
       "publicClient": false,
       "authorizationServicesEnabled": true,
       "defaultClientScopes": ["openid", "profile"],
-      "optionalClientScopes": ["notificationservice.post", "blockerservice.post", "accountservice.post"]
-    },
-    {
-      "clientId": "exchangegeneratorservice",
-      "secret": "XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm",
-      "redirectUris": [],
-      "webOrigins": [],
-      "directAccessGrantsEnabled": true,
-      "standardFlowEnabled": true,
-      "implicitFlowEnabled": true,
-      "serviceAccountsEnabled": true,
-      "publicClient": false,
-      "authorizationServicesEnabled": true,
-      "defaultClientScopes": ["openid", "profile"],
-      "optionalClientScopes": ["exchangeservice.post"]
+      "optionalClientScopes": ["blockerservice.post", "accountservice.post"]
     },
     {
       "clientId": "transferservice",
@@ -56,7 +42,7 @@
       "publicClient": false,
       "authorizationServicesEnabled": true,
       "defaultClientScopes": ["openid", "profile"],
-      "optionalClientScopes": ["exchangeservice.post", "accountservice.post", "blockerservice.post", "notificationservice.post"]
+      "optionalClientScopes": ["exchangeservice.post", "accountservice.post", "blockerservice.post"]
     },
     {
       "clientId": "frontservice",
@@ -124,14 +110,6 @@
     },
     {
       "name": "blockerservice.post",
-      "protocol": "openid-connect",
-      "attributes": {
-        "include.in.token.scope": "true",
-        "display.on.consent.screen": "false"
-      }
-    },
-    {
-      "name": "notificationservice.post",
       "protocol": "openid-connect",
       "attributes": {
         "include.in.token.scope": "true",

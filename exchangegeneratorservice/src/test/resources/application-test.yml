@@ -4,24 +4,7 @@ server:
 spring:
   application:
     name: exchangegeneratorservice
-  security:
-    oauth2:
-      client:
-        registration:
-          exchange-generator:
-            client-id: exchangegeneratorservice
-            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
-            authorization-grant-type: client_credentials
-            scope: exchangeservice.post
-            provider: keycloak
-        provider:
-          keycloak:
-            token-uri: http://localhost:8892/realms/bankapp/protocol/openid-connect/token
-            issuer-uri: http://localhost:8892/realms/bankapp
-
-eureka:
-  client:
-    enabled: false
-
-exchangeservice:
-    url: http://localhost:8889/exchangeapp/api/generation
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration

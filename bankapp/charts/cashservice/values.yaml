@@ -9,6 +9,7 @@ service:
 clients:
   accountservice: "http://{{ .Release.Name }}-accountservice.{{ .Release.Namespace }}.svc.cluster.local:8881/api"
   blockerservice: "http://{{ .Release.Name }}-blockerservice.{{ .Release.Namespace }}.svc.cluster.local:8882/api"
-  notificationservice: "http://{{ .Release.Name }}-notificationservice.{{ .Release.Namespace }}.svc.cluster.local:8890/api"
 keycloak:
   issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
+kafka:
+  url: "http://{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9991"

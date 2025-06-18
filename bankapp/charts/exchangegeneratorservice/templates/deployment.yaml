@@ -34,10 +34,8 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: EXCHANGESERVICE_API
-              value: {{ tpl .Values.clients.exchangeservice . | quote }}
-            - name: ISSUER_URI
-              value: {{ tpl .Values.keycloak.issuer . | quote }}
+            - name: KAFKA_URL
+              value: {{ tpl .Values.kafka.url . | quote }}
           livenessProbe:
             httpGet:
               path: /actuator/health

@@ -44,10 +44,10 @@ spec:
               value: {{ tpl .Values.clients.accountservice . | quote }}
             - name: BLOCKERSERVICE_API
               value: {{ tpl .Values.clients.blockerservice . | quote }}
-            - name: NOTIFICATIONSERVICE_API
-              value: {{ tpl .Values.clients.notificationservice . | quote }}
             - name: ISSUER_URI
               value: {{ tpl .Values.keycloak.issuer . | quote }}
+            - name: KAFKA_URL
+              value: {{ tpl .Values.kafka.url . | quote }}
           livenessProbe:
             httpGet:
               path: /actuator/health

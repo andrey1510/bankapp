@@ -24,11 +24,25 @@ spring:
     port: ${MAIL_SMTP_PORT}
     username:
     password:
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    topic:
+      notifications: "notifications"
+    consumer:
+      group-id: "notifications-group"
+      auto-offset-reset: "earliest"
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties:
+      spring.json.trusted.packages: "*"
+
 management:
-  endpoint:
-    health:
-      access: unrestricted
   endpoints:
     web:
       exposure:
-        include: health,info,refresh
+        include: health,info,refresh,busrefresh,metrics,env
+  endpoint:
+    health:
+      show-details: always
+      access: unrestricted

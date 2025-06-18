@@ -37,6 +37,8 @@ spec:
               value: {{ tpl .Values.clients.mailport . | quote }}
             - name: ISSUER_URI
               value: {{ tpl .Values.keycloak.issuer . | quote }}
+            - name: KAFKA_URL
+              value: {{ tpl .Values.kafka.url . | quote }}
           livenessProbe:
             httpGet:
               path: /actuator/health

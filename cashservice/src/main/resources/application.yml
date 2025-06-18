@@ -23,16 +23,21 @@ spring:
             authorization-grant-type: client_credentials
             scope: blockerservice.post
             provider: keycloak
-          notification-service:
-            client-id: cashservice
-            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
-            authorization-grant-type: client_credentials
-            scope: notificationservice.post
-            provider: keycloak
         provider:
           keycloak:
             token-uri: ${ISSUER_URI}/protocol/openid-connect/token
             issuer-uri: ${ISSUER_URI}
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+    topic:
+      notifications: "notifications"
+    properties:
+      security.protocol: PLAINTEXT
 
 accountservice:
   url: ${ACCOUNTSERVICE_API}
@@ -40,5 +45,12 @@ accountservice:
 blockerservice:
   url: ${BLOCKERSERVICE_API}
 
-notificationservice:
-  url: ${NOTIFICATIONSERVICE_API}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,busrefresh,metrics,env
+  endpoint:
+    health:
+      show-details: always
+      access: unrestricted

@@ -3,7 +3,7 @@ package com.exchangeservice.controllers;
 import com.exchangeservice.dto.ConversionRateDto;
 import com.exchangeservice.dto.ConversionRateRequestDto;
 import com.exchangeservice.dto.CurrenciesDto;
-import com.exchangeservice.dto.CurrencyRate;
+import com.exchangeservice.dto.CurrencyRateDto;
 import com.exchangeservice.dto.ExchangeRate;
 import com.exchangeservice.dto.RatesDto;
 import com.exchangeservice.services.RateService;
@@ -38,7 +38,7 @@ class RateControllerTest {
     @InjectMocks
     private RateController rateController;
 
-    private List<CurrencyRate> rates;
+    private List<CurrencyRateDto> rates;
     private ConversionRateRequestDto conversionRequest;
     private RatesDto ratesDto;
     private ExchangeRate exchangeRate;
@@ -49,8 +49,8 @@ class RateControllerTest {
     void setUp() {
         LocalDateTime now = LocalDateTime.now();
         rates = Arrays.asList(
-            new CurrencyRate("USD Rate", "USD", new BigDecimal("1.0"), now),
-            new CurrencyRate("EUR Rate", "EUR", new BigDecimal("0.85"), now)
+            new CurrencyRateDto("USD Rate", "USD", new BigDecimal("1.0"), now),
+            new CurrencyRateDto("EUR Rate", "EUR", new BigDecimal("0.85"), now)
         );
 
         conversionRequest = new ConversionRateRequestDto(
@@ -74,16 +74,6 @@ class RateControllerTest {
         currenciesMap.put("EUR", "Euro");
         currenciesMap.put("GBP", "British Pound");
         currenciesDto = new CurrenciesDto(currenciesMap);
-    }
-
-    @Test
-    void receiveRates_ShouldSaveRates() {
-        doNothing().when(rateService).saveRates(any());
-
-        ResponseEntity<?> response = rateController.receiveRates(rates);
-
-        assertEquals(ResponseEntity.ok().build(), response);
-        verify(rateService, times(1)).saveRates(rates);
     }
 
     @Test

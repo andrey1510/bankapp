@@ -3,7 +3,7 @@ package com.exchangeservice.services;
 import com.exchangeservice.dto.ConversionRateDto;
 import com.exchangeservice.dto.ConversionRateRequestDto;
 import com.exchangeservice.dto.CurrenciesDto;
-import com.exchangeservice.dto.CurrencyRate;
+import com.exchangeservice.dto.CurrencyRateDto;
 import com.exchangeservice.dto.ExchangeRate;
 import com.exchangeservice.entities.Rate;
 import com.exchangeservice.repositories.RateRepository;
@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +43,7 @@ class RateServiceImplTest {
     private RateServiceImpl rateService;
 
     private List<Rate> testRates;
-    private List<CurrencyRate> testCurrencyRates;
+    private List<CurrencyRateDto> testCurrencyRateDtos;
     private LocalDateTime testTimestamp;
 
     @BeforeEach
@@ -71,16 +70,16 @@ class RateServiceImplTest {
                 .build()
         );
 
-        testCurrencyRates = List.of(
-            new CurrencyRate("Доллар", "USD", new BigDecimal("75.00"), testTimestamp),
-            new CurrencyRate("Евро", "EUR", new BigDecimal("85.00"), testTimestamp)
+        testCurrencyRateDtos = List.of(
+            new CurrencyRateDto("Доллар", "USD", new BigDecimal("75.00"), testTimestamp),
+            new CurrencyRateDto("Евро", "EUR", new BigDecimal("85.00"), testTimestamp)
         );
     }
 
     @Test
     void saveRates_ShouldSaveAllRates() {
 
-        rateService.saveRates(testCurrencyRates);
+        rateService.saveRates(testCurrencyRateDtos);
 
         verify(rateRepository).saveAll(argThat((List<Rate> list) ->
             list.size() == 2 &&

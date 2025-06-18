@@ -2,7 +2,7 @@ package com.exchangeservice.services;
 
 import com.exchangeservice.dto.ConversionRateDto;
 import com.exchangeservice.dto.ConversionRateRequestDto;
-import com.exchangeservice.dto.CurrencyRate;
+import com.exchangeservice.dto.CurrencyRateDto;
 import com.exchangeservice.dto.ExchangeRate;
 import com.exchangeservice.dto.CurrenciesDto;
 import com.exchangeservice.dto.RatesDto;
@@ -25,8 +25,8 @@ public class RateServiceImpl implements RateService {
 
     @Override
     @Transactional
-    public void saveRates(List<CurrencyRate> currencyRates) {
-        rateRepository.saveAll(currencyRates.stream()
+    public void saveRates(List<CurrencyRateDto> currencyRateDtos) {
+        rateRepository.saveAll(currencyRateDtos.stream()
             .map(rate -> Rate.builder()
                 .title(rate.title())
                 .currency(rate.currency())

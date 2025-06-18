@@ -51,6 +51,10 @@ dependencies:
     repository: "https://charts.bitnami.com/bitnami"
     alias: exchangedb
     condition: exchangedb.enabled
+  - name: kafka
+    version: "32.2.12"
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: kafka
 
 
 

@@ -10,10 +10,10 @@ database:
   url: "jdbc:postgresql://{{ .Release.Name }}-accountdb.{{ .Release.Namespace }}.svc.cluster.local:5432/accountdb"
   username: "login"
   password: "password"
-clients:
-  notificationservice: "http://{{ .Release.Name }}-notificationservice.{{ .Release.Namespace }}.svc.cluster.local:8890/api"
 keycloak:
   issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
+kafka:
+  url: "http://{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9991"
 
 
 

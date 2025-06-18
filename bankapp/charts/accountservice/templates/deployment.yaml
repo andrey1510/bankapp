@@ -31,10 +31,10 @@ spec:
               value: {{ tpl .Values.database.username . | quote }}
             - name: SPRING_DATASOURCE_PASSWORD
               value: {{ tpl .Values.database.password . | quote }}
-            - name: NOTIFICATIONSERVICE_API
-              value: {{ tpl .Values.clients.notificationservice . | quote }}
             - name: ISSUER_URI
               value: {{ tpl .Values.keycloak.issuer . | quote }}
+            - name: KAFKA_URL
+              value: {{ tpl .Values.kafka.url . | quote }}
           livenessProbe:
             httpGet:
               path: /actuator/health

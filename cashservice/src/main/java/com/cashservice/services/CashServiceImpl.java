@@ -2,10 +2,11 @@ package com.cashservice.services;
 
 import com.cashservice.clients.AccountClient;
 import com.cashservice.clients.BlockerClient;
-import com.cashservice.clients.NotificationClient;
 import com.cashservice.dto.CashRequestDto;
+import com.cashservice.dto.NotificationRequestDto;
 import com.cashservice.dto.SuspicionOperationDto;
 import com.cashservice.exceptions.CashOperationException;
+import com.cashservice.kafka.NotificationProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,8 @@ import org.springframework.web.client.RestClientException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Slf4j
 @Service
@@ -23,7 +26,7 @@ public class CashServiceImpl implements CashService {
 
     private final AccountClient accountClient;
     private final BlockerClient blockerClient;
-    private final NotificationClient notificationClient;
+    private final NotificationProducer notificationProducer;
 
     @Override
     public void processOperation(CashRequestDto request) {
@@ -31,7 +34,7 @@ public class CashServiceImpl implements CashService {
         SuspicionOperationDto response = blockerClient.checkCashOperation(request);
 
         if (response != null && response.isSuspicious()) {
-            notificationClient.sendBlockedCashNotification(request);
+            notificationProducer.sendNotification(new NotificationRequestDto(request.email(), createMessage(request)));
             throw new CashOperationException("Операция заблокирована");
         }
 
@@ -44,6 +47,14 @@ public class CashServiceImpl implements CashService {
             handleAccountServiceError(e);
         }
 
+    }
+
+    private String createMessage(CashRequestDto request) {
+        return String.format("%s была заблокирована операция по %s счета на сумму %.2f %s",
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
+            request.isDeposit() ? "пополнению" : "снятию со",
+            request.amount().setScale(2, RoundingMode.HALF_UP).doubleValue(),
+            request.currency());
     }
 
     private void handleAccountServiceError(RestClientException e) {
