@@ -3,7 +3,7 @@ package com.exchangeservice.controllers;
 import com.exchangeservice.dto.ConversionRateDto;
 import com.exchangeservice.dto.ConversionRateRequestDto;
 import com.exchangeservice.dto.CurrenciesDto;
-import com.exchangeservice.dto.CurrencyRateDto;
+import com.exchangeservice.dto.kafka.CurrencyRateDto;
 import com.exchangeservice.dto.ExchangeRate;
 import com.exchangeservice.dto.RatesDto;
 import com.exchangeservice.services.RateService;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,7 +23,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

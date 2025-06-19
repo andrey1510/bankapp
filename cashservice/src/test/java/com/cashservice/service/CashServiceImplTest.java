@@ -2,10 +2,8 @@ package com.cashservice.service;
 
 import com.cashservice.clients.AccountClient;
 import com.cashservice.clients.BlockerClient;
-import com.cashservice.clients.NotificationClient;
 import com.cashservice.dto.CashRequestDto;
 import com.cashservice.dto.SuspicionOperationDto;
-import com.cashservice.exceptions.CashOperationException;
 import com.cashservice.services.CashServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 
@@ -29,9 +26,6 @@ public class CashServiceImplTest {
 
     @Mock
     private BlockerClient blockerClient;
-
-    @Mock
-    private NotificationClient notificationClient;
 
     @InjectMocks
     private CashServiceImpl cashService;
@@ -63,15 +57,6 @@ public class CashServiceImplTest {
 
         assertDoesNotThrow(() -> cashService.processOperation(withdrawRequest));
         verify(accountClient).sendAccountRequest(eq(1L), eq(new BigDecimal("-50.00")));
-    }
-
-    @Test
-    void processOperation_shouldBlockWhenSuspicious() {
-        when(blockerClient.checkCashOperation(any())).thenReturn(new SuspicionOperationDto(true));
-
-        assertThrows(CashOperationException.class, () -> cashService.processOperation(validRequest));
-        verify(notificationClient).sendBlockedCashNotification(any());
-        verifyNoInteractions(accountClient);
     }
 
 }

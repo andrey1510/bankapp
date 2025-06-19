@@ -1,6 +1,6 @@
 package com.notificationservice.kafka;
 
-import com.notificationservice.dto.NotificationRequestDto;
+import com.notificationservice.dto.kafka.NotificationRequestDto;
 import com.notificationservice.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,11 @@ public class NotificationConsumer {
 
     private final NotificationService notificationService;
 
-    @KafkaListener(topics = "${spring.kafka.topic.notifications}", groupId = "${spring.kafka.consumer.group-id}")
-    public void consumeRates(NotificationRequestDto notification, Acknowledgment acknowledgment) {
+    @KafkaListener(
+        topics = "${spring.kafka.topic.notifications}",
+        groupId = "${spring.kafka.consumer.group-id}"
+    )
+    public void consumeNotifications(NotificationRequestDto notification, Acknowledgment acknowledgment) {
         try {
             log.info("Message received: {}", notification);
             notificationService.processNotification(notification);

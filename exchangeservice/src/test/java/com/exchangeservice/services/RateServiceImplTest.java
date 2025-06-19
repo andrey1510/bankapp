@@ -3,7 +3,8 @@ package com.exchangeservice.services;
 import com.exchangeservice.dto.ConversionRateDto;
 import com.exchangeservice.dto.ConversionRateRequestDto;
 import com.exchangeservice.dto.CurrenciesDto;
-import com.exchangeservice.dto.CurrencyRateDto;
+import com.exchangeservice.dto.kafka.CurrencyRateDto;
+import com.exchangeservice.dto.kafka.CurrencyRatesBatchDto;
 import com.exchangeservice.dto.ExchangeRate;
 import com.exchangeservice.entities.Rate;
 import com.exchangeservice.repositories.RateRepository;
@@ -43,6 +44,7 @@ class RateServiceImplTest {
     private RateServiceImpl rateService;
 
     private List<Rate> testRates;
+    private CurrencyRatesBatchDto currencyRatesBatchDto;
     private List<CurrencyRateDto> testCurrencyRateDtos;
     private LocalDateTime testTimestamp;
 
@@ -74,12 +76,13 @@ class RateServiceImplTest {
             new CurrencyRateDto("Доллар", "USD", new BigDecimal("75.00"), testTimestamp),
             new CurrencyRateDto("Евро", "EUR", new BigDecimal("85.00"), testTimestamp)
         );
+        currencyRatesBatchDto = new CurrencyRatesBatchDto(testCurrencyRateDtos);
     }
 
     @Test
     void saveRates_ShouldSaveAllRates() {
 
-        rateService.saveRates(testCurrencyRateDtos);
+        rateService.saveRates(currencyRatesBatchDto);
 
         verify(rateRepository).saveAll(argThat((List<Rate> list) ->
             list.size() == 2 &&

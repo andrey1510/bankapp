@@ -6,7 +6,7 @@ __README__
 пользователей, а также виджетом с обновляющимися курсами валют.
 
 Использованный стек: Java SE 21, Spring Boot, Spring Security, JPA, PostgreSQL, Spring Retry, Keycloak, REST, Gradle, Lombok,
-Thymeleaf, JUnit 5, Mockito, Docker, Kubernetes, Jenkins, Helm.
+Thymeleaf, JUnit 5, Mockito, Kafka, Docker, Kubernetes, Jenkins, Helm.
 
 Установка и запуск:
 -----------------------------------
@@ -29,7 +29,7 @@ CI/CD-пайплайн.
 ```
     docker build -t accountservice:latest ./accountservice
     docker build -t blockerservice:latest ./blockerservice
-    docker build -t cashservice:latest ./blockerservice    
+    docker build -t cashservice:latest ./cashservice    
     docker build -t exchangeservice:latest ./exchangeservice
     docker build -t exchangegeneratorservice:latest ./exchangegeneratorservice
     docker build -t frontservice:latest ./frontservice   
@@ -116,16 +116,22 @@ CI/CD-пайплайн.
 Приложение состоит из следующих микросервисов:
 
 1. **Front service** — пользовательский интерфейс.
-2. **Account service** — сервис, отвечающий за хранение и изменение данных пользователей и данных их счетов; балансы счетов; 
-открытие и закрытие счетов.
+2. **Account service** с базой данных **accountdb** (Postgresql) — сервис, отвечающий за хранение и изменение данных
+ пользователей и данных их счетов; балансы счетов; открытие и закрытие счетов.
 3. **Transfer service** - сервис, отвечающий за обработку переводов.
 4. **Cash service** - сервис, отвечающий за пополнение/снятие денег.
-5. **Exchange service** - сервис, отвечающий за конвертацию курсов валют между собой.
-6. **Exchange generator service** - сервис, отвечающий за генерацию курсов валют. Содержит логику генерации и список доступных 
-в приложении валют.
+5. **Exchange service** с базой данных **exchangedb** (Postgresql) - сервис, отвечающий за конвертацию курсов валют 
+ между собой, и их хранение.
+6. **Exchange generator service** - сервис, отвечающий за генерацию курсов валют. Содержит логику генерации и список
+ доступных в приложении валют.
 7. **Blocker service** — сервис, отвечающий за блокировку операций. Содержит логику блокирования.
-8. **Notification service** — сервис отправки уведомлений. Содержит данные подключенного почтового сервиса (сейчас - *Mailhog*).
-9. **Gateway service**, **Eureka service**, **Config service** — технические сервисы.
+8. **Notification service** с базой данных **notificationdb** (Postgresql) — сервис отправки и хранения уведомлений. Содержит 
+ данные подключенного почтового сервиса (сейчас - *Mailhog*).
+
+Микросервисы развернуты в **Kubernetes**-кластере (**Docker** используется в качестве контейнерной среды), безопасность 
+ их взаимодействия обеспечивается с помощью сервера **Keycloak**. 
+ Взаимодействие Exchange generator service с Exchange service, а также Transfer service, Cash service и 
+ Account service с Notification service осуществляется с помощью **Apache Kafka**.
 
 Тесты
 ------------------------------------------

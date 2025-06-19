@@ -1,76 +1,65 @@
 package com.exchangegeneratorservice.kafka;
 
-import com.exchangegeneratorservice.ExchangegeneratorserviceApplication;
-import com.exchangegeneratorservice.dto.CurrencyRateDto;
+import com.exchangegeneratorservice.dto.kafka.CurrencyRatesBatchDto;
 import com.exchangegeneratorservice.services.ExchangeGenerationService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.KafkaMessageListenerContainer;
-import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-
+import org.springframework.test.annotation.DirtiesContext;
+import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.StreamSupport;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.springframework.kafka.test.utils.KafkaTestUtils;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.springframework.kafka.core.ConsumerFactory;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest(classes = ExchangegeneratorserviceApplication.class,
-    properties = {
-        "spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer",
-        "spring.kafka.producer.value-serializer=org.apache.kafka.common.serialization.StringSerializer",
-        "spring.kafka.producer.bootstrap-servers=localhost:9992",
-        "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
-        "spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer",
-        "spring.kafka.consumer.properties.spring.json.trusted.packages=*"
-    })
+@SpringBootTest(properties = {
+    "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+    "spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer",
+    "spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer",
+    "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
+    "spring.kafka.consumer.group-id=test-group",
+    "spring.kafka.consumer.auto-offset-reset=earliest",
+    "spring.kafka.consumer.properties.spring.json.trusted.packages=*",
+    "spring.kafka.consumer.properties.spring.json.use.type.headers=false",
+    "spring.kafka.consumer.properties.spring.json.value.default.type=com.exchangegeneratorservice.dto.kafka.CurrencyRatesBatchDto" // Отключаем планировщик
+})
 @EmbeddedKafka(
-    topics = {"rates"},
-    partitions = 1,
-    brokerProperties = { "listeners=PLAINTEXT://:9992", "port=9992" }
+    topics = "${spring.kafka.topic.rates}",
+    partitions = 1
 )
-public class ExchangeKafkaProducerTest {
+@DirtiesContext
+class ExchangeKafkaProducerTest {
 
     @Autowired
-    private ExchangeKafkaProducer exchangeKafkaProducer;
+    private ExchangeKafkaProducer producer;
+
+    @Mock
+    private ExchangeGenerationService generationService;
 
     @Autowired
-    private ExchangeGenerationService exchangeGenerationService;
-
-    @Autowired
-    private ConsumerFactory<String, List<CurrencyRateDto>> consumerFactory;
+    private ConsumerFactory<String, CurrencyRatesBatchDto> consumerFactory;
 
     @Test
-    void testSendMessage() throws InterruptedException {
-        String topic = "rates";
-        String groupId = "group";
+    void shouldDeliverMessageToKafka() {
+        try (Consumer<String, CurrencyRatesBatchDto> consumer = consumerFactory.createConsumer()) {
 
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<List<CurrencyRateDto>> received = new AtomicReference<>();
+            consumer.subscribe(List.of("rates"));
+            consumer.poll(Duration.ofMillis(100));
+            consumer.commitSync();
 
-        ContainerProperties containerProps = new ContainerProperties(topic);
-        KafkaMessageListenerContainer<String, List<CurrencyRateDto>> container =
-            new KafkaMessageListenerContainer<>(consumerFactory, containerProps);
-        container.setupMessageListener((MessageListener<String, List<CurrencyRateDto>>) record -> {
-            received.set(record.value());
-            latch.countDown();
-        });
-        container.getContainerProperties().setGroupId(groupId);
-        container.start();
+            producer.sendRates();
 
-        try {
-            exchangeKafkaProducer.sendRates();
-            assertTrue(latch.await(10, TimeUnit.SECONDS));
-            assertNotNull(received.get());
-            assertFalse(received.get().isEmpty());
-        } finally {
-            container.stop();
+            var records = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(5));
+
+            assertTrue(records.count() > 0);
+            assertTrue(StreamSupport.stream(records.records("rates").spliterator(), false)
+                .anyMatch(record -> "rates_key".equals(record.key())));
         }
     }
 }

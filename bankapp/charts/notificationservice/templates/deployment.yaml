@@ -43,18 +43,18 @@ spec:
             httpGet:
               path: /actuator/health
               port: http
-            initialDelaySeconds: 75
+            initialDelaySeconds: 90
             periodSeconds: 15
-            timeoutSeconds: 5
-            failureThreshold: 50
+            timeoutSeconds: 10
+            failureThreshold: 100
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: http
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90
             periodSeconds: 10
-            timeoutSeconds: 3
-            failureThreshold: 50
+            timeoutSeconds: 10
+            failureThreshold: 100
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

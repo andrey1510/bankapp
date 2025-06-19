@@ -1,6 +1,6 @@
 package com.cashservice.kafka;
 
-import com.cashservice.dto.NotificationRequestDto;
+import com.cashservice.dto.kafka.NotificationRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class NotificationProducer {
 
     @Value("${spring.kafka.topic.notifications}")
-    private String notificationsTopic;
+    String notificationsTopic;
 
     private final KafkaTemplate<String, NotificationRequestDto> kafkaTemplate;
 

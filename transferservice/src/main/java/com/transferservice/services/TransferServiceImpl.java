@@ -5,7 +5,7 @@ import com.transferservice.clients.BlockerClient;
 import com.transferservice.clients.ExchangeClient;
 import com.transferservice.dto.BalanceUpdateRequestDto;
 import com.transferservice.dto.ConversionRateRequestDto;
-import com.transferservice.dto.NotificationRequestDto;
+import com.transferservice.dto.kafka.NotificationRequestDto;
 import com.transferservice.dto.SuspicionOperationDto;
 import com.transferservice.dto.TransferRequestDto;
 import com.transferservice.exceptions.SameAccountTransferException;

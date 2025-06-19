@@ -2,7 +2,7 @@ package com.accountservice.services;
 
 import com.accountservice.dto.AccountBalanceChangeDto;
 import com.accountservice.dto.BalanceUpdateRequestDto;
-import com.accountservice.dto.NotificationRequestDto;
+import com.accountservice.dto.kafka.NotificationRequestDto;
 import com.accountservice.entities.Account;
 import com.accountservice.exceptions.AccountNotFoundException;
 import com.accountservice.exceptions.InsufficientFundsException;

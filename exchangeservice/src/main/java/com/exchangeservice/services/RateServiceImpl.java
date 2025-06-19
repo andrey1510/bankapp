@@ -2,13 +2,14 @@ package com.exchangeservice.services;
 
 import com.exchangeservice.dto.ConversionRateDto;
 import com.exchangeservice.dto.ConversionRateRequestDto;
-import com.exchangeservice.dto.CurrencyRateDto;
+import com.exchangeservice.dto.kafka.CurrencyRatesBatchDto;
 import com.exchangeservice.dto.ExchangeRate;
 import com.exchangeservice.dto.CurrenciesDto;
 import com.exchangeservice.dto.RatesDto;
 import com.exchangeservice.entities.Rate;
 import com.exchangeservice.repositories.RateRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,24 +18,27 @@ import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RateServiceImpl implements RateService {
 
     private final RateRepository rateRepository;
 
-    @Override
     @Transactional
-    public void saveRates(List<CurrencyRateDto> currencyRateDtos) {
-        rateRepository.saveAll(currencyRateDtos.stream()
+    @Override
+    public void saveRates(CurrencyRatesBatchDto batch) {
+        List<Rate> rates = batch.getRates().stream()
             .map(rate -> Rate.builder()
-                .title(rate.title())
-                .currency(rate.currency())
-                .value(rate.value())
-                .timestamp(rate.timestamp())
+                .title(rate.getTitle())
+                .currency(rate.getCurrency())
+                .value(rate.getValue())
+                .timestamp(rate.getTimestamp())
                 .build()
             )
-            .collect(Collectors.toList()));
+            .collect(Collectors.toList());
+        log.info("Saving rates: {}", rates);
+        rateRepository.saveAll(rates);
     }
 
     @Transactional(readOnly = true)

@@ -49,10 +49,14 @@ exchangedb:
 kafka:
   enabled: true
   clusterId: "bankapp-kafka-cluster"
+  auth:
+    password: "password"
+    interBrokerUser: "broker"
+    interBrokerPassword: "password"
   service:
     enabled: true
     type: ClusterIP
-    port: 9991
+    port: 9092
     name: "bankapp-kafka-broker"
   broker:
     replicaCount: 1

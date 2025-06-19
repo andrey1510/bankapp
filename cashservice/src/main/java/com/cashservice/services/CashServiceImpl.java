@@ -3,7 +3,7 @@ package com.cashservice.services;
 import com.cashservice.clients.AccountClient;
 import com.cashservice.clients.BlockerClient;
 import com.cashservice.dto.CashRequestDto;
-import com.cashservice.dto.NotificationRequestDto;
+import com.cashservice.dto.kafka.NotificationRequestDto;
 import com.cashservice.dto.SuspicionOperationDto;
 import com.cashservice.exceptions.CashOperationException;
 import com.cashservice.kafka.NotificationProducer;
