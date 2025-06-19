@@ -9,3 +9,13 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${ISSUER_URI}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,busrefresh,metrics,env
+  endpoint:
+    health:
+      show-details: always
+      access: unrestricted

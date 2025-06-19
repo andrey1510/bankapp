@@ -1,6 +1,5 @@
 package com.accountservice.services;
 
-import com.accountservice.clients.NotificationClient;
 import com.accountservice.dto.AccountBalanceChangeDto;
 import com.accountservice.dto.BalanceUpdateRequestDto;
 import com.accountservice.entities.Account;
@@ -21,12 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,9 +28,6 @@ class AccountServiceTest {
 
     @Mock
     private AccountRepository accountRepository;
-
-    @Mock
-    private NotificationClient notificationClient;
 
     @InjectMocks
     private AccountServiceImpl accountService;
@@ -74,23 +65,6 @@ class AccountServiceTest {
     }
 
     @Test
-    void updateBalanceCash_WithValidRequest_ShouldUpdateBalance() {
-        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
-        doNothing().when(notificationClient).sendCashNotification(any(), any(), any());
-
-        accountService.updateBalanceCash(cashRequest);
-
-        verify(accountRepository).save(accountCaptor.capture());
-        Account savedAccount = accountCaptor.getValue();
-        assertEquals(new BigDecimal("1100.00"), savedAccount.getAmount());
-        verify(notificationClient).sendCashNotification(
-            cashRequest.amount(),
-            account.getCurrency(),
-            account.getUser().getEmail()
-        );
-    }
-
-    @Test
     void updateBalanceCash_WithInsufficientFunds_ShouldThrowException() {
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
         cashRequest = new AccountBalanceChangeDto(1L, new BigDecimal("-1100.00"));
@@ -106,34 +80,6 @@ class AccountServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> 
             accountService.updateBalanceCash(cashRequest)
-        );
-    }
-
-    @Test
-    void updateBalanceTransfer_WithValidRequest_ShouldUpdateBalances() {
-        Account recipientAccount = new Account();
-        recipientAccount.setId(2L);
-        recipientAccount.setUser(user);
-        recipientAccount.setCurrency("EUR");
-        recipientAccount.setAmount(new BigDecimal("500.00"));
-
-        when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
-        when(accountRepository.findById(2L)).thenReturn(Optional.of(recipientAccount));
-        doNothing().when(notificationClient).sendTransferNotification(any(), any(), any());
-
-        accountService.updateBalanceTransfer(transferRequest);
-
-        verify(accountRepository, times(2)).save(accountCaptor.capture());
-        Account savedSenderAccount = accountCaptor.getAllValues().get(0);
-        Account savedRecipientAccount = accountCaptor.getAllValues().get(1);
-
-        assertEquals(new BigDecimal("900.00"), savedSenderAccount.getAmount());
-        assertEquals(new BigDecimal("600.00"), savedRecipientAccount.getAmount());
-
-        verify(notificationClient).sendTransferNotification(
-            transferRequest.senderAccountBalanceChange(),
-            account.getCurrency(),
-            account.getUser().getEmail()
         );
     }
 

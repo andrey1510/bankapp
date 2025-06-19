@@ -19,3 +19,27 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${ISSUER_URI}
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    topic:
+      rates: "rates"
+    consumer:
+      group-id: "rates-group"
+      auto-offset-reset: "latest"
+      enable-auto-commit: true
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: "com.exchangeservice.dto.kafka.CurrencyRatesBatchDto"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,busrefresh,metrics,env
+  endpoint:
+    health:
+      show-details: always
+      access: unrestricted

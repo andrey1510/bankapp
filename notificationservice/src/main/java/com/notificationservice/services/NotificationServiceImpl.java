@@ -1,6 +1,6 @@
 package com.notificationservice.services;
 
-import com.notificationservice.dto.NotificationRequestDto;
+import com.notificationservice.dto.kafka.NotificationRequestDto;
 import com.notificationservice.entities.Notification;
 import com.notificationservice.repositories.NotificationRepository;
 import jakarta.transaction.Transactional;
@@ -27,14 +27,14 @@ public class NotificationServiceImpl implements NotificationService {
     public void processNotification(NotificationRequestDto request) {
 
         Notification notification = Notification.builder()
-            .email(request.email())
-            .message(request.message())
+            .email(request.getEmail())
+            .message(request.getMessage())
             .isSent(false)
             .build();
         notification = notificationRepository.save(notification);
 
         try {
-            sendEmail(request.email(), request.message());
+            sendEmail(request.getEmail(), request.getMessage());
             notification.setIsSent(true);
             notificationRepository.save(notification);
         } catch (MailException e) {

@@ -23,12 +23,6 @@ spring:
             authorization-grant-type: client_credentials
             scope: blockerservice.post
             provider: keycloak
-          notification-service:
-            client-id: transferservice
-            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
-            authorization-grant-type: client_credentials
-            scope: notificationservice.post
-            provider: keycloak
           exchange-service:
             client-id: transferservice
             client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
@@ -39,6 +33,18 @@ spring:
           keycloak:
             token-uri: ${ISSUER_URI}/protocol/openid-connect/token
             issuer-uri: ${ISSUER_URI}
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+    topic:
+      notifications: "notifications"
+    properties:
+      security.protocol: PLAINTEXT
+
 
 exchangeservice:
   url: ${EXCHANGESERVICE_API}
@@ -48,6 +54,3 @@ accountservice:
 
 blockerservice:
   url: ${BLOCKERSERVICE_API}
-
-notificationservice:
-  url: ${NOTIFICATIONSERVICE_API}

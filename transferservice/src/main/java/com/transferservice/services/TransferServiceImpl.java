@@ -3,13 +3,14 @@ package com.transferservice.services;
 import com.transferservice.clients.AccountClient;
 import com.transferservice.clients.BlockerClient;
 import com.transferservice.clients.ExchangeClient;
-import com.transferservice.clients.NotificationClient;
 import com.transferservice.dto.BalanceUpdateRequestDto;
 import com.transferservice.dto.ConversionRateRequestDto;
+import com.transferservice.dto.kafka.NotificationRequestDto;
 import com.transferservice.dto.SuspicionOperationDto;
 import com.transferservice.dto.TransferRequestDto;
 import com.transferservice.exceptions.SameAccountTransferException;
 import com.transferservice.exceptions.TransferOperationException;
+import com.transferservice.kafka.NotificationProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import org.springframework.web.client.RestClientException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Slf4j
@@ -29,7 +32,7 @@ public class TransferServiceImpl implements TransferService {
     private final AccountClient accountClient;
     private final BlockerClient blockerClient;
     private final ExchangeClient exchangeClient;
-    private final NotificationClient notificationClient;
+    private final NotificationProducer notificationProducer;
 
     @Override
     public void processTransfer(TransferRequestDto request) {
@@ -57,7 +60,7 @@ public class TransferServiceImpl implements TransferService {
 
         SuspicionOperationDto response = blockerClient.checkTransferOperation(request);
         if (response != null && response.isSuspicious()) {
-            notificationClient.sendBlockedTransferNotification(request);
+            notificationProducer.sendNotification(new NotificationRequestDto(request.email(), createMessage(request)));
             throw new TransferOperationException("Операция заблокирована");
         }
 
@@ -67,6 +70,13 @@ public class TransferServiceImpl implements TransferService {
             RestClientException e) {
               handleAccountServiceError(e);
         }
+    }
+
+    private String createMessage(TransferRequestDto request) {
+        return String.format("%s была заблокирована операция по переводу %.2f %s ",
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
+            request.amount().setScale(2, RoundingMode.HALF_UP).doubleValue(),
+            request.senderAccountCurrency());
     }
 
     private void handleAccountServiceError(RestClientException e) {

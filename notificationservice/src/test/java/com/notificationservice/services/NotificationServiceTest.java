@@ -1,6 +1,6 @@
 package com.notificationservice.services;
 
-import com.notificationservice.dto.NotificationRequestDto;
+import com.notificationservice.dto.kafka.NotificationRequestDto;
 import com.notificationservice.entities.Notification;
 import com.notificationservice.repositories.NotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,8 +51,8 @@ class NotificationServiceTest {
         notificationService = new NotificationServiceImpl(notificationRepository, mailSender);
         validRequest = new NotificationRequestDto("test@example.com", "Test message");
         savedNotification = Notification.builder()
-            .email(validRequest.email())
-            .message(validRequest.message())
+            .email(validRequest.getEmail())
+            .message(validRequest.getMessage())
             .isSent(false)
             .build();
     }
@@ -67,20 +67,20 @@ class NotificationServiceTest {
         verify(mailSender).send(mailMessageCaptor.capture());
 
         List<Notification> capturedNotifications = notificationCaptor.getAllValues();
-        Notification firstSave = capturedNotifications.get(0);
-        assertEquals(validRequest.email(), firstSave.getEmail());
-        assertEquals(validRequest.message(), firstSave.getMessage());
+        Notification firstSave = capturedNotifications.getFirst();
+        assertEquals(validRequest.getEmail(), firstSave.getEmail());
+        assertEquals(validRequest.getMessage(), firstSave.getMessage());
         assertFalse(firstSave.getIsSent());
 
         Notification secondSave = capturedNotifications.get(1);
-        assertEquals(validRequest.email(), secondSave.getEmail());
-        assertEquals(validRequest.message(), secondSave.getMessage());
+        assertEquals(validRequest.getEmail(), secondSave.getEmail());
+        assertEquals(validRequest.getMessage(), secondSave.getMessage());
         assertTrue(secondSave.getIsSent());
 
         SimpleMailMessage capturedMessage = mailMessageCaptor.getValue();
-        assertEquals(validRequest.email(), Objects.requireNonNull(capturedMessage.getTo())[0]);
+        assertEquals(validRequest.getEmail(), Objects.requireNonNull(capturedMessage.getTo())[0]);
         assertEquals("Уведомление от банковского приложения", capturedMessage.getSubject());
-        assertEquals(validRequest.message(), capturedMessage.getText());
+        assertEquals(validRequest.getMessage(), capturedMessage.getText());
     }
 
     @Test

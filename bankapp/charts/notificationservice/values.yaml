@@ -12,6 +12,8 @@ database:
   password: "password"
 clients:
   mailhog: "{{ .Release.Name }}-mailhog.{{ .Release.Namespace }}.svc.cluster.local"
-  mailport: "8025"
+  mailport: "1025"
 keycloak:
   issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
+kafka:
+  url: "http://{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"

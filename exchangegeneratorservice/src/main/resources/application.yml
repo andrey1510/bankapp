@@ -4,20 +4,24 @@ server:
 spring:
   application:
     name: exchangegeneratorservice
-  security:
-    oauth2:
-      client:
-        registration:
-          exchange-generator:
-            client-id: exchangegeneratorservice
-            client-secret: XZxKQ8kk6Rrdbe7RnsfwtBTgHkwAqQjm
-            authorization-grant-type: client_credentials
-            scope: exchangeservice.post
-            provider: keycloak
-        provider:
-          keycloak:
-            token-uri: ${ISSUER_URI}/protocol/openid-connect/token
-            issuer-uri: ${ISSUER_URI}
+  kafka:
+    bootstrap-servers: ${KAFKA_URL}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: 1
+      retries: 0
+    topic:
+      rates: "rates"
+    properties:
+      security.protocol: PLAINTEXT
 
-exchangeservice:
-  url: ${EXCHANGESERVICE_API}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh,busrefresh,metrics,env
+  endpoint:
+    health:
+      show-details: always
+      access: unrestricted
