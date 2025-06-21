@@ -79,4 +79,12 @@ public class BankService {
             .findFirst();
     }
 
+    public Optional<String> findLoginByAccountId(List<UserAccountsDto> users, Long accountId) {
+        return users.stream()
+            .filter(user -> user.accounts().stream()
+                .anyMatch(account -> account.accountId().equals(accountId)))
+            .findFirst()
+            .map(UserAccountsDto::login);
+    }
+
 }

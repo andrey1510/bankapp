@@ -8,5 +8,7 @@ public record TransferRequestDto(
     String senderAccountCurrency,
     BigDecimal amount,
     Long recipientAccountId,
-    String recipientAccountCurrency
+    String recipientAccountCurrency,
+    String senderLogin,
+    String recipientLogin
 ) {}

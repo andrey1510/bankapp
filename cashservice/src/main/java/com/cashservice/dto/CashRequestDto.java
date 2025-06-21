@@ -12,5 +12,6 @@ public record CashRequestDto(
     @NotNull Long accountId,
     @NotBlank String currency,
     @Positive BigDecimal amount,
-    @NotNull boolean isDeposit
+    @NotNull boolean isDeposit,
+    @NotNull String login
 ) {}

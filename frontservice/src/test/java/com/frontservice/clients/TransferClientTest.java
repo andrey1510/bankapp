@@ -29,7 +29,9 @@ class TransferClientTest {
         "USD",
         new BigDecimal("100.00"),
         67890L,
-        "EUR"
+        "EUR",
+        "login1",
+        "login2"
     );
 
     @BeforeEach
@@ -56,7 +58,9 @@ class TransferClientTest {
             "USD",
             new BigDecimal("-50.00"),
             67890L,
-            "EUR"
+            "EUR",
+            "login1",
+            "login2"
         );
 
         transferClient.sendTransferRequest(negativeAmountRequest);

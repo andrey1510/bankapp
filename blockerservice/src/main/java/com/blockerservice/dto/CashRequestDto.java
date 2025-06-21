@@ -6,5 +6,6 @@ public record CashRequestDto(
     String email,
     Long accountId,
     String currency,
-    BigDecimal amount
+    BigDecimal amount,
+    String login
 ) {}

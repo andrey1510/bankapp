@@ -27,10 +27,10 @@ public class AccountClient {
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
-    public void sendAccountRequest(Long accountId, BigDecimal amount) {
+    public void sendAccountRequest(Long accountId, BigDecimal amount, String login) {
         restTemplate.postForObject(
             String.format("%s/accounts/cash-update", accountServiceUrl),
-            new AccountBalanceChangeDto(accountId, amount),
+            new AccountBalanceChangeDto(accountId, amount, login),
             Void.class
         );
     }

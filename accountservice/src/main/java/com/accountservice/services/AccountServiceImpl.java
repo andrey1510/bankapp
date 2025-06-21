@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
 
         notificationProducer.sendNotifications(new NotificationRequestDto(
             account.getUser().getEmail(),
-            createCashMessage(request.amount(), account.getCurrency())
+            createCashMessage(request, account.getCurrency())
         ));
     }
 
@@ -73,34 +73,41 @@ public class AccountServiceImpl implements AccountService {
 
         notificationProducer.sendNotifications(new NotificationRequestDto(
             senderAccount.getUser().getEmail(),
-            createTransferMessage(request.senderAccountBalanceChange(), senderAccount.getCurrency())
+            createTransferMessage(request, senderAccount.getCurrency())
         ));
-
     }
 
-
-    private String createCashMessage(BigDecimal amount, String currency) {
+    private String createCashMessage(AccountBalanceChangeDto request, String currency) {
 
         String operationType = "пополнению";
+        BigDecimal amount = request.amount();
 
-        if(amount.compareTo(BigDecimal.ZERO) < 0) {
-            amount = amount.negate().setScale(2, RoundingMode.HALF_UP);
+        if(request.amount().compareTo(BigDecimal.ZERO) < 0) {
+           amount = amount.negate().setScale(2, RoundingMode.HALF_UP);
             operationType = "снятию со";
         }
 
-        return String.format("%s была проведена операция по %s счета на сумму %.2f %s",
+        return String.format("%s была проведена операция по %s счета %s пользователя %s  на сумму %.2f %s",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
             operationType,
+            request.accountId(),
+            request.login(),
             amount.setScale(2, RoundingMode.HALF_UP).doubleValue(),
-            currency);
+            currency
+        );
 
     }
 
-    private String createTransferMessage(BigDecimal amount, String currency) {
-        return String.format("%s была проведена операция по переводу %.2f %s ",
+    private String createTransferMessage(BalanceUpdateRequestDto request, String currency) {
+        return String.format("%s была проведена операция по переводу %.2f %s со счета %s пользователя %s на счет %s пользователя %s ",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
-            amount.setScale(2, RoundingMode.HALF_UP).doubleValue(),
-            currency);
+            request.senderAccountBalanceChange().setScale(2, RoundingMode.HALF_UP).doubleValue(),
+            request.senderAccountId(),
+            request.senderLogin(),
+            request.recipientAccountId(),
+            request.recipientLogin(),
+            currency
+        );
     }
 
 

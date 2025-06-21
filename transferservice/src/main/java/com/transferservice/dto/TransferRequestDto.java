@@ -13,5 +13,7 @@ public record TransferRequestDto(
     @NotBlank String senderAccountCurrency,
     @Positive BigDecimal amount,
     @NotNull Long recipientAccountId,
-    @NotBlank String recipientAccountCurrency
+    @NotBlank String recipientAccountCurrency,
+    @NotNull String senderLogin,
+    @NotNull String recipientLogin
 ) {}

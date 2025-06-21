@@ -49,14 +49,18 @@ class TransferServiceImplTest {
             "USD",
             new BigDecimal("100.00"),
             2L,
-            "EUR"
+            "EUR",
+            "login",
+            "login"
         );
 
         balanceUpdateRequest = new BalanceUpdateRequestDto(
             1L,
             new BigDecimal("100.50"),
             2L,
-            new BigDecimal("85.50")
+            new BigDecimal("85.50"),
+            "login",
+            "login"
         );
     }
 
@@ -68,7 +72,9 @@ class TransferServiceImplTest {
             transferRequest.senderAccountCurrency(),
             transferRequest.amount(),
             1L,
-            transferRequest.recipientAccountCurrency()
+            transferRequest.recipientAccountCurrency(),
+            "login",
+            "login"
         );
 
         assertThrows(SameAccountTransferException.class, () -> transferService.processTransfer(invalidRequest));
@@ -95,7 +101,9 @@ class TransferServiceImplTest {
             "USD",
             transferRequest.amount(),
             transferRequest.recipientAccountId(),
-            "USD"
+            "USD",
+            "login",
+            "login"
         );
 
         when(blockerClient.checkTransferOperation(any())).thenReturn(new SuspicionOperationDto(false));

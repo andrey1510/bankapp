@@ -42,7 +42,7 @@ public class CashServiceImpl implements CashService {
         if (!request.isDeposit()) amount = amount.negate().setScale(2, RoundingMode.HALF_UP);
 
         try {
-            accountClient.sendAccountRequest(request.accountId(), amount);
+            accountClient.sendAccountRequest(request.accountId(), amount, request.login());
         } catch (RestClientException e) {
             handleAccountServiceError(e);
         }
@@ -50,7 +50,8 @@ public class CashServiceImpl implements CashService {
     }
 
     private String createMessage(CashRequestDto request) {
-        return String.format("%s была заблокирована операция по %s счета на сумму %.2f %s",
+        return String.format("Пользователю %s %s была заблокирована операция по %s счета на сумму %.2f %s",
+            request.login(),
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
             request.isDeposit() ? "пополнению" : "снятию со",
             request.amount().setScale(2, RoundingMode.HALF_UP).doubleValue(),

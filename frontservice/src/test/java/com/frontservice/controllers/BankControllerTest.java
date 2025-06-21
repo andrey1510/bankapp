@@ -159,6 +159,7 @@ class BankControllerTest {
     void transferToOther_WithValidData_ShouldTransfer() {
         when(accountsClient.getUserAccountsDto(anyString())).thenReturn(userAccountsDto);
         when(accountsClient.getAllUsersInfoExceptCurrentDto(anyString())).thenReturn(allUsersInfo);
+        when(bankService.findLoginByAccountId(any(),any())).thenReturn(Optional.of("login"));
         when(bankService.findAccountById(any(UserAccountsDto.class), any())).thenReturn(Optional.of(account1));
         when(bankService.findAccountById(any(List.class), any())).thenReturn(Optional.of(account2));
         doNothing().when(transferClient).sendTransferRequest(any());

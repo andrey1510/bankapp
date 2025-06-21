@@ -65,7 +65,9 @@ public class BankController {
                 senderAccount.currency(),
                 value,
                 recipientAccount.accountId(),
-                recipientAccount.currency()
+                recipientAccount.currency(),
+                currentAccounts.login(),
+                currentAccounts.login()
             ));
 
             redirectAttributes.addFlashAttribute("transferSuccess", "Успешный перевод");
@@ -95,8 +97,13 @@ public class BankController {
         AccountInfoDto senderAccount = bankService.findAccountById(currentAccounts, fromAccount)
             .orElseThrow(() -> new AccountNotFoundException("Счет отправителя не найден"));
 
-        AccountInfoDto recipientAccount = bankService.findAccountById(
-                accountsClient.getAllUsersInfoExceptCurrentDto(authService.getLoginFromSecurityContext()).users(), toAccount)
+        List<UserAccountsDto> users = accountsClient
+            .getAllUsersInfoExceptCurrentDto(authService.getLoginFromSecurityContext()).users();
+
+        AccountInfoDto recipientAccount = bankService.findAccountById(users, toAccount)
+            .orElseThrow(() -> new AccountNotFoundException("Счет получателя не найден"));
+
+        String recipientLogin = bankService.findLoginByAccountId(users, fromAccount)
             .orElseThrow(() -> new AccountNotFoundException("Счет получателя не найден"));
 
         try {
@@ -106,7 +113,9 @@ public class BankController {
                 senderAccount.currency(),
                 value,
                 recipientAccount.accountId(),
-                recipientAccount.currency()
+                recipientAccount.currency(),
+                currentAccounts.login(),
+                recipientLogin
             ));
 
             redirectAttributes.addFlashAttribute("transferOtherSuccess", "Успешный перевод");
@@ -211,7 +220,8 @@ public class BankController {
                 account.accountId(),
                 account.currency(),
                 value,
-                "PUT".equals(action)
+                "PUT".equals(action),
+                currentAccounts.login()
             ));
 
             redirectAttributes.addFlashAttribute("cashSuccess", "Операция успешна");

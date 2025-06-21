@@ -38,7 +38,8 @@ class CashControllerTest {
             1L,
             "USD",
             new BigDecimal("100.00"),
-            true
+            true,
+            "login"
         );
 
         withdrawalRequest = new CashRequestDto(
@@ -46,7 +47,8 @@ class CashControllerTest {
             1L,
             "USD",
             new BigDecimal("-100.00"),
-            false
+            false,
+            "login"
         );
     }
 

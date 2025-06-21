@@ -178,6 +178,7 @@ class BankControllerIntegrationTest {
     @WithMockUser(username = "testuser")
     void transferToOther_WithValidData_ShouldRedirectToMain() throws Exception {
         when(authService.getLoginFromSecurityContext()).thenReturn("testuser");
+        when(bankService.findLoginByAccountId(any(),any())).thenReturn(Optional.of("login"));
         when(accountsClient.getUserAccountsDto("testuser")).thenReturn(testUserAccountsDto);
         when(bankService.findAccountById(eq(testUserAccountsDto), anyLong())).thenReturn(Optional.of(testAccountDto));
         when(accountsClient.getAllUsersInfoExceptCurrentDto("testuser")).thenReturn(new AllUsersInfoExceptCurrentDto(List.of(testUserAccountsDto)));

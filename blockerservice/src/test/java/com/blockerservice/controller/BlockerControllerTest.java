@@ -40,14 +40,17 @@ class BlockerControllerTest {
             "USD",
             new BigDecimal("100.00"),
             2L,
-            "EUR"
+            "EUR",
+            "login",
+            "login"
         );
 
         cashRequest = new CashRequestDto(
             "test@example.com",
             1L,
             "USD",
-            new BigDecimal("100.00")
+            new BigDecimal("100.00"),
+            "login"
         );
 
         suspicionOperation = new SuspicionOperationDto(

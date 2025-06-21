@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,9 +38,21 @@ public class CashServiceImplTest {
     @BeforeEach
     void setUp() {
         depositRequest = new CashRequestDto(
-            "test@example.com", 1L, "USD", new BigDecimal("100.00"), true);
+            "test@example.com",
+            1L,
+            "USD",
+            new BigDecimal("100.00"),
+            true,
+            "login"
+        );
         withdrawRequest = new CashRequestDto(
-            "test@example.com", 1L, "USD", new BigDecimal("50.00"), false);
+            "test@example.com",
+            1L,
+            "USD",
+            new BigDecimal("50.00"),
+            false,
+            "login"
+        );
         validRequest = depositRequest;
     }
 
@@ -48,7 +61,7 @@ public class CashServiceImplTest {
         when(blockerClient.checkCashOperation(any())).thenReturn(new SuspicionOperationDto(false));
 
         assertDoesNotThrow(() -> cashService.processOperation(depositRequest));
-        verify(accountClient).sendAccountRequest(eq(1L), eq(new BigDecimal("100.00")));
+        verify(accountClient).sendAccountRequest(eq(1L), eq(new BigDecimal("100.00")), eq("login"));
     }
 
     @Test
@@ -56,7 +69,7 @@ public class CashServiceImplTest {
         when(blockerClient.checkCashOperation(any())).thenReturn(new SuspicionOperationDto(false));
 
         assertDoesNotThrow(() -> cashService.processOperation(withdrawRequest));
-        verify(accountClient).sendAccountRequest(eq(1L), eq(new BigDecimal("-50.00")));
+        verify(accountClient).sendAccountRequest(eq(1L), eq(new BigDecimal("-50.00")), eq("login"));
     }
 
 }

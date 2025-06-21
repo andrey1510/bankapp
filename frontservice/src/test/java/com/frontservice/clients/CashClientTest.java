@@ -28,7 +28,8 @@ class CashClientTest {
         12345L,
         "USD",
         new BigDecimal("100.00"),
-        true
+        true,
+        "login"
     );
 
     @BeforeEach
@@ -43,7 +44,8 @@ class CashClientTest {
             12345L,
             "USD",
             new BigDecimal("100.00"),
-            true
+            true,
+            "login"
         );
 
         cashClient.sendCashRequest(depositRequest);
@@ -62,7 +64,8 @@ class CashClientTest {
             12345L,
             "USD",
             new BigDecimal("50.00"),
-            false
+            false,
+            "login"
         );
 
         cashClient.sendCashRequest(withdrawalRequest);
@@ -81,7 +84,8 @@ class CashClientTest {
             12345L,
             "USD",
             new BigDecimal("-100.00"),
-            true
+            true,
+            "login"
         );
 
         cashClient.sendCashRequest(negativeAmountRequest);
@@ -100,7 +104,8 @@ class CashClientTest {
             12345L,
             "USD",
             BigDecimal.ZERO,
-            true
+            true,
+            "login"
         );
 
         cashClient.sendCashRequest(zeroAmountRequest);

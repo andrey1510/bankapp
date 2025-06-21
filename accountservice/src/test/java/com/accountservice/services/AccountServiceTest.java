@@ -53,21 +53,24 @@ class AccountServiceTest {
 
         cashRequest = new AccountBalanceChangeDto(
             1L,
-            new BigDecimal("100.00")
+            new BigDecimal("100.00"),
+            "login"
         );
 
         transferRequest = new BalanceUpdateRequestDto(
             1L,
             new BigDecimal("100.00"),
             2L,
-            new BigDecimal("100.00")
+            new BigDecimal("100.00"),
+            "login",
+            "login"
         );
     }
 
     @Test
     void updateBalanceCash_WithInsufficientFunds_ShouldThrowException() {
         when(accountRepository.findById(1L)).thenReturn(Optional.of(account));
-        cashRequest = new AccountBalanceChangeDto(1L, new BigDecimal("-1100.00"));
+        cashRequest = new AccountBalanceChangeDto(1L, new BigDecimal("-1100.00"),"login");
 
         assertThrows(InsufficientFundsException.class, () -> 
             accountService.updateBalanceCash(cashRequest)

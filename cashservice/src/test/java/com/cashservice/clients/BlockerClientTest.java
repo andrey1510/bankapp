@@ -37,7 +37,13 @@ public class BlockerClientTest {
     void setUp() {
         blockerClient.blockerServiceUrl = "http://blocker-service";
         testRequest = new CashRequestDto(
-            "test@email.com", 1L, "USD", new BigDecimal("100.00"), true);
+            "test@email.com",
+            1L,
+            "USD",
+            new BigDecimal("100.00"),
+            true,
+            "login"
+        );
         testResponse = new SuspicionOperationDto(false);
     }
 
