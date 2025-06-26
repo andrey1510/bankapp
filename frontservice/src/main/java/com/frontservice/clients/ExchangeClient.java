@@ -3,6 +3,7 @@ package com.frontservice.clients;
 import com.frontservice.dto.CurrenciesDto;
 import com.frontservice.dto.RatesDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExchangeClient {
@@ -28,16 +30,20 @@ public class ExchangeClient {
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
     public CurrenciesDto getCurrenciesDto() {
-        return restTemplate.getForEntity(
+        CurrenciesDto currencies = restTemplate.getForEntity(
             String.format("%s/currencies", exchangeUrl),
             CurrenciesDto.class
         ).getBody();
+        log.info("Currencies: {}", currencies);
+        return currencies;
     }
 
     public RatesDto getRates() {
-        return restTemplate.getForEntity(
+        RatesDto rates = restTemplate.getForEntity(
             String.format("%s/rates", exchangeUrl),
             RatesDto.class
         ).getBody();
+        log.info("Rates: {}", rates);
+        return rates;
     }
 }

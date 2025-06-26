@@ -10,6 +10,7 @@ import com.accountservice.kafka.NotificationProducer;
 import com.accountservice.repositories.AccountRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -40,6 +42,7 @@ public class AccountServiceImpl implements AccountService {
         account.setAmount(newBalance);
 
         accountRepository.save(account);
+        log.info("Account saved: {}", account);
 
         notificationProducer.sendNotifications(new NotificationRequestDto(
             account.getUser().getEmail(),
@@ -69,7 +72,9 @@ public class AccountServiceImpl implements AccountService {
         recipientAccount.setAmount(newRecipientBalance);
 
         accountRepository.save(senderAccount);
+        log.info("Account saved: {}", senderAccount);
         accountRepository.save(recipientAccount);
+        log.info("Account saved: {}", recipientAccount);
 
         notificationProducer.sendNotifications(new NotificationRequestDto(
             senderAccount.getUser().getEmail(),

@@ -3,6 +3,7 @@ package com.transferservice.clients;
 import com.transferservice.dto.ConversionRateDto;
 import com.transferservice.dto.ConversionRateRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExchangeClient {
@@ -28,11 +30,13 @@ public class ExchangeClient {
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
     public ConversionRateDto getConversionRate(ConversionRateRequestDto requestDto) {
-        return restTemplate.postForObject(
+        ConversionRateDto conversionRateDto = restTemplate.postForObject(
             String.format("%s/rates/conversion", exchangeServiceUrl),
             requestDto,
             ConversionRateDto.class
         );
+        log.info("Conversion rate sent: {}", conversionRateDto);
+        return conversionRateDto;
 
     }
 }

@@ -4,10 +4,12 @@ import com.blockerservice.dto.CashRequestDto;
 import com.blockerservice.dto.SuspicionOperationDto;
 import com.blockerservice.dto.TransferRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BlockerServiceImpl implements BlockerService {
@@ -17,12 +19,16 @@ public class BlockerServiceImpl implements BlockerService {
 
     @Override
     public SuspicionOperationDto checkTransferOperation(TransferRequestDto request) {
-        return new SuspicionOperationDto(request.amount().compareTo(transferThreshold) > 0);
+        SuspicionOperationDto suspicionOperationDto = new SuspicionOperationDto(request.amount().compareTo(transferThreshold) > 0);
+        log.info("Suspicion operation: {}", suspicionOperationDto);
+        return suspicionOperationDto;
     }
 
     @Override
     public SuspicionOperationDto checkCashOperation(CashRequestDto request) {
-        return new SuspicionOperationDto(request.amount().compareTo(cashThreshold) > 0);
+        SuspicionOperationDto suspicionOperationDto = new SuspicionOperationDto(request.amount().compareTo(cashThreshold) > 0);
+        log.info("Suspicion operation: {}", suspicionOperationDto);
+        return suspicionOperationDto;
     }
 
 }

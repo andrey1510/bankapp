@@ -44,6 +44,7 @@ public class CashServiceImpl implements CashService {
         try {
             accountClient.sendAccountRequest(request.accountId(), amount, request.login());
         } catch (RestClientException e) {
+            log.error(e.getMessage());
             handleAccountServiceError(e);
         }
 

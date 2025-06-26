@@ -50,7 +50,7 @@ public class UserController {
                     .collect(Collectors.toList())
             );
         }
-
+        log.info("Registering user: {}", userDto);
         try {
             userService.createUser(userDto);
             return ResponseEntity.ok().build();
@@ -70,7 +70,7 @@ public class UserController {
                     .collect(Collectors.toList())
             );
         }
-
+        log.info("Changing password: {}", passwordChangeDto);
         try {
             userService.changePassword(passwordChangeDto);
             return ResponseEntity.ok().build();
@@ -82,6 +82,7 @@ public class UserController {
     @GetMapping("/user-info")
     @PreAuthorize("hasAuthority('SCOPE_accountservice.get')")
     public ResponseEntity<UserInfoDto> getUserInfo(@RequestParam String login) {
+        log.info("Getting user info: {}", login);
         return ResponseEntity.ok(userService.getUserInfo(login));
     }
 
@@ -98,7 +99,7 @@ public class UserController {
                     .toList()
             );
         }
-
+        log.info("Updating user: {}", dto);
         try {
             return ResponseEntity.ok(userService.updateUser(dto.login(), dto));
         } catch (EmailAlreadyExistsException | WrongAgeException e  ) {
@@ -110,6 +111,7 @@ public class UserController {
     @GetMapping("/accounts-info")
     @PreAuthorize("hasAuthority('SCOPE_accountservice.get')")
     public ResponseEntity<UserAccountsDto> getAccountsInfo(@RequestParam String login) {
+        log.info("Getting accounts info: {}", login);
         return ResponseEntity.ok(userService.getAccountsInfo(login));
     }
 
@@ -141,6 +143,7 @@ public class UserController {
     @GetMapping("/users-except-current")
     @PreAuthorize("hasAuthority('SCOPE_accountservice.get')")
     public ResponseEntity<AllUsersInfoExceptCurrentDto> getAllUsersExceptCurrent(@RequestParam String login) {
+        log.info("Getting all users except current: {}", login);
         return ResponseEntity.ok(userService.getAllUsersInfoExceptCurrent(login));
     }
 
@@ -148,7 +151,7 @@ public class UserController {
     @PostMapping("/login")
     @PreAuthorize("hasAuthority('SCOPE_accountservice.post')")
     public ResponseEntity<Void> login(@RequestBody LoginPasswordDto request) {
-
+        log.info("Attempting login: {}", request);
         if (userService.authenticateUser(request.login(), request.password())) {
             log.info("Login successful for user: {}", request.login());
             return ResponseEntity.ok().build();

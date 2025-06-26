@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(userDto.email()))
             throw new EmailAlreadyExistsException(EMAIL_EXISTS);
 
-        return userRepository.save(User.builder()
+        User user = userRepository.save(User.builder()
             .login(userDto.login())
             .password(passwordEncoder.encode(userDto.password()))
             .name(userDto.name())
@@ -69,6 +69,8 @@ public class UserServiceImpl implements UserService {
             .birthdate(userDto.birthdate())
             .accounts(new ArrayList<>())
             .build());
+        log.info("User created: {}", user);
+        return user;
     }
 
     @Transactional
@@ -80,7 +82,9 @@ public class UserServiceImpl implements UserService {
 
         user.setPassword(passwordEncoder.encode(passwordChangeDto.password()));
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        log.info("User changed: {}", savedUser);
+        return savedUser;
     }
 
     @Override
@@ -89,6 +93,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findByLogin(login)
             .orElseThrow(() -> new NoSuchUserException(USER_NOT_FOUND));
+        log.info("User info: {}", user);
 
         return new UserInfoDto(
             user.getLogin(),
@@ -113,6 +118,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.email());
 
         userRepository.save(user);
+        log.info("User updated: {}", user);
 
         return getUserInfo(login);
     }
@@ -143,7 +149,9 @@ public class UserServiceImpl implements UserService {
             })
             .collect(Collectors.toList());
 
-        return new AllUsersInfoExceptCurrentDto(userDtos);
+        AllUsersInfoExceptCurrentDto allUsersInfoExceptCurrentDto = new AllUsersInfoExceptCurrentDto(userDtos);
+        log.info("AllUsersInfoExceptCurrent: {}", allUsersInfoExceptCurrentDto);
+        return allUsersInfoExceptCurrentDto;
     }
 
 
@@ -153,7 +161,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByLogin(login)
             .orElseThrow(() -> new NoSuchUserException(USER_NOT_FOUND));
 
-        return new UserAccountsDto(login, user.getName(), user.getEmail(), user.getAccounts().stream()
+        UserAccountsDto accountsDto = new UserAccountsDto(login, user.getName(), user.getEmail(), user.getAccounts().stream()
             .map(account -> new AccountInfoDto(
                 account.getId(),
                 account.getTitle(),
@@ -162,6 +170,8 @@ public class UserServiceImpl implements UserService {
                 true
             ))
             .collect(Collectors.toList()));
+        log.info("UserAccountsDto: {}", accountsDto);
+        return accountsDto;
     }
 
     @Transactional
@@ -188,6 +198,7 @@ public class UserServiceImpl implements UserService {
             .collect(Collectors.toList());
 
         accountRepository.deleteAll(accountsToDelete);
+        log.info("Account deleted: {}", accountsToDelete);
 
         List<Account> accountsToCreate = dto.accounts().stream()
             .filter(AccountInfoDto::isExisting)
@@ -211,14 +222,17 @@ public class UserServiceImpl implements UserService {
         }
 
         accountRepository.saveAll(accountsToCreate);
+        log.info("Account created: {}", accountsToCreate);
     }
 
     @Transactional(readOnly = true)
     @Override
     public boolean authenticateUser(String login, String password) {
-        return userRepository.findByLogin(login)
+        Boolean authenticate = userRepository.findByLogin(login)
             .map(user -> passwordEncoder.matches(password, user.getPassword()))
             .orElse(false);
+        log.info("User authenticated: {}", authenticate);
+        return authenticate;
     }
 
 }

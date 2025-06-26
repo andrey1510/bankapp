@@ -22,6 +22,7 @@ public class ExchangeKafkaProducer {
     public void sendRates() {
         try {
             kafkaTemplate.send(currencyRatesTopic, "rates_key", exchangeGenerationService.getCurrencyRateDtos());
+            log.info("Rates sent");
         } catch (Exception e) {
             log.error("Error sending rates", e);
         }

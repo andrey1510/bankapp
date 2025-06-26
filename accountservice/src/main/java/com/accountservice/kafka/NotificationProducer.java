@@ -20,6 +20,7 @@ public class NotificationProducer {
     public void sendNotifications(NotificationRequestDto notification) {
         try {
             kafkaTemplate.send(notificationsTopic, notification);
+            log.info("Notification sent to topic {}", notificationsTopic);
         } catch (Exception e) {
             log.error("Error sending notification", e);
         }

@@ -55,6 +55,7 @@ public class MainController {
 
         } catch (HttpClientErrorException e) {
             model.addAttribute("userAccountsErrors", List.of("Ошибка загрузки данных"));
+            log.error(e.getMessage());
         }
 
         return "main";
@@ -63,7 +64,9 @@ public class MainController {
     @GetMapping("/api/rates")
     @ResponseBody
     public List<ExchangeRate> getExchangeRates() {
-        return exchangeClient.getRates().rates();
+        List<ExchangeRate> rates = exchangeClient.getRates().rates();
+        log.info("rates received: {}", rates);
+        return rates;
     }
 
 }

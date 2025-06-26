@@ -2,6 +2,7 @@ package com.frontservice.clients;
 
 import com.frontservice.dto.CashRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
@@ -13,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CashClient {
@@ -32,6 +34,7 @@ public class CashClient {
             request,
             Void.class
         );
+        log.info("Send cash request");
     }
 
 }

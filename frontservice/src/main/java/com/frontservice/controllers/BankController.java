@@ -74,10 +74,12 @@ public class BankController {
             return "redirect:/main";
 
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
             redirectAttributes.addFlashAttribute("transferErrors",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";
         } catch (Exception e) {
+            log.error(e.getMessage());
             redirectAttributes.addFlashAttribute("transferErrors",
                 List.of("Внутренняя ошибка сервера"));
             return "redirect:/main";
@@ -122,10 +124,12 @@ public class BankController {
             return "redirect:/main";
 
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
             redirectAttributes.addFlashAttribute("transferOtherErrors",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";
         } catch (Exception e) {
+            log.error(e.getMessage());
             redirectAttributes.addFlashAttribute("transferOtherErrors",
                 List.of("Внутренняя ошибка сервера"));
             return "redirect:/main";
@@ -148,10 +152,12 @@ public class BankController {
 
             redirectAttributes.addFlashAttribute("successUpdatedUser", "Данные успешно обновлены");
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
             redirectAttributes.addFlashAttribute("errorUsers",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";
         } catch (Exception e) {
+            log.error(e.getMessage());
             redirectAttributes.addFlashAttribute("errorUsers",
                 List.of("Внутренняя ошибка сервера"));
             return "redirect:/main";
@@ -188,10 +194,12 @@ public class BankController {
             redirectAttributes.addFlashAttribute("successUpdatedAcc", "Данные обновлены");
 
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
             redirectAttributes.addFlashAttribute("userAccountsErrors",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";
         } catch (Exception e) {
+            log.error(e.getMessage());
             redirectAttributes.addFlashAttribute("userAccountsErrors",
                 List.of("Внутренняя ошибка сервера"));
             return "redirect:/main";
@@ -229,6 +237,7 @@ public class BankController {
             return "redirect:/main";
 
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
             redirectAttributes.addFlashAttribute("cashErrors",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";

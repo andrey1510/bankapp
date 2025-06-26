@@ -33,11 +33,13 @@ public class RemoteAuthenticationProvider implements AuthenticationProvider {
             );
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                return new UsernamePasswordAuthenticationToken(
+                UsernamePasswordAuthenticationToken roleUser = new UsernamePasswordAuthenticationToken(
                     login,
                     null,
                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
                 );
+                log.info("Authenticated user: " + login);
+                return roleUser;
             } else {
                 log.warn("Authentication failed for {}: HTTP {}", login, response.getStatusCodeValue());
             }

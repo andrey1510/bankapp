@@ -6,6 +6,7 @@ import com.frontservice.dto.AllUsersInfoExceptCurrentDto;
 import com.frontservice.dto.CurrenciesDto;
 import com.frontservice.dto.UserAccountsDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BankService {
@@ -40,12 +42,13 @@ public class BankService {
                 ));
             }
         });
+        log.info("combineCurrencies: {}", allAccounts);
 
         return allAccounts;
     }
 
     public List<AccountUserInfoDto> convertToAccountUserInfoList(UserAccountsDto userAccountsDto) {
-        return userAccountsDto.accounts().stream()
+        List<AccountUserInfoDto> collect = userAccountsDto.accounts().stream()
             .map(account -> new AccountUserInfoDto(
                 userAccountsDto.name(),
                 account.accountId(),
@@ -55,36 +58,48 @@ public class BankService {
                 account.amount()
             ))
             .collect(Collectors.toList());
+        log.info("convertToAccountUserInfoList: {}", collect);
+
+        return collect;
     }
 
     public List<AccountUserInfoDto> convertAllUsersToAccountInfo(AllUsersInfoExceptCurrentDto allUsersDto) {
         if (allUsersDto == null || allUsersDto.users() == null)
             return List.of();
 
-        return allUsersDto.users().stream()
+        List<AccountUserInfoDto> collect = allUsersDto.users().stream()
             .flatMap(userDto -> convertToAccountUserInfoList(userDto).stream())
             .collect(Collectors.toList());
+        log.info("convertAllUsersToAccountInfo: {}", collect);
+
+        return collect;
     }
 
     public Optional<AccountInfoDto> findAccountById(UserAccountsDto accountsDto, Long accountId) {
-        return accountsDto.accounts().stream()
+        Optional<AccountInfoDto> account = accountsDto.accounts().stream()
             .filter(acc -> acc.accountId().equals(accountId))
             .findFirst();
+        log.info("findAccountById: {}", account);
+        return account;
     }
 
     public Optional<AccountInfoDto> findAccountById(List<UserAccountsDto> users, Long targetAccountId) {
-        return users.stream()
+        Optional<AccountInfoDto> acc = users.stream()
             .flatMap(user -> user.accounts().stream())
             .filter(account -> account.accountId().equals(targetAccountId))
             .findFirst();
+        log.info("findAccountById: {}", acc);
+        return acc;
     }
 
     public Optional<String> findLoginByAccountId(List<UserAccountsDto> users, Long accountId) {
-        return users.stream()
+        Optional<String> login = users.stream()
             .filter(user -> user.accounts().stream()
                 .anyMatch(account -> account.accountId().equals(accountId)))
             .findFirst()
             .map(UserAccountsDto::login);
+        log.info("findLoginByAccountId: {}", login);
+        return login;
     }
 
 }

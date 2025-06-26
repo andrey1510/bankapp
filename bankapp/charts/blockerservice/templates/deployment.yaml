@@ -40,6 +40,8 @@ spec:
           env:
             - name: ISSUER_URI
               value: {{ tpl .Values.keycloak.issuer . | quote }}
+            - name: KAFKA_URL
+              value: {{ tpl .Values.kafka.url . | quote }}
           livenessProbe:
             httpGet:
               path: /actuator/health
