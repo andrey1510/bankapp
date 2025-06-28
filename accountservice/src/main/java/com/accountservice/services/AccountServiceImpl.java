@@ -44,10 +44,10 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
         log.info("Account saved: {}", account);
 
-        notificationProducer.sendNotifications(new NotificationRequestDto(
-            account.getUser().getEmail(),
-            createCashMessage(request, account.getCurrency())
-        ));
+        notificationProducer.sendNotifications(
+            new NotificationRequestDto(account.getUser().getEmail(), createCashMessage(request, account.getCurrency())),
+            request.login()
+        );
     }
 
     @Override
@@ -76,10 +76,11 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(recipientAccount);
         log.info("Account saved: {}", recipientAccount);
 
-        notificationProducer.sendNotifications(new NotificationRequestDto(
-            senderAccount.getUser().getEmail(),
-            createTransferMessage(request, senderAccount.getCurrency())
-        ));
+        notificationProducer.sendNotifications(
+            new NotificationRequestDto(
+                senderAccount.getUser().getEmail(), createTransferMessage(request, senderAccount.getCurrency())),
+            request.senderLogin()
+        );
     }
 
     private String createCashMessage(AccountBalanceChangeDto request, String currency) {

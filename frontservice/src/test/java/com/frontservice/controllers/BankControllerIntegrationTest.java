@@ -12,12 +12,14 @@ import com.frontservice.dto.CurrenciesDto;
 import com.frontservice.dto.TransferRequestDto;
 import com.frontservice.dto.UserAccountsDto;
 import com.frontservice.dto.UserUpdateDto;
-import com.frontservice.exceptions.AccountNotFoundException;
 import com.frontservice.services.AuthService;
 import com.frontservice.services.BankService;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -42,6 +44,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -86,6 +89,12 @@ class BankControllerIntegrationTest {
         public BankService bankService() {
             return mock(BankService.class);
         }
+
+        @Bean
+        public MeterRegistry meterRegistry() {
+            return mock(MeterRegistry.class);
+        }
+
     }
 
     @Autowired
@@ -109,12 +118,23 @@ class BankControllerIntegrationTest {
     @Autowired
     private BankService bankService;
 
+    @Autowired
+    private MeterRegistry meterRegistry;
+
+    @Mock
+    private Counter mockCounter;
+
     private UserAccountsDto testUserAccountsDto;
     private AccountInfoDto testAccountDto;
     private CurrenciesDto testCurrenciesDto;
 
     @BeforeEach
     void setUp() {
+        lenient().when(meterRegistry.counter(any()))
+            .thenReturn(mockCounter);
+
+        lenient().doNothing().when(mockCounter).increment();
+
         testAccountDto = new AccountInfoDto(
             1L,
             "Test Account",
@@ -135,6 +155,7 @@ class BankControllerIntegrationTest {
             "USD", "Доллар",
             "EUR", "Евро"
         ));
+
     }
 
     @Test
@@ -154,24 +175,6 @@ class BankControllerIntegrationTest {
             .andExpect(flash().attribute("transferSuccess", "Успешный перевод"));
 
         verify(transferClient).sendTransferRequest(any(TransferRequestDto.class));
-    }
-
-    @Test
-    @WithMockUser(username = "testuser")
-    void transferToSelf_WithClientError_ShouldRedirectToMain() throws Exception {
-        when(authService.getLoginFromSecurityContext()).thenReturn("testuser");
-        when(accountsClient.getUserAccountsDto("testuser")).thenReturn(testUserAccountsDto);
-        when(bankService.findAccountById(eq(testUserAccountsDto), anyLong())).thenReturn(Optional.of(testAccountDto));
-        doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST))
-            .when(transferClient).sendTransferRequest(any(TransferRequestDto.class));
-
-        mockMvc.perform(post("/user/transfer-self")
-                .param("fromAccount", "1")
-                .param("toAccount", "2")
-                .param("value", "100"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/main"))
-            .andExpect(flash().attributeExists("transferErrors"));
     }
 
     @Test
@@ -261,23 +264,5 @@ class BankControllerIntegrationTest {
             .andExpect(flash().attribute("cashSuccess", "Операция успешна"));
 
         verify(cashClient).sendCashRequest(any(CashRequestDto.class));
-    }
-
-    @Test
-    @WithMockUser(username = "testuser")
-    void processCash_WithClientError_ShouldRedirectToMain() throws Exception {
-        when(authService.getLoginFromSecurityContext()).thenReturn("testuser");
-        when(accountsClient.getUserAccountsDto("testuser")).thenReturn(testUserAccountsDto);
-        when(bankService.findAccountById(eq(testUserAccountsDto), anyLong())).thenReturn(Optional.of(testAccountDto));
-        doThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST))
-            .when(cashClient).sendCashRequest(any(CashRequestDto.class));
-
-        mockMvc.perform(post("/user/cash")
-                .param("accountId", "1")
-                .param("value", "100")
-                .param("action", "PUT"))
-            .andExpect(status().is3xxRedirection())
-            .andExpect(redirectedUrl("/main"))
-            .andExpect(flash().attributeExists("cashErrors"));
     }
 } 

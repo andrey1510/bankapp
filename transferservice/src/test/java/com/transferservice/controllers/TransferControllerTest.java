@@ -38,7 +38,9 @@ class TransferControllerTest {
             "USD",
             new BigDecimal("100.00"),
             2L,
-            "EUR"
+            "EUR",
+            "login1",
+            "login2"
         );
 
     }

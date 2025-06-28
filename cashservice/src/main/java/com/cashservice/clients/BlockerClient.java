@@ -36,6 +36,7 @@ public class BlockerClient {
             SuspicionOperationDto.class
         );
         log.info("Suspicion operation: {}", suspicionOperationDto);
+
         return suspicionOperationDto;
     }
 }

@@ -34,7 +34,10 @@ public class CashServiceImpl implements CashService {
         SuspicionOperationDto response = blockerClient.checkCashOperation(request);
 
         if (response != null && response.isSuspicious()) {
-            notificationProducer.sendNotification(new NotificationRequestDto(request.email(), createMessage(request)));
+            notificationProducer.sendNotification(
+                new NotificationRequestDto(request.email(), createMessage(request)),
+                request.login()
+            );
             throw new CashOperationException("Операция заблокирована");
         }
 
@@ -47,7 +50,6 @@ public class CashServiceImpl implements CashService {
             log.error(e.getMessage());
             handleAccountServiceError(e);
         }
-
     }
 
     private String createMessage(CashRequestDto request) {

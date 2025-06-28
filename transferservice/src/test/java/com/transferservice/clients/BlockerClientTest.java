@@ -40,7 +40,9 @@ class BlockerClientTest {
             "USD",
             new BigDecimal("100.00"),
             2L,
-            "EUR"
+            "EUR",
+            "login1",
+            "login2"
         );
         suspicionResponse = new SuspicionOperationDto(false);
     }

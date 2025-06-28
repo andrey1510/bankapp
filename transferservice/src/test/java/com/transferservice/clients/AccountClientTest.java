@@ -33,7 +33,9 @@ class AccountClientTest {
             1L,
             new BigDecimal("100.00"),
             2L,
-            new BigDecimal("85.00")
+            new BigDecimal("85.00"),
+            "login1",
+            "login2"
         );
     }
 

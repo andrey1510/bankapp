@@ -19,6 +19,13 @@ public class ExceptionsHandler {
         return new ErrorResponse(ex.getMessage());
     }
 
+    @ExceptionHandler(RatesFetchException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorResponse handleRatesFetchException(RatesFetchException ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
     @AllArgsConstructor
     @Getter
     private static class ErrorResponse {

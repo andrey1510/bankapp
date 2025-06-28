@@ -4,26 +4,47 @@ import com.blockerservice.dto.CashRequestDto;
 import com.blockerservice.dto.SuspicionOperationDto;
 import com.blockerservice.dto.TransferRequestDto;
 import com.blockerservice.service.BlockerServiceImpl;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class BlockerServiceImplTest {
 
-    private BlockerServiceImpl blockerService;
     private TransferRequestDto typicalTransferRequest;
     private CashRequestDto typicalCashRequest;
 
+    @InjectMocks
+    private BlockerServiceImpl blockerService;
+
+    @Mock
+    private MeterRegistry meterRegistry;
+
+    @Mock
+    private Counter mockCounter;
+
     @BeforeEach
     void setUp() {
-        blockerService = new BlockerServiceImpl();
+
+        lenient().when(meterRegistry.counter(anyString(), anyString(), anyString(), anyString(), anyString()))
+            .thenReturn(mockCounter);
+
+        lenient().doNothing().when(mockCounter).increment();
 
         typicalTransferRequest = new TransferRequestDto(
             "user@example.com",
@@ -51,6 +72,8 @@ class BlockerServiceImplTest {
         SuspicionOperationDto result = blockerService.checkTransferOperation(typicalTransferRequest);
 
         assertFalse(result.isSuspicious());
+
+        verify(meterRegistry, never()).counter(eq("cash_blocked"), anyString(), anyString());
     }
 
     @Test
@@ -94,7 +117,9 @@ class BlockerServiceImplTest {
         SuspicionOperationDto result = blockerService.checkCashOperation(suspiciousRequest);
 
         assertTrue(result.isSuspicious());
+
     }
+
 
     @Test
     void checkTransferOperation_ShouldHandleEdgeCases() {
