@@ -16,7 +16,7 @@ keycloak:
 kafka:
   url: "http://{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
 zipkin:
-  url: "http://{{ .Release.Name }}-zipkin:9411/api/v2/spans"
+  url: "http://{{ .Release.Name }}-zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
 
 ingress:
   enabled: true

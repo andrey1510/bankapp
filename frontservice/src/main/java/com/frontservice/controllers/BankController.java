@@ -265,7 +265,7 @@ public class BankController {
 
         } catch (HttpClientErrorException e) {
             log.info(e.getMessage());
-            meterRegistry.counter("cash",
+            meterRegistry.counter("cash_failed",
                 "login", currentAccounts.login(),
                 "account", account.accountId().toString()
             ).increment();
@@ -274,7 +274,7 @@ public class BankController {
             return "redirect:/main";
         } catch (Exception e) {
             log.error("Unexpected error", e);
-            meterRegistry.counter("cash",
+            meterRegistry.counter("cash_failed",
                 "login", currentAccounts.login(),
                 "account", account.accountId().toString()
             ).increment();

@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "exchangegeneratorservice.fullname" . }}-monitor
+  labels:
+    app: {{ include "exchangegeneratorservice.name" . }}
+spec:
+  jobLabel: exchangegeneratorservice
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 10s
+  selector:
+    matchLabels:
+      app: {{ include "exchangegeneratorservice.name" . }}
+  namespaceSelector:
+    any: true

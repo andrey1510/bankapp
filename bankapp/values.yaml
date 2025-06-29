@@ -71,3 +71,210 @@ kafka:
       protocol: PLAINTEXT
     interbroker:
       protocol: PLAINTEXT
+
+zipkin:
+  enabled: true
+  storageType: mem
+  cassandra:
+    enabled: false
+  self-tracing:
+    enabled: false
+  tls:
+    enabled: false
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: zipkin.local
+        paths:
+          - path: /
+            pathType: Prefix
+
+kube-prometheus:
+  additionalPrometheusRulesMap:
+    custom-alerts:
+      groups:
+        - name: blocking-alerts
+          rules:
+            - alert: HighTransferBlockedAttempts
+              expr: sum(transfer_blocked_total) by (sender_login, recipient_login, sender_account, recipient_account) > 3
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Частые блокировки переводов для пользователя {{ $labels.sender_login }}"
+                description: "Более 3 блокировок переводов за минуту: отправитель - {{ $labels.sender_login }}, счет {{ $labels.sender_account }}, получатель: {{ $labels.recipient_login }}, счет - {{ $labels.recipient_account }}"
+            - alert: HighCashBlockedAttempts
+              expr: sum(cash_blocked_total) by (login, account) > 2
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Частые блокировки операций пополнения/вывода со счета у пользователя {{ $labels.login }}"
+                description: "Более 2 блокировок операций пополнения/вывода за 3 минуты: пользователь {{ $labels.login }}, счет {{ $labels.account }}"
+        - name: failure-alerts
+          rules:
+            - alert: HighTransfersFailures
+              expr: increase(transfer_failed_total[1m]) > 2
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Частые ошибки операций пополнения/вывода в приложении."
+                description: "Более 2 ошибок операций пополнения/вывода за 1 минуту."
+            - alert: HighCashFailures
+              expr: increase(cash_failed_total[1m]) > 2
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Частые ошибки операций пополнения/вывода в приложении."
+                description: "Более 2 ошибок операций пополнения/вывода за 1 минуту."
+            - alert: HighNotificationsFailures
+              expr: increase(notification_failed_total[1m]) > 2
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Частые ошибки отправки уведомлений в приложении."
+                description: "Более 2 ошибок отправки уведомлений за 1 минуту."
+        - name: user-alerts
+          rules:
+            - alert: HighLoginFailures
+              expr: sum(user_login_total{status="failure"}) > 3
+              for: 1m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Частые неудачные попытки входа пользователя {{ $labels.login }}."
+                description: "Более 3 неудачных попыток входа пользователя {{ $labels.login }} за 1 минуту."
+        - name: rates-alerts
+          rules:
+            - alert: HighRatesFailures
+              expr: increase(rates_update_failed_total[1m]) > 3
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Частые ошибки обновления курса в приложении."
+                description: "Более 3 ошибок обновления курса за 1 минуту."
+  prometheus:
+    enableEndpointSlice: true
+    prometheusSpec:
+      serviceMonitorSelector: {}
+      podMonitorSelector: {}
+    ingress:
+      enabled: true
+      className: "nginx"
+      hosts:
+        - host: prometheus.local
+          paths:
+            - path: /
+              pathType: Prefix
+  grafana:
+    enabled: true
+    adminPassword: "admin"
+    service:
+      type: ClusterIP
+    ingress:
+      enabled: true
+      className: "nginx"
+      hosts:
+        - host: grafana.local
+          paths:
+            - path: /
+              pathType: Prefix
+  prometheus-node-exporter:
+    hostRootFsMount:
+      enabled: false
+
+elasticsearch:
+  protocol: http
+  createCert: false
+  esJavaOpts: "-Xmx1g -Xms1g"
+  clusterHealthCheckParams: ""
+  tls:
+    enabled: false
+  masterService: "elasticsearch"
+  sysctlInitContainer:
+    enabled: true
+  replicas: 1
+  rbac:
+    create: false
+  esConfig:
+    elasticsearch.yml: |
+      cluster.name: bankapp-cluster
+      node.name: node-1
+      network.host: 0.0.0.0
+      discovery.seed_hosts: ["127.0.0.1"]
+      discovery.type: single-node
+      bootstrap.memory_lock: true
+      xpack.security.enabled: false
+      xpack.security.transport.ssl.enabled: false
+      xpack.security.http.ssl.enabled: false
+      xpack.security.authc.token.enabled: false
+
+kibana:
+  elasticsearchHosts: "http://{{ .Release.Name }}-elasticsearch.{{ .Release.Namespace }}.svc.cluster.local:9200"
+  elasticsearch:
+    ssl:
+      enabled: false
+  automountToken: false
+  service:
+    type: NodePort
+    nodePort: 32000
+  replicaCount: 1
+  ingress:
+    enabled: true
+    className: "nginx"
+    hosts:
+      - host: kibana.local
+        paths:
+          - path: /
+            pathType: Prefix
+
+logstash:
+  esJavaOpts: "-Xmx1g -Xms1g"
+  logstashPipeline:
+    monitoring.conf: |
+      input {
+        kafka {
+          bootstrap_servers => "http://{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
+          topics => ["logs"]
+          group_id => "logs-group"
+          consumer_threads => 1
+        }
+      }
+      
+      filter {
+        grok {
+          match => {
+            "message" => [
+              "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:log-level} $%{DATA:app_name}$ $%{DATA:thread}$ %{DATA:logger} %{DATA:traceId}/%{DATA:spanId} - %{GREEDYDATA:message}",
+              "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:log-level} $%{DATA:app_name}$ $%{DATA:thread}$ %{DATA:logger} - %{GREEDYDATA:message}"
+            ]
+          }
+          tag_on_failure => ["_grokparsefailure"]
+        }
+      
+        if "_grokparsefailure" in [tags] {
+          mutate {
+            add_tag => "failed_grok"
+          }
+        }
+      }      
+      
+      output {
+        elasticsearch {
+          hosts => ["http://{{ .Release.Name }}-elasticsearch.{{ .Release.Namespace }}.svc.cluster.local:9200"]
+          index => "logs-%{+YYYY.MM.dd}"
+          retry_on_conflict => 3
+          action => "index"
+        }
+
+        stdout {
+          codec => rubydebug {
+            metadata => true
+          }
+        }
+      }

@@ -48,4 +48,4 @@ management:
       probability: 1
   zipkin:
     tracing:
-      endpoint:  ${ZIPKIN_URL}
+      endpoint: ${ZIPKIN_URL}
