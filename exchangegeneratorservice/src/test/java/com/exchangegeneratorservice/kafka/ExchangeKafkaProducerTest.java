@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     "spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer",
     "spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer",
     "spring.kafka.consumer.group-id=test-group",
+    "management.zipkin.tracing.endpoint=http://localhost:9411/api/v2/spans",
     "spring.kafka.consumer.auto-offset-reset=earliest",
     "spring.kafka.consumer.properties.spring.json.trusted.packages=*",
     "spring.kafka.consumer.properties.spring.json.use.type.headers=false",

@@ -55,12 +55,17 @@ public class TransferServiceImpl implements TransferService {
             request.recipientAccountId(),
             request.amount()
                 .multiply(conversionRate)
-                .setScale(2, RoundingMode.HALF_UP)
+                .setScale(2, RoundingMode.HALF_UP),
+            request.senderLogin(),
+            request.recipientLogin()
         );
 
         SuspicionOperationDto response = blockerClient.checkTransferOperation(request);
         if (response != null && response.isSuspicious()) {
-            notificationProducer.sendNotification(new NotificationRequestDto(request.email(), createMessage(request)));
+            notificationProducer.sendNotification(
+                new NotificationRequestDto(request.email(), createMessage(request)),
+                request.senderLogin()
+            );
             throw new TransferOperationException("Операция заблокирована");
         }
 
@@ -73,10 +78,15 @@ public class TransferServiceImpl implements TransferService {
     }
 
     private String createMessage(TransferRequestDto request) {
-        return String.format("%s была заблокирована операция по переводу %.2f %s ",
+        return String.format("%s была заблокирована операция по переводу %.2f %s со счета %s пользователя %s на счет %s пользователя %s",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
             request.amount().setScale(2, RoundingMode.HALF_UP).doubleValue(),
-            request.senderAccountCurrency());
+            request.senderAccountCurrency(),
+            request.senderAccountId(),
+            request.senderLogin(),
+            request.recipientAccountId(),
+            request.recipientLogin()
+        );
     }
 
     private void handleAccountServiceError(RestClientException e) {

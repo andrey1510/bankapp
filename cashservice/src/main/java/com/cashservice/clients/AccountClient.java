@@ -2,6 +2,7 @@ package com.cashservice.clients;
 
 import com.cashservice.dto.AccountBalanceChangeDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountClient {
@@ -27,12 +29,13 @@ public class AccountClient {
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
-    public void sendAccountRequest(Long accountId, BigDecimal amount) {
+    public void sendAccountRequest(Long accountId, BigDecimal amount, String login) {
         restTemplate.postForObject(
             String.format("%s/accounts/cash-update", accountServiceUrl),
-            new AccountBalanceChangeDto(accountId, amount),
+            new AccountBalanceChangeDto(accountId, amount, login),
             Void.class
         );
+        log.info("Send account request");
     }
 
 }

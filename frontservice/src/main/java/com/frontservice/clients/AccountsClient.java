@@ -8,6 +8,7 @@ import com.frontservice.dto.UserDto;
 import com.frontservice.dto.UserInfoDto;
 import com.frontservice.dto.UserUpdateDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountsClient {
@@ -35,44 +37,52 @@ public class AccountsClient {
         maxAttempts = 1, backoff = @Backoff(delay = 1000)
     )
     public ResponseEntity<Void> sendAuthRequest(LoginPasswordDto dto) {
-        return restTemplate.postForEntity(
+        ResponseEntity<Void> voidResponseEntity = restTemplate.postForEntity(
             String.format("%s/users/login", usersUrl),
             dto,
             Void.class
         );
+        log.info("Send auth request to " + usersUrl);
+        return voidResponseEntity;
     }
 
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
     public UserInfoDto getUserInfoDto(String login) {
-        return restTemplate.getForEntity(
+        UserInfoDto user = restTemplate.getForEntity(
             String.format("%s/users/user-info?login={login}", usersUrl),
             UserInfoDto.class,
             login
         ).getBody();
+        log.info("Get user info from " + usersUrl);
+        return user;
     }
 
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
     public AllUsersInfoExceptCurrentDto getAllUsersInfoExceptCurrentDto(String login) {
-        return restTemplate.getForEntity(
+        AllUsersInfoExceptCurrentDto allUsers = restTemplate.getForEntity(
             String.format("%s/users/users-except-current?login={login}", usersUrl),
             AllUsersInfoExceptCurrentDto.class,
             login
         ).getBody();
+        log.info("Get all users info from " + usersUrl);
+        return allUsers;
     }
 
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
     public UserAccountsDto getUserAccountsDto(String login) {
-        return restTemplate.getForEntity(
+        UserAccountsDto user = restTemplate.getForEntity(
             String.format("%s/users/accounts-info?login={login}", usersUrl),
             UserAccountsDto.class,
             login
         ).getBody();
+        log.info("Get user accounts from " + usersUrl);
+        return user;
     }
 
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
@@ -84,6 +94,7 @@ public class AccountsClient {
             dto,
             Void.class
         );
+        log.info("Send user update request to " + usersUrl);
     }
 
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
@@ -95,6 +106,7 @@ public class AccountsClient {
             new UserAccountsDto(login, null, null, updatedAccounts),
             Void.class
         );
+        log.info("Send account update request to " + usersUrl);
     }
 
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
@@ -106,6 +118,7 @@ public class AccountsClient {
             new LoginPasswordDto(login, password),
             Void.class
         );
+        log.info("Send password change request to " + usersUrl);
     }
 
     @Retryable(retryFor = {ResourceAccessException.class, SocketTimeoutException.class, ConnectException.class},
@@ -117,6 +130,7 @@ public class AccountsClient {
             dto,
             Void.class
         );
+        log.info("Send signup request to " + usersUrl);
     }
 
 }

@@ -34,6 +34,7 @@ public class CashController {
             cashService.processOperation(request);
             return ResponseEntity.accepted().build();
         } catch (CashOperationException e) {
+            log.error(e.getMessage());
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());

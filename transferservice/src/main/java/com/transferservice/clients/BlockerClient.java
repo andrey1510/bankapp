@@ -3,6 +3,7 @@ package com.transferservice.clients;
 import com.transferservice.dto.SuspicionOperationDto;
 import com.transferservice.dto.TransferRequestDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
@@ -14,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BlockerClient {
@@ -28,10 +30,12 @@ public class BlockerClient {
         maxAttempts = 2, backoff = @Backoff(delay = 1000)
     )
     public SuspicionOperationDto checkTransferOperation(TransferRequestDto request) {
-        return restTemplate.postForObject(
+        SuspicionOperationDto suspicionOperationDto = restTemplate.postForObject(
             String.format("%s/fraud-check/transfer", blockerUrl),
             request,
             SuspicionOperationDto.class
         );
+        log.info("Suspicion operation sent: {}", suspicionOperationDto);
+        return suspicionOperationDto;
     }
 }

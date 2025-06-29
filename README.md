@@ -6,7 +6,7 @@ __README__
 пользователей, а также виджетом с обновляющимися курсами валют.
 
 Использованный стек: Java SE 21, Spring Boot, Spring Security, JPA, PostgreSQL, Spring Retry, Keycloak, REST, Gradle, Lombok,
-Thymeleaf, JUnit 5, Mockito, Kafka, Docker, Kubernetes, Jenkins, Helm.
+Thymeleaf, JUnit 5, Mockito, Kafka, Docker, Kubernetes, Jenkins, Helm, Prometheus, Grafana, Elasticsearch, Logstash, Kibana, Zipkin.
 
 Установка и запуск:
 -----------------------------------

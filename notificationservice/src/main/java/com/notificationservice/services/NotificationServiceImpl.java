@@ -32,11 +32,13 @@ public class NotificationServiceImpl implements NotificationService {
             .isSent(false)
             .build();
         notification = notificationRepository.save(notification);
+        log.info("Notification saved: " + notification);
 
         try {
             sendEmail(request.getEmail(), request.getMessage());
             notification.setIsSent(true);
             notificationRepository.save(notification);
+            log.info("Sent notification saved: " + notification);
         } catch (MailException e) {
             log.error(e.getMessage());
         }
@@ -64,6 +66,7 @@ public class NotificationServiceImpl implements NotificationService {
         message.setSubject("Уведомление от банковского приложения");
         message.setText(text);
         mailSender.send(message);
+        log.info("Email sent: " + message);
     }
 
 }

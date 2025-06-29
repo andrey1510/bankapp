@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "blockerservice.fullname" . }}-monitor
+  labels:
+    app: {{ include "blockerservice.name" . }}
+spec:
+  jobLabel: blockerservice
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 10s
+  selector:
+    matchLabels:
+      app: {{ include "blockerservice.name" . }}
+  namespaceSelector:
+    any: true

@@ -1,6 +1,7 @@
 package com.frontservice.configs;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
@@ -41,33 +42,47 @@ public class ClientsSecurityConfig {
 
     @Bean
     @Qualifier("accountRestTemplate")
-    public RestTemplate accountRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createSecuredRestTemplate(authorizedClientManager, "account-service");
+    public RestTemplate accountRestTemplate(
+        OAuth2AuthorizedClientManager authorizedClientManager,
+        RestTemplateBuilder builder
+    ) {
+        return createSecuredRestTemplate(authorizedClientManager, "account-service", builder);
     }
 
     @Bean
     @Qualifier("exchangeRestTemplate")
-    public RestTemplate exchangeRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createSecuredRestTemplate(authorizedClientManager, "exchange-service");
+    public RestTemplate exchangeRestTemplate(
+        OAuth2AuthorizedClientManager authorizedClientManager,
+        RestTemplateBuilder builder
+    ) {
+        return createSecuredRestTemplate(authorizedClientManager, "exchange-service", builder);
     }
 
     @Bean
     @Qualifier("transferRestTemplate")
-    public RestTemplate transferRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createSecuredRestTemplate(authorizedClientManager, "transfer-service");
+    public RestTemplate transferRestTemplate(
+        OAuth2AuthorizedClientManager authorizedClientManager,
+        RestTemplateBuilder builder
+    ) {
+        return createSecuredRestTemplate(authorizedClientManager, "transfer-service", builder);
     }
 
     @Bean
     @Qualifier("cashRestTemplate")
-    public RestTemplate cashRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createSecuredRestTemplate(authorizedClientManager, "cash-service");
+    public RestTemplate cashRestTemplate(
+        OAuth2AuthorizedClientManager authorizedClientManager,
+        RestTemplateBuilder builder
+    ) {
+        return createSecuredRestTemplate(authorizedClientManager, "cash-service", builder);
     }
 
     private RestTemplate createSecuredRestTemplate(
         OAuth2AuthorizedClientManager authorizedClientManager,
-        String registrationId) {
+        String registrationId,
+        RestTemplateBuilder builder
+    ) {
 
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = builder.build();
 
         restTemplate.getInterceptors().add((request, body, execution) -> {
             OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest

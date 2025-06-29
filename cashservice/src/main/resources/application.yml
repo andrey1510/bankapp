@@ -38,6 +38,8 @@ spring:
       notifications: "notifications"
     properties:
       security.protocol: PLAINTEXT
+    template:
+      observation-enabled: true
 
 accountservice:
   url: ${ACCOUNTSERVICE_API}
@@ -49,8 +51,15 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,refresh,busrefresh,metrics,env
+        include: health,info,refresh,busrefresh,metrics,env,prometheus
   endpoint:
     health:
       show-details: always
       access: unrestricted
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}

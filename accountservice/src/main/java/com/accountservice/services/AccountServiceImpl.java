@@ -10,6 +10,7 @@ import com.accountservice.kafka.NotificationProducer;
 import com.accountservice.repositories.AccountRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
@@ -40,11 +42,12 @@ public class AccountServiceImpl implements AccountService {
         account.setAmount(newBalance);
 
         accountRepository.save(account);
+        log.info("Account saved: {}", account);
 
-        notificationProducer.sendNotifications(new NotificationRequestDto(
-            account.getUser().getEmail(),
-            createCashMessage(request.amount(), account.getCurrency())
-        ));
+        notificationProducer.sendNotifications(
+            new NotificationRequestDto(account.getUser().getEmail(), createCashMessage(request, account.getCurrency())),
+            request.login()
+        );
     }
 
     @Override
@@ -69,38 +72,48 @@ public class AccountServiceImpl implements AccountService {
         recipientAccount.setAmount(newRecipientBalance);
 
         accountRepository.save(senderAccount);
+        log.info("Account saved: {}", senderAccount);
         accountRepository.save(recipientAccount);
+        log.info("Account saved: {}", recipientAccount);
 
-        notificationProducer.sendNotifications(new NotificationRequestDto(
-            senderAccount.getUser().getEmail(),
-            createTransferMessage(request.senderAccountBalanceChange(), senderAccount.getCurrency())
-        ));
-
+        notificationProducer.sendNotifications(
+            new NotificationRequestDto(
+                senderAccount.getUser().getEmail(), createTransferMessage(request, senderAccount.getCurrency())),
+            request.senderLogin()
+        );
     }
 
-
-    private String createCashMessage(BigDecimal amount, String currency) {
+    private String createCashMessage(AccountBalanceChangeDto request, String currency) {
 
         String operationType = "пополнению";
+        BigDecimal amount = request.amount();
 
-        if(amount.compareTo(BigDecimal.ZERO) < 0) {
-            amount = amount.negate().setScale(2, RoundingMode.HALF_UP);
+        if(request.amount().compareTo(BigDecimal.ZERO) < 0) {
+           amount = amount.negate().setScale(2, RoundingMode.HALF_UP);
             operationType = "снятию со";
         }
 
-        return String.format("%s была проведена операция по %s счета на сумму %.2f %s",
+        return String.format("%s была проведена операция по %s счета %s пользователя %s  на сумму %.2f %s",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
             operationType,
+            request.accountId(),
+            request.login(),
             amount.setScale(2, RoundingMode.HALF_UP).doubleValue(),
-            currency);
+            currency
+        );
 
     }
 
-    private String createTransferMessage(BigDecimal amount, String currency) {
-        return String.format("%s была проведена операция по переводу %.2f %s ",
+    private String createTransferMessage(BalanceUpdateRequestDto request, String currency) {
+        return String.format("%s была проведена операция по переводу %.2f %s со счета %s пользователя %s на счет %s пользователя %s ",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
-            amount.setScale(2, RoundingMode.HALF_UP).doubleValue(),
-            currency);
+            request.senderAccountBalanceChange().setScale(2, RoundingMode.HALF_UP).doubleValue(),
+            request.senderAccountId(),
+            request.senderLogin(),
+            request.recipientAccountId(),
+            request.recipientLogin(),
+            currency
+        );
     }
 
 

@@ -41,6 +41,10 @@ spec:
               value: {{ tpl .Values.clients.transferservice . | quote }}
             - name: ISSUER_URI
               value: {{ tpl .Values.keycloak.issuer . | quote }}
+            - name: KAFKA_URL
+              value: {{ tpl .Values.kafka.url . | quote }}
+            - name: ZIPKIN_URL
+              value: {{ tpl .Values.zipkin.url . | quote }}
           livenessProbe:
             httpGet:
               path: /actuator/health

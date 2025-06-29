@@ -12,6 +12,7 @@ import com.frontservice.dto.UserUpdateDto;
 import com.frontservice.exceptions.AccountNotFoundException;
 import com.frontservice.services.AuthService;
 import com.frontservice.services.BankService;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -42,6 +43,8 @@ public class BankController {
     private final BankService bankService;
     private final AuthService authService;
 
+    private final MeterRegistry meterRegistry;
+
     @PostMapping("/user/transfer-self")
     @PreAuthorize("hasRole('USER')")
     public String transferToSelf(
@@ -65,17 +68,33 @@ public class BankController {
                 senderAccount.currency(),
                 value,
                 recipientAccount.accountId(),
-                recipientAccount.currency()
+                recipientAccount.currency(),
+                currentAccounts.login(),
+                currentAccounts.login()
             ));
 
             redirectAttributes.addFlashAttribute("transferSuccess", "Успешный перевод");
             return "redirect:/main";
 
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
+            meterRegistry.counter("transfer_failed",
+                "sender_login", currentAccounts.login(),
+                "recipient_login", currentAccounts.login(),
+                "sender_account", senderAccount.accountId().toString(),
+                "recipient_account", senderAccount.accountId().toString()
+            ).increment();
             redirectAttributes.addFlashAttribute("transferErrors",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";
         } catch (Exception e) {
+            log.error(e.getMessage());
+            meterRegistry.counter("transfer_failed",
+                "sender_login", currentAccounts.login(),
+                "recipient_login", currentAccounts.login(),
+                "sender_account", senderAccount.accountId().toString(),
+                "recipient_account", senderAccount.accountId().toString()
+            ).increment();
             redirectAttributes.addFlashAttribute("transferErrors",
                 List.of("Внутренняя ошибка сервера"));
             return "redirect:/main";
@@ -95,8 +114,13 @@ public class BankController {
         AccountInfoDto senderAccount = bankService.findAccountById(currentAccounts, fromAccount)
             .orElseThrow(() -> new AccountNotFoundException("Счет отправителя не найден"));
 
-        AccountInfoDto recipientAccount = bankService.findAccountById(
-                accountsClient.getAllUsersInfoExceptCurrentDto(authService.getLoginFromSecurityContext()).users(), toAccount)
+        List<UserAccountsDto> users = accountsClient
+            .getAllUsersInfoExceptCurrentDto(authService.getLoginFromSecurityContext()).users();
+
+        AccountInfoDto recipientAccount = bankService.findAccountById(users, toAccount)
+            .orElseThrow(() -> new AccountNotFoundException("Счет получателя не найден"));
+
+        String recipientLogin = bankService.findLoginByAccountId(users, fromAccount)
             .orElseThrow(() -> new AccountNotFoundException("Счет получателя не найден"));
 
         try {
@@ -106,17 +130,33 @@ public class BankController {
                 senderAccount.currency(),
                 value,
                 recipientAccount.accountId(),
-                recipientAccount.currency()
+                recipientAccount.currency(),
+                currentAccounts.login(),
+                recipientLogin
             ));
 
             redirectAttributes.addFlashAttribute("transferOtherSuccess", "Успешный перевод");
             return "redirect:/main";
 
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
+            meterRegistry.counter("transfer_failed",
+                "sender_login", currentAccounts.login(),
+                "recipient_login", recipientLogin,
+                "sender_account", senderAccount.accountId().toString(),
+                "recipient_account", recipientAccount.accountId().toString()
+            ).increment();
             redirectAttributes.addFlashAttribute("transferOtherErrors",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";
         } catch (Exception e) {
+            log.error(e.getMessage());
+            meterRegistry.counter("transfer_failed",
+                "sender_login", currentAccounts.login(),
+                "recipient_login", currentAccounts.login(),
+                "sender_account", senderAccount.accountId().toString(),
+                "recipient_account", senderAccount.accountId().toString()
+            ).increment();
             redirectAttributes.addFlashAttribute("transferOtherErrors",
                 List.of("Внутренняя ошибка сервера"));
             return "redirect:/main";
@@ -139,10 +179,12 @@ public class BankController {
 
             redirectAttributes.addFlashAttribute("successUpdatedUser", "Данные успешно обновлены");
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
             redirectAttributes.addFlashAttribute("errorUsers",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";
         } catch (Exception e) {
+            log.error(e.getMessage());
             redirectAttributes.addFlashAttribute("errorUsers",
                 List.of("Внутренняя ошибка сервера"));
             return "redirect:/main";
@@ -179,10 +221,12 @@ public class BankController {
             redirectAttributes.addFlashAttribute("successUpdatedAcc", "Данные обновлены");
 
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
             redirectAttributes.addFlashAttribute("userAccountsErrors",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";
         } catch (Exception e) {
+            log.error(e.getMessage());
             redirectAttributes.addFlashAttribute("userAccountsErrors",
                 List.of("Внутренняя ошибка сервера"));
             return "redirect:/main";
@@ -211,7 +255,8 @@ public class BankController {
                 account.accountId(),
                 account.currency(),
                 value,
-                "PUT".equals(action)
+                "PUT".equals(action),
+                currentAccounts.login()
             ));
 
             redirectAttributes.addFlashAttribute("cashSuccess", "Операция успешна");
@@ -219,11 +264,20 @@ public class BankController {
             return "redirect:/main";
 
         } catch (HttpClientErrorException e) {
+            log.info(e.getMessage());
+            meterRegistry.counter("cash_failed",
+                "login", currentAccounts.login(),
+                "account", account.accountId().toString()
+            ).increment();
             redirectAttributes.addFlashAttribute("cashErrors",
                 List.of(e.getResponseBodyAsString()));
             return "redirect:/main";
         } catch (Exception e) {
             log.error("Unexpected error", e);
+            meterRegistry.counter("cash_failed",
+                "login", currentAccounts.login(),
+                "account", account.accountId().toString()
+            ).increment();
             redirectAttributes.addFlashAttribute("cashErrors",
                 List.of("Внутренняя ошибка сервера"));
             return "redirect:/main";

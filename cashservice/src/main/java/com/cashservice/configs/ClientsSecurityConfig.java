@@ -1,6 +1,7 @@
 package com.cashservice.configs;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
@@ -41,27 +42,38 @@ public class ClientsSecurityConfig {
 
     @Bean
     @Qualifier("accountRestTemplate")
-    public RestTemplate accountRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createSecuredRestTemplate(authorizedClientManager, "account-service");
+    public RestTemplate accountRestTemplate(
+        OAuth2AuthorizedClientManager authorizedClientManager,
+        RestTemplateBuilder builder
+    ) {
+        return createSecuredRestTemplate(authorizedClientManager, "account-service", builder);
     }
 
     @Bean
     @Qualifier("blockerRestTemplate")
-    public RestTemplate blockerRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createSecuredRestTemplate(authorizedClientManager, "blocker-service");
+    public RestTemplate blockerRestTemplate(
+        OAuth2AuthorizedClientManager authorizedClientManager,
+        RestTemplateBuilder builder
+    ) {
+        return createSecuredRestTemplate(authorizedClientManager, "blocker-service", builder);
     }
 
     @Bean
     @Qualifier("notificationRestTemplate")
-    public RestTemplate notificationRestTemplate(OAuth2AuthorizedClientManager authorizedClientManager) {
-        return createSecuredRestTemplate(authorizedClientManager, "notification-service");
+    public RestTemplate notificationRestTemplate(
+        OAuth2AuthorizedClientManager authorizedClientManager,
+        RestTemplateBuilder builder
+    ) {
+        return createSecuredRestTemplate(authorizedClientManager, "notification-service", builder);
     }
 
     private RestTemplate createSecuredRestTemplate(
         OAuth2AuthorizedClientManager authorizedClientManager,
-        String registrationId) {
+        String registrationId,
+        RestTemplateBuilder builder
+    ) {
 
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = builder.build();
 
         restTemplate.getInterceptors().add((request, body, execution) -> {
             OAuth2AuthorizeRequest authorizeRequest = OAuth2AuthorizeRequest

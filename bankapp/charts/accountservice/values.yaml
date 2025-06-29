@@ -14,6 +14,7 @@ keycloak:
   issuer: "http://{{ .Release.Name }}-keycloak.{{ .Release.Namespace }}.svc.cluster.local:8080/realms/bankapp"
 kafka:
   url: "http://{{ .Release.Name }}-kafka.{{ .Release.Namespace }}.svc.cluster.local:9092"
-
+zipkin:
+  url: "http://{{ .Release.Name }}-zipkin.{{ .Release.Namespace }}.svc.cluster.local:9411/api/v2/spans"
 
 

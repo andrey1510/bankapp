@@ -33,13 +33,13 @@ public class AccountClientTest {
     void setUp() {
         testAccountId = 123L;
         testAmount = new BigDecimal("100.00");
-        expectedDto = new AccountBalanceChangeDto(testAccountId, testAmount);
+        expectedDto = new AccountBalanceChangeDto(testAccountId, testAmount, "login");
         accountClient.accountServiceUrl = "http://localhost:8080";
     }
 
     @Test
     void sendAccountRequest_shouldCallRestTemplateWithCorrectUrl() {
-        accountClient.sendAccountRequest(testAccountId, testAmount);
+        accountClient.sendAccountRequest(testAccountId, testAmount, "login");
         verify(restTemplate).postForObject(
             eq("http://localhost:8080/accounts/cash-update"),
             eq(expectedDto),
@@ -49,7 +49,7 @@ public class AccountClientTest {
 
     @Test
     void sendAccountRequest_shouldPassCorrectDto() {
-        accountClient.sendAccountRequest(testAccountId, testAmount);
+        accountClient.sendAccountRequest(testAccountId, testAmount, "login");
         verify(restTemplate).postForObject(
             anyString(),
             eq(expectedDto),
@@ -59,7 +59,7 @@ public class AccountClientTest {
 
     @Test
     void sendAccountRequest_shouldUseVoidReturnType() {
-        accountClient.sendAccountRequest(testAccountId, testAmount);
+        accountClient.sendAccountRequest(testAccountId, testAmount, "login");
         verify(restTemplate).postForObject(
             anyString(),
             any(),

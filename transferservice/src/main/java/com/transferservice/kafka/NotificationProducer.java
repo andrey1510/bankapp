@@ -1,6 +1,7 @@
 package com.transferservice.kafka;
 
 import com.transferservice.dto.kafka.NotificationRequestDto;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +17,14 @@ public class NotificationProducer {
     String notificationsTopic;
 
     private final KafkaTemplate<String, NotificationRequestDto> kafkaTemplate;
+    private final MeterRegistry meterRegistry;
 
-    public void sendNotification(NotificationRequestDto notification) {
+    public void sendNotification(NotificationRequestDto notification, String login) {
         try {
             kafkaTemplate.send(notificationsTopic, notification);
+            log.info("Notification sent to topic: " + notificationsTopic);
         } catch (Exception e) {
+            meterRegistry.counter("notification_failed","login", login).increment();
             log.error("Error sending notification", e);
         }
     }

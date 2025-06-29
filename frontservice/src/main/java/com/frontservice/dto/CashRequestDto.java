@@ -8,5 +8,6 @@ public record CashRequestDto(
     Long accountId,
     String currency,
     BigDecimal amount,
-    boolean isDeposit
+    boolean isDeposit,
+    String login
 ) {}

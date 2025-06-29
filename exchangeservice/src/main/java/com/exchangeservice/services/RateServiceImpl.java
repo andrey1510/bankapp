@@ -39,12 +39,13 @@ public class RateServiceImpl implements RateService {
             .collect(Collectors.toList());
         log.info("Saving rates: {}", rates);
         rateRepository.saveAll(rates);
+        log.info("Rates saved");
     }
 
     @Transactional(readOnly = true)
     @Override
     public RatesDto getLatestRates() {
-        return new RatesDto(
+        RatesDto ratesDto = new RatesDto(
             rateRepository.findLatestRates().stream()
                 .map(rate -> new ExchangeRate(
                     rate.getTitle(),
@@ -53,24 +54,29 @@ public class RateServiceImpl implements RateService {
                 ))
                 .toList()
         );
+        log.info("Rates fetched: {}", ratesDto);
+        return ratesDto;
     }
 
     @Transactional(readOnly = true)
     @Override
     public ExchangeRate getLatestRateByCurrency(String currency) {
-        return rateRepository.findLatestRateByCurrency(currency)
+        ExchangeRate exchangeRate = rateRepository.findLatestRateByCurrency(currency)
             .map(rate -> new ExchangeRate(
                 rate.getTitle(),
                 rate.getCurrency(),
                 rate.getValue()
             )).orElseThrow();
-
+        log.info("Rates fetched: {}", exchangeRate);
+        return exchangeRate;
     }
 
     @Transactional(readOnly = true)
     @Override
     public CurrenciesDto getCurrencies() {
-        return new CurrenciesDto(rateRepository.findAllCurrencyNamesWithTitles());
+        CurrenciesDto currenciesDto = new CurrenciesDto(rateRepository.findAllCurrencyNamesWithTitles());
+        log.info("Currencies fetched: {}", currenciesDto);
+        return currenciesDto;
     }
 
 
@@ -91,7 +97,12 @@ public class RateServiceImpl implements RateService {
         }
 
         BigDecimal inverseToRate = BigDecimal.ONE.divide(toRate.value(), 2, RoundingMode.HALF_UP);
-        return new ConversionRateDto(fromRate.value().multiply(inverseToRate).setScale(2, RoundingMode.HALF_UP));
+
+        ConversionRateDto conversionRateDto = new ConversionRateDto(
+            fromRate.value().multiply(inverseToRate).setScale(2, RoundingMode.HALF_UP)
+        );
+        log.info("ConversionRate fetched: {}", conversionRateDto);
+        return conversionRateDto;
     }
 
 }

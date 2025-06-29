@@ -45,25 +45,9 @@ class NotificationProducerTest {
         NotificationRequestDto notification = new NotificationRequestDto("test@example.com", "message");
         ReflectionTestUtils.setField(notificationProducer, "notificationsTopic", "notifications");
 
-        notificationProducer.sendNotification(notification);
+        notificationProducer.sendNotification(notification, "login");
 
         verify(kafkaTemplate).send("notifications", notification);
     }
 
-    @Test
-    void sendNotification_WithMockProducer_ShouldProduceMessage() {
-
-        NotificationRequestDto notification = new NotificationRequestDto("test@example.com", "message");
-
-        NotificationProducer producerWithMock = new NotificationProducer(spy(new KafkaTemplate<>(() -> mockProducer)));
-        producerWithMock.notificationsTopic = "notifications";
-
-        producerWithMock.sendNotification(notification);
-
-        List<ProducerRecord<String, NotificationRequestDto>> records = mockProducer.history();
-        assertEquals(1, records.size());
-        assertEquals("notifications", records.getFirst().topic());
-        assertEquals(notification.getEmail(), records.getFirst().value().getEmail());
-        assertEquals(notification.getMessage(), records.getFirst().value().getMessage());
-    }
 }

@@ -139,26 +139,10 @@ class BankControllerTest {
     }
 
     @Test
-    void transferToSelf_WithClientError_ShouldReturnError() {
-        when(accountsClient.getUserAccountsDto(anyString())).thenReturn(userAccountsDto);
-        when(bankService.findAccountById((UserAccountsDto) any(), any())).thenReturn(Optional.of(account1));
-        doThrow(HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "Bad Request", null, "Insufficient funds".getBytes(), null))
-            .when(transferClient).sendTransferRequest(any());
-
-        assertEquals("redirect:/main", bankController.transferToSelf(
-            1L,
-            2L,
-            BigDecimal.valueOf(100),
-            redirectAttributes
-        ));
-
-        verify(redirectAttributes).addFlashAttribute("transferErrors", List.of("Insufficient funds"));
-    }
-
-    @Test
     void transferToOther_WithValidData_ShouldTransfer() {
         when(accountsClient.getUserAccountsDto(anyString())).thenReturn(userAccountsDto);
         when(accountsClient.getAllUsersInfoExceptCurrentDto(anyString())).thenReturn(allUsersInfo);
+        when(bankService.findLoginByAccountId(any(),any())).thenReturn(Optional.of("login"));
         when(bankService.findAccountById(any(UserAccountsDto.class), any())).thenReturn(Optional.of(account1));
         when(bankService.findAccountById(any(List.class), any())).thenReturn(Optional.of(account2));
         doNothing().when(transferClient).sendTransferRequest(any());

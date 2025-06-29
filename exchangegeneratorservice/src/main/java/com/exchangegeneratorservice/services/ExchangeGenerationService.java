@@ -21,11 +21,13 @@ public class ExchangeGenerationService {
     private static final int SCALE = 2;
 
     public CurrencyRatesBatchDto getCurrencyRateDtos() {
-        return new CurrencyRatesBatchDto(List.of(
+        CurrencyRatesBatchDto currencyRatesBatchDto = new CurrencyRatesBatchDto(List.of(
             new CurrencyRateDto("Рубль", "RUR", BigDecimal.ONE, LocalDateTime.now()),
             new CurrencyRateDto("Доллар", "USD", generateRate(70, 20), LocalDateTime.now()),
             new CurrencyRateDto("Юань", "CNY", generateRate(10, 5), LocalDateTime.now())
         ));
+        log.info("CurrencyRatesBatchDto: {}", currencyRatesBatchDto);
+        return currencyRatesBatchDto;
     }
 
     protected BigDecimal generateRate(double base, double spread) {

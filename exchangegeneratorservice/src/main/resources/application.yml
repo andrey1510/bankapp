@@ -15,13 +15,22 @@ spring:
       rates: "rates"
     properties:
       security.protocol: PLAINTEXT
+    template:
+      observation-enabled: true
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,refresh,busrefresh,metrics,env
+        include: health,info,refresh,busrefresh,metrics,env,prometheus
   endpoint:
     health:
       show-details: always
       access: unrestricted
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}

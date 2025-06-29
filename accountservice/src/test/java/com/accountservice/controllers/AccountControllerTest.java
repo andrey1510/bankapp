@@ -36,14 +36,17 @@ class AccountControllerTest {
     void setUp() {
         cashRequest = new AccountBalanceChangeDto(
             1L,
-            BigDecimal.valueOf(100)
+            BigDecimal.valueOf(100),
+            "login"
         );
 
         transferRequest = new BalanceUpdateRequestDto(
             1L,
             BigDecimal.valueOf(100),
             2L,
-            BigDecimal.valueOf(50)
+            BigDecimal.valueOf(50),
+            "login",
+            "login"
         );
     }
 

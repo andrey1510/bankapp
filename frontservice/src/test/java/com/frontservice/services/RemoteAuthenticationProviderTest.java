@@ -2,6 +2,8 @@ package com.frontservice.services;
 
 import com.frontservice.clients.AccountsClient;
 import com.frontservice.dto.LoginPasswordDto;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +30,12 @@ class RemoteAuthenticationProviderTest {
 
     @Mock
     private AccountsClient accountsClient;
+
+    @Mock
+    private MeterRegistry meterRegistry;
+
+    @Mock
+    private Counter mockCounter;
 
     @InjectMocks
     private RemoteAuthenticationProvider authenticationProvider;
@@ -35,6 +45,14 @@ class RemoteAuthenticationProviderTest {
     @BeforeEach
     void setUp() {
         authentication = new UsernamePasswordAuthenticationToken("testuser", "password");
+
+        lenient().when(meterRegistry.counter(anyString(), anyString(), anyString(), anyString(), anyString()))
+            .thenReturn(mockCounter);
+
+        lenient().when(meterRegistry.counter(anyString(), any(String[].class)))
+            .thenReturn(mockCounter);
+
+        lenient().doNothing().when(mockCounter).increment();
     }
 
     @Test

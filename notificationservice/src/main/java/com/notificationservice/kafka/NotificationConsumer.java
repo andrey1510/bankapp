@@ -23,7 +23,9 @@ public class NotificationConsumer {
         try {
             log.info("Message received: {}", notification);
             notificationService.processNotification(notification);
+            log.info("Message sent: {}", notification);
             acknowledgment.acknowledge();
+            log.info("acknowledgment sent: {}", notification);
         } catch (Exception e) {
             log.error("Error processing notification: {}", notification, e);
         }

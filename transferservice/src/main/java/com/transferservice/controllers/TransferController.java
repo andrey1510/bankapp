@@ -34,6 +34,7 @@ public class TransferController {
             log.info("Transfer request received: {}", request);
             return ResponseEntity.accepted().build();
         } catch (TransferOperationException | SameAccountTransferException e) {
+            log.error(e.getMessage());
             return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
